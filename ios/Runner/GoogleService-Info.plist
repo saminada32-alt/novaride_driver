@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyBy2N2pI7z3fkTe3tTRV2vl5qf9cOghrgo</string>
+	<key>GCM_SENDER_ID</key>
+	<string>420049372283</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.novaride.driver</string>
+	<key>PROJECT_ID</key>
+	<string>nova-ride-production</string>
+	<key>STORAGE_BUCKET</key>
+	<string>nova-ride-production.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:420049372283:ios:0637f39774c065eaa44ede</string>
+</dict>
+</plist>

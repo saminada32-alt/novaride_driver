@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+jobs:
+  flutter:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze (infos are non-fatal; warnings/errors fail the build)
+        run: flutter analyze --no-fatal-infos
+
+      - name: Tests
+        run: flutter test

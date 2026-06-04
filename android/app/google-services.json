@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "420049372283",
+    "project_id": "nova-ride-production",
+    "storage_bucket": "nova-ride-production.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:420049372283:android:e3554b4fc60e2f17a44ede",
+        "android_client_info": {
+          "package_name": "com.example.novaride_driver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvwJ-AEoWngeU-DTyz3Hfs_J3Ak6x14Tg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:420049372283:android:37360b8618cbf9c1a44ede",
+        "android_client_info": {
+          "package_name": "com.example.novaride_rider"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvwJ-AEoWngeU-DTyz3Hfs_J3Ak6x14Tg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

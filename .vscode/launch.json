@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Driver · dev",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": ["--dart-define-from-file=config/dev.json"]
+    },
+    {
+      "name": "Driver · staging",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": ["--dart-define-from-file=config/staging.json"]
+    },
+    {
+      "name": "Driver · prod (release)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release",
+      "program": "lib/main.dart",
+      "args": ["--dart-define-from-file=config/prod.json"]
+    }
+  ]
+}
