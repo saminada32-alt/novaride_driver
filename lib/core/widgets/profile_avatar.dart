@@ -1,7 +1,8 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import '../utils/media_url.dart';
+import 'authed_network_image.dart';
 
 class ProfileAvatar extends StatelessWidget {
   const ProfileAvatar({
@@ -13,6 +14,8 @@ class ProfileAvatar extends StatelessWidget {
     this.showCameraBadge = false,
     this.backgroundColor,
     this.initialColor,
+    this.localPreviewPath,
+    this.onNetworkImageLoaded,
   });
 
   final String? imageUrl;
@@ -22,6 +25,8 @@ class ProfileAvatar extends StatelessWidget {
   final bool showCameraBadge;
   final Color? backgroundColor;
   final Color? initialColor;
+  final String? localPreviewPath;
+  final VoidCallback? onNetworkImageLoaded;
 
   String get _initial =>
       name.trim().isNotEmpty ? name.trim()[0].toUpperCase() : '?';
@@ -45,18 +50,20 @@ class ProfileAvatar extends StatelessWidget {
     final url = imageUrl;
     if (url == null || url.isEmpty) return _fallback();
 
-    if (url.startsWith('http')) {
-      return CachedNetworkImage(
-        imageUrl: url,
-        fit: BoxFit.cover,
-        placeholder: (_, __) => _fallback(),
-        errorWidget: (_, __, ___) => _fallback(),
-      );
+    final file = File(url);
+    if (!url.startsWith('http') && file.existsSync()) {
+      return Image.file(file, fit: BoxFit.cover);
     }
 
-    final file = File(url);
-    if (file.existsSync()) {
-      return Image.file(file, fit: BoxFit.cover);
+    final resolved = resolveMediaUrl(url);
+    if (resolved != null) {
+      return AuthedNetworkImage(
+        url: resolved,
+        fallback: _fallback(),
+        tokenStorageKey: 'driver_token',
+        localPreviewPath: localPreviewPath,
+        onNetworkLoaded: onNetworkImageLoaded,
+      );
     }
 
     return _fallback();

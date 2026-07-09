@@ -39,6 +39,11 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
+# Local secrets (copy config/prod.example.json → config/prod.json)
+config/prod.json
+flutter_*.png
+ios/build/
+
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile

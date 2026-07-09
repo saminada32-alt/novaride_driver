@@ -1,6 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../core/utils/profile_photo_picker.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/widgets/profile_avatar.dart';
 import '../../../auth/providers/auth_provider.dart';
@@ -58,12 +58,21 @@ class _AccountScreenState extends State<AccountScreen> {
                 GestureDetector(
                   onTap: () {
                     final token = context.read<AuthProvider>().token;
-                    if (token != null) prov.pickProfileImage(token);
+                    if (token == null) return;
+                    showProfilePhotoSourceSheet(
+                      context,
+                      cameraLabel: t.camera,
+                      galleryLabel: t.gallery,
+                      onPicked: (file) =>
+                          prov.uploadProfileImage(token, file),
+                    );
                   },
                   child: Stack(
                     children: [
                       ProfileAvatar(
                         imageUrl: user.profileImage,
+                        localPreviewPath: prov.localProfilePreview,
+                        onNetworkImageLoaded: prov.clearLocalProfilePreview,
                         name: user.name,
                         radius: 50,
                         backgroundColor: Colors.white.withOpacity(.3),
@@ -198,7 +207,7 @@ class _AccountScreenState extends State<AccountScreen> {
           const SizedBox(height: 16),
 
           _info(Icons.phone, user.phone),
-          _info(Icons.email, user.email.isNotEmpty ? user.email : 'Not set'),
+          _info(Icons.email, user.email.isNotEmpty ? user.email : t.notSet),
 
           const SizedBox(height: 20),
 

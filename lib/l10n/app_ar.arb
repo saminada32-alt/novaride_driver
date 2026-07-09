@@ -29,7 +29,7 @@
   "fieldRequired": "هذا الحقل مطلوب",
   "passwordHint": "كلمة المرور",
   "confirmPasswordHint": "تأكيد كلمة المرور",
-  "welcomeTitle": "قد وابدأ الربح معنا",
+  "welcomeTitle": "مرحبًا بك ",
   "welcomeSubtitle": "انضم لآلاف السائقين وابدأ تحقيق الدخل اليوم.",
   "fastEarnings": "متابعة أرباح فورية",
   "safeTrips": "رحلات آمنة ومؤكدة",
@@ -127,6 +127,7 @@
   "drivingLicense": "رخصة القيادة",
   "vehicleRegistration": "رخصة المركبة",
   "insurance": "التأمين",
+  "wheelchairAccessible": "مركبة ملائمة للكراسي المتحركة",
   "vehicleFrontPhoto": "صورة أمامية للمركبة",
   "vehicleBackPhoto": "صورة خلفية للمركبة",
   "vehicleInteriorPhoto": "صورة داخل المركبة",
@@ -177,6 +178,23 @@
   "openApp": "فتح التطبيق",
   "home": "الرئيسية",
   "trips": "الرحلات",
+  "scheduledRidesTitle": "الرحلات المجدولة",
+  "scheduledRidesEmpty": "لا توجد رحلات مجدولة قريبة",
+  "scheduledRidesEmptyHint": "ستظهر هنا الرحلات المجدولة في منطقتك قبل موعدها",
+  "scheduledRideBadge": "مجدولة",
+  "scheduledRideStartsIn": "تبدأ خلال {time}",
+  "@scheduledRideStartsIn": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "scheduledRideDriverHint": "ستصلك إشعار قبول تلقائي قبل 15 دقيقة من الموعد — ابقَ متصلاً",
+  "incomingScheduledPickup": "موعد الالتقاط: {time}",
+  "@incomingScheduledPickup": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
   "earnings": "الأرباح",
   "account": "الحساب",
   "tripsToday": "رحلات اليوم",
@@ -319,6 +337,53 @@
   "mySubscriptions": "اشتراكاتي",
   "mySubscriptionTitle": "اشتراكي",
   "noSubscriptionFound": "لا يوجد اشتراك",
+  "noSubscriptionPlanRequired": "لا يوجد اشتراك. يرجى اختيار خطة من التطبيق.",
+  "subscriptionPaymentRequired": "مطلوب دفع الاشتراك",
+  "subscriptionSuspended": "الاشتراك موقوف. يرجى تسوية الدفع للاتصال.",
+  "monthlySubscriptionPaymentRequired": "مطلوب دفع الاشتراك الشهري قبل الاتصال.",
+  "subscriptionPaymentOverdue": "الدفع متأخر. يرجى تقديم الدفع من قسم الاشتراكات.",
+  "saved": "تم الحفظ",
+  "preferencesLoadFailed": "تعذّر تحميل التفضيلات",
+  "onlineStatus": "متصل",
+  "offlineStatus": "غير متصل",
+  "todayEarningsBar": "اليوم: {amount}",
+  "@todayEarningsBar": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "rideEtaToPickup": "الوصول لنقطة الالتقاط خلال {minutes} د",
+  "@rideEtaToPickup": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "rideEtaToDropoff": "الوصول للوجهة خلال {minutes} د",
+  "@rideEtaToDropoff": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "rideTripDetails": "تفاصيل المشوار",
+  "rideTripDetailsHint": "التقِ بالراكب في موقع الالتقاط",
+  "safetyRecordAudio": "سجّل الصوت لمزيد من السلامة",
+  "safetyRecordStart": "ابدأ",
+  "safetyRecording": "جاري التسجيل...",
+  "incomingRideEtaHeadline": "الوصول خلال {minutes} د",
+  "@incomingRideEtaHeadline": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "minutesShort": "د",
+  "rideNumber": "رحلة #{id}",
+  "@rideNumber": {
+    "placeholders": {
+      "id": {"type": "int"}
+    }
+  },
+  "sendMessage": "إرسال رسالة",
+  "call": "اتصال",
   "choosePlan": "اختر خطة",
   "changePlan": "تغيير الخطة",
   "commissionPlan": "خطة العمولة",
@@ -397,7 +462,7 @@
   "rideNoPassengerPhone": "رقم الراكب غير متوفر",
   "rideCallFailed": "تعذّر إجراء المكالمة",
   "notificationsTitle": "الإشعارات",
-  "notificationsEmpty": "لا توجد إشعارات بعد",
+  "notificationsEmpty": "لا يوجد إشعارات",
   "markAllRead": "تعليم الكل كمقروء",
   "rideMessageFailed": "تعذّر فتح تطبيق الرسائل",
   "rideOpenInMaps": "فتح في خرائط Google",
@@ -406,7 +471,9 @@
   "incomingRideSec": "{seconds} ث",
   "@incomingRideSec": {
     "placeholders": {
-      "seconds": { "type": "int" }
+      "seconds": {
+        "type": "int"
+      }
     }
   },
   "incomingRideFare": "الأجرة",
@@ -438,8 +505,105 @@
   "workZonePrimary": "أساسية",
   "workZonesEmpty": "لا توجد مناطق عمل. أضف منطقة لتحديد الدوام.",
   "workZonesOffShiftOnline": "خارج ساعات الدوام. حدّث الجدول من مناطق العمل.",
+  "language": "اللغة",
+  "gpsPermissionRequired": "يجب السماح بالموقع للذهاب أونلاين",
+  "locationRequiredForOnline": "فعّل خدمات الموقع للذهاب أونلاين",
+  "outsideWorkZoneOnline": "يجب أن تكون في منطقة عملك للذهاب أونلاين",
   "voiceNavOn": "التنقل الصوتي مفعّل",
   "voiceNavOff": "التنقل الصوتي متوقف",
   "voiceNavToggle": "تنقل صوتي",
-  "rideTakenByAnother": "أُخذت هذه الرحلة من سائق آخر"
+  "rideTakenByAnother": "أُخذت هذه الرحلة من سائق آخر",
+  "sosButton": "طوارئ SOS",
+  "sosConfirm": "إبلاغ الدعم ومشاركة موقعك؟",
+  "sosActivated": "تم إرسال SOS — تم إبلاغ الدعم",
+  "driverIncentivesTitle": "المكافآت والحوافز",
+  "driverIncentivesEmpty": "لا يوجد مكافآت",
+  "driverIncentivesBonus": "مكافأة المنطقة",
+  "driverIncentivesActiveCount": "مكافآت نشطة",
+  "multiStopLabel": "محطة",
+  "multiStopNext": "المحطة التالية",
+  "multiStopReached": "وصلت للمحطة — الانتقال للتالية",
+  "accessibilityRide": "رحلة إمكانية وصول — عناية إضافية عند الالتقاط",
+  "camera": "الكاميرا",
+  "gallery": "المعرض",
+  "remove": "حذف",
+  "readyToUpload": "جاهزة للرفع",
+  "uploadFailedTryAgain": "فشل الرفع. حاول مرة أخرى.",
+  "documentsSelected": "الوثائق المحددة",
+  "uploading": "جاري الرفع...",
+  "resubmitDocumentsTitle": "إعادة رفع الوثائق",
+  "resubmitDocumentsSubtitle": "يرجى إعادة رفع الوثائق المرفوضة فقط. باقي طلبك يبقى قيد المراجعة.",
+  "documentsSentReview": "تم إرسال الوثائق. سيتم مراجعتها قريباً.",
+  "awaitingApproval": "في انتظار الموافقة",
+  "documentsNeedResubmit": "وثائق تحتاج إعادة رفع",
+  "resubmitPendingMessage": "تم رفض بعض الوثائق. يرجى إعادة رفعها فقط.\nطلبك يبقى قيد المراجعة.",
+  "pendingReviewMessage": "حسابك قيد المراجعة من قبل فريقنا.\nسيتم إشعارك فور الموافقة وتفعيل التطبيق.",
+  "reuploadDocuments": "إعادة رفع الوثائق",
+  "autoChecking": "يتم التحقق تلقائياً كل 30 ثانية",
+  "checkStatusNow": "فحص الحالة الآن",
+  "checking": "جاري الفحص...",
+  "signOut": "تسجيل الخروج",
+  "applicationRejected": "تم رفض طلبك",
+  "rejectedLogoutMessage": "نأسف، تم رفض طلبك.\nسيتم تسجيل خروجك تلقائياً.",
+  "loggingOut": "جاري تسجيل الخروج...",
+  "resubmitBadge": "بانتظار إعادة الرفع",
+  "notSet": "غير محدد",
+  "driverLabel": "سائق",
+  "statusOnline": "متصل",
+  "statusOffline": "غير متصل",
+  "preferences": "التفضيلات",
+  "referrals": "الإحالات",
+  "preferencesTitle": "تفضيلات السائق",
+  "destinationFilterTitle": "فلتر الوجهة",
+  "destinationFilterDesc": "اقبل رحلاتاً باتجاه وجهتك فقط",
+  "enableFilter": "تفعيل الفلتر",
+  "destinationLabel": "الوجهة",
+  "acceptRadiusKm": "نطاق القبول (كم): {km}",
+  "@acceptRadiusKm": {"placeholders": {"km": {"type": "String"}}},
+  "saveFilter": "حفظ الفلتر",
+  "autoAcceptTitle": "قبول تلقائي",
+  "autoAcceptDesc": "اقبل الرحلات تلقائياً حسب شروطك",
+  "enableAutoAccept": "تفعيل القبول التلقائي",
+  "maxPickupKmLabel": "أقصى مسافة للالتقاط (كم): {km}",
+  "@maxPickupKmLabel": {"placeholders": {"km": {"type": "String"}}},
+  "minFareLabel": "أقل أجرة: {amount}",
+  "@minFareLabel": {"placeholders": {"amount": {"type": "String"}}},
+  "saveAutoAccept": "حفظ القبول التلقائي",
+  "submitPaymentTitle": "تقديم الدفع",
+  "paymentNote": "ملاحظة",
+  "paymentSubmittedReview": "تم تقديم الدفع — الإدارة ستراجعه",
+  "suspendedStatus": "موقوف",
+  "pendingReview": "بانتظار المراجعة",
+  "cannotGoOnlineUntilPaid": "لا يمكنك الاتصال حتى يتم تأكيد الدفع.",
+  "referralsTitle": "الإحالات",
+  "yourReferralCode": "رمز الإحالة الخاص بك",
+  "copied": "تم النسخ",
+  "referralsCount": "الإحالات: {count}",
+  "@referralsCount": {"placeholders": {"count": {"type": "int"}}},
+  "earnedAmount": "المكتسب: {amount}",
+  "@earnedAmount": {"placeholders": {"amount": {"type": "String"}}},
+  "tripStatusScheduled": "مجدولة",
+  "tripStatusSearching": "بحث",
+  "tripStatusAssigned": "مُعيَّنة",
+  "tripStatusArrived": "وصلت",
+  "tripStatusOnboard": "صعد الراكب",
+  "tripStatusStarted": "جارية",
+  "tripStatusCompleted": "مكتملة",
+  "tripStatusCancelled": "ملغاة",
+  "incomingReachPickup": "الوصول للالتقاط خلال {minutes} د",
+  "@incomingReachPickup": {"placeholders": {"minutes": {"type": "int"}}},
+  "incomingOfferSubtitle": "رحلة جديدة في منطقتك",
+  "activeRideMeetPassenger": "التقِ بالراكب في موقع الالتقاط",
+  "activeRideMeetPassengerEta": "الالتقاء بالراكب خلال {minutes} من الدقائق",
+  "@activeRideMeetPassengerEta": {"placeholders": {"minutes": {"type": "int"}}},
+  "activeRideArriveDropoffEta": "الوصول للوجهة خلال {minutes} من الدقائق",
+  "@activeRideArriveDropoffEta": {"placeholders": {"minutes": {"type": "int"}}},
+  "passengerTripsCount": "{count} من المشاوير",
+  "@passengerTripsCount": {"placeholders": {"count": {"type": "int"}}},
+  "ridePickupPoint": "نقطة الالتقاء",
+  "activeRideMoreOptions": "المزيد",
+  "distanceKmUnit": "{km} كم",
+  "@distanceKmUnit": {"placeholders": {"km": {"type": "String"}}},
+  "invalidOtpCode": "رمز غير صالح",
+  "actionFailed": "فشلت العملية"
 }

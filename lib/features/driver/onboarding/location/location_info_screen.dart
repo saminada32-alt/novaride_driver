@@ -5,6 +5,7 @@ import '../../../auth/providers/auth_provider.dart';
 import '../application_review/application_review_screen.dart';
 import 'provider/location_provider.dart';
 import 'map_selection_screen.dart';
+import 'syria_cities_catalog.dart';
 
 class LocationInfoScreen extends StatelessWidget {
   const LocationInfoScreen({super.key});
@@ -25,58 +26,13 @@ class _Body extends StatefulWidget {
 }
 
 class _BodyState extends State<_Body> {
-  // ─── controller منفصل للعنوان ──────────────────────────────
   final _addrCtrl = TextEditingController();
-
-  final Map<String, List<String>> _cityAreas = {
-    'damascus': [
-      'barzeh',
-      'mazzeh',
-      'kafr_sousa',
-      'abu_rummaneh',
-      'midane',
-      'rukn_al_din',
-      'ash_al_warwar',
-      'qadam',
-    ],
-    'rif_damascus': [
-      'al_tal',
-      'manin',
-      'saydnaya',
-      'maarraba',
-      'qudsaya',
-      'jaramana',
-      'sahnaya',
-      'daraya',
-    ],
-  };
 
   @override
   void dispose() {
     _addrCtrl.dispose();
     super.dispose();
   }
-
-  List<String> _areas(String? city) => _cityAreas[city] ?? [];
-
-  Map<String, String> _labels(AppLocalizations local) => {
-    'barzeh': local.barzeh,
-    'mazzeh': local.mazzeh,
-    'kafr_sousa': local.kafr_sousa,
-    'abu_rummaneh': local.abu_rummaneh,
-    'midane': local.midane,
-    'rukn_al_din': local.rukn_al_din,
-    'ash_al_warwar': local.ash_al_warwar,
-    'qadam': local.qadam,
-    'al_tal': local.al_tal,
-    'manin': local.manin,
-    'saydnaya': local.saydnaya,
-    'maarraba': local.maarraba,
-    'qudsaya': local.qudsaya,
-    'jaramana': local.jaramana,
-    'sahnaya': local.sahnaya,
-    'daraya': local.daraya,
-  };
 
   InputDecoration _dec({IconData? icon, String? hint}) => InputDecoration(
     prefixIcon: icon != null ? Icon(icon, color: Colors.black87) : null,
@@ -143,7 +99,9 @@ class _BodyState extends State<_Body> {
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
     final prov = context.watch<LocationProvider>();
-    final lbl = _labels(local);
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final selectedCity = SyriaCitiesCatalog.cityById(prov.selectedCity);
+    final areas = SyriaCitiesCatalog.areasFor(prov.selectedCity);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -179,9 +137,15 @@ class _BodyState extends State<_Body> {
               local.workLocationTitle,
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
+            const SizedBox(height: 8),
+            Text(
+              isAr
+                  ? 'اختر مدينتك ومنطقة عملك في سوريا'
+                  : 'Select your city and work area in Syria',
+              style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+            ),
             const SizedBox(height: 28),
 
-            // ─── City ───────────────────────────────────────────
             Text(
               local.city,
               style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
@@ -190,21 +154,25 @@ class _BodyState extends State<_Body> {
             DropdownButtonFormField<String>(
               value: prov.selectedCity,
               decoration: _dec(icon: Icons.location_city),
-              items: [
-                DropdownMenuItem(
-                  value: 'damascus',
-                  child: Text(local.damascus),
-                ),
-                DropdownMenuItem(
-                  value: 'rif_damascus',
-                  child: Text(local.rifDamascus),
-                ),
-              ],
-              onChanged: (v) => prov.updateCity(v!),
+              items: SyriaCitiesCatalog.cities
+                  .map(
+                    (c) => DropdownMenuItem(
+                      value: c.id,
+                      child: Text(c.label(isAr)),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (v) {
+                if (v == null) return;
+                prov.updateCity(v);
+                final cityAreas = SyriaCitiesCatalog.areasFor(v);
+                if (cityAreas.isNotEmpty) {
+                  prov.updateArea(cityAreas.first.id);
+                }
+              },
             ),
             const SizedBox(height: 20),
 
-            // ─── Area ────────────────────────────────────────────
             Text(
               local.workArea,
               style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
@@ -213,16 +181,27 @@ class _BodyState extends State<_Body> {
             DropdownButtonFormField<String>(
               value: prov.selectedArea,
               decoration: _dec(icon: Icons.map),
-              items: _areas(prov.selectedCity)
+              items: areas
                   .map(
-                    (a) => DropdownMenuItem(value: a, child: Text(lbl[a] ?? a)),
+                    (a) => DropdownMenuItem(
+                      value: a.id,
+                      child: Text(a.label(isAr)),
+                    ),
                   )
                   .toList(),
-              onChanged: (v) => prov.updateArea(v!),
+              onChanged: areas.isEmpty ? null : (v) => prov.updateArea(v!),
             ),
+            if (selectedCity != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                isAr
+                    ? 'السوق التشغيلي: ${selectedCity.nameAr}'
+                    : 'Ops market: ${selectedCity.nameEn}',
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+              ),
+            ],
             const SizedBox(height: 20),
 
-            // ─── Address — TextField بسيط بدل Autocomplete ───────
             Text(
               local.detailedAddress,
               style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
@@ -235,7 +214,6 @@ class _BodyState extends State<_Body> {
             ),
             const SizedBox(height: 12),
 
-            // ─── Map Button ───────────────────────────────────────
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
@@ -248,7 +226,6 @@ class _BodyState extends State<_Body> {
                   );
                   if (result != null && mounted) {
                     final addr = result['address']?.toString() ?? '';
-                    // ─── تعبئة تلقائية فورية ───────────────────
                     _addrCtrl.text = addr;
                     prov.updateAddress(addr);
                   }
@@ -269,7 +246,6 @@ class _BodyState extends State<_Body> {
             ),
             const SizedBox(height: 28),
 
-            // ─── Working Hours ────────────────────────────────────
             Text(
               local.workingHours,
               style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
@@ -331,7 +307,6 @@ class _BodyState extends State<_Body> {
             ),
             const SizedBox(height: 32),
 
-            // ─── Error ───────────────────────────────────────────
             if (prov.errorMessage != null)
               Container(
                 padding: const EdgeInsets.all(12),
@@ -359,7 +334,6 @@ class _BodyState extends State<_Body> {
                 ),
               ),
 
-            // ─── Buttons ─────────────────────────────────────────
             Row(
               children: [
                 Expanded(

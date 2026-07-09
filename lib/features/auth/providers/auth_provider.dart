@@ -65,10 +65,16 @@ class AuthProvider extends ChangeNotifier {
     String phone,
     String otp, {
     String role = 'DRIVER',
+    List<Map<String, String>>? consents,
   }) async {
     _begin();
     try {
-      final r = await AuthService.instance.verifyOtp(phone, otp, role: role);
+      final r = await AuthService.instance.verifyOtp(
+        phone,
+        otp,
+        role: role,
+        consents: consents,
+      );
 
       _driver = r.driver;
       _token = r.accessToken;

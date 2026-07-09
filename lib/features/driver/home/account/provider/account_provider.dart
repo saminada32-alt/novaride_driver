@@ -1,8 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import '../../../../../core/utils/media_url.dart';
 import '../../../onboarding/documents/services/document_service.dart';
 import '../model/account_model.dart';
 import '../service/account_service.dart';
@@ -11,14 +9,15 @@ import '../../../../auth/welcome/welcome_screen.dart';
 
 class AccountProvider extends ChangeNotifier {
   final AccountService _service = AccountService();
-  final ImagePicker _picker = ImagePicker();
 
   AccountModel? _account;
+  String? _localProfilePreview;
   bool _loading = false;
   bool isSaving = false;
   String? _error;
 
   AccountModel? get account => _account;
+  String? get localProfilePreview => _localProfilePreview;
   bool get isLoading => _loading;
   String? get error => _error;
 
@@ -66,25 +65,24 @@ class AccountProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> pickProfileImage(String token) async {
-    final p = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 85,
-    );
-    if (p == null || _account == null) return;
+  void clearLocalProfilePreview() {
+    if (_localProfilePreview == null) return;
+    _localProfilePreview = null;
+    notifyListeners();
+  }
+
+  Future<void> uploadProfileImage(String token, File file) async {
+    if (_account == null) return;
 
     isSaving = true;
     _error = null;
+    _localProfilePreview = file.path;
+    _account = _account!.copyWith(profileImage: file.path);
     notifyListeners();
 
     try {
-      final url = await DocumentsService().uploadDriverPhoto(
-        File(p.path),
-        token,
-      );
-      _account = _account!.copyWith(
-        profileImage: resolveMediaUrl(url) ?? url,
-      );
+      final url = await DocumentsService().uploadDriverPhoto(file, token);
+      _account = _account!.copyWith(profileImage: url);
     } catch (e) {
       _error = e.toString();
       debugPrint('Profile upload error: $e');

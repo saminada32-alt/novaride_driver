@@ -62,7 +62,7 @@ class _MySubscriptionScreenState extends State<MySubscriptionScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Submit Payment'),
+        title: Text(local.submitPaymentTitle),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -80,7 +80,7 @@ class _MySubscriptionScreenState extends State<MySubscriptionScreen> {
               const SizedBox(height: 8),
               TextField(
                 controller: noteCtrl,
-                decoration: const InputDecoration(labelText: 'Note'),
+                decoration: InputDecoration(labelText: local.paymentNote),
               ),
             ],
           ),
@@ -115,7 +115,7 @@ class _MySubscriptionScreenState extends State<MySubscriptionScreen> {
       SnackBar(
         content: Text(
           submitted
-              ? 'Payment submitted — admin will review'
+              ? local.paymentSubmittedReview
               : local.subscriptionFailed,
         ),
         backgroundColor: submitted ? Colors.green : Colors.red,
@@ -190,7 +190,7 @@ class _MySubscriptionScreenState extends State<MySubscriptionScreen> {
     String statusLabel = local.active;
     if (status == 'suspended') {
       statusColor = Colors.red;
-      statusLabel = 'Suspended';
+      statusLabel = local.suspendedStatus;
     } else if (status == 'pending_payment' || isOverdue) {
       statusColor = Colors.orange;
       statusLabel = local.paymentOverdue;
@@ -223,7 +223,7 @@ class _MySubscriptionScreenState extends State<MySubscriptionScreen> {
               backgroundColor: Colors.black,
               icon: const Icon(Icons.upload_rounded, color: Colors.white),
               label: Text(
-                'Submit Payment',
+                local.submitPaymentTitle,
                 style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             )
@@ -249,7 +249,7 @@ class _MySubscriptionScreenState extends State<MySubscriptionScreen> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'You cannot go online until payment is confirmed.',
+                        local.cannotGoOnlineUntilPaid,
                         style: TextStyle(color: Colors.red.shade800, fontSize: 13),
                       ),
                     ),
@@ -335,7 +335,7 @@ class _MySubscriptionScreenState extends State<MySubscriptionScreen> {
             ),
 
             if (pending.isNotEmpty) ...[
-              Text('Pending Review', style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(local.pendingReview, style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               ...pending.map((p) => _paymentTile(p, pending: true)),
               const SizedBox(height: 16),

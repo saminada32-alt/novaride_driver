@@ -27,13 +27,21 @@ class AppConfig {
 
   /// The base URL of the backend API for the active environment.
   static String get apiBaseUrl {
-    if (_apiBaseUrl.isNotEmpty) return _apiBaseUrl;
-
-    // Local-dev fallback when no --dart-define is supplied.
-    if (Platform.isAndroid) {
-      return 'http://10.0.2.2:3000'; // Android emulator → host machine
+    if (_apiBaseUrl.isNotEmpty) {
+      if (isProd && !_apiBaseUrl.startsWith('https://')) {
+        throw StateError('Production API_BASE_URL must use HTTPS');
+      }
+      return _apiBaseUrl;
     }
-    return 'http://172.20.10.4:3000'; // iOS / real device → Mac LAN IP
+
+    if (isProd) {
+      throw StateError('API_BASE_URL is required for production builds');
+    }
+
+    if (Platform.isAndroid) {
+      return 'http://10.0.2.2:3000';
+    }
+    return 'http://172.20.10.4:3000';
   }
 
   /// Crash reporting is enabled outside of local dev by default, but can be

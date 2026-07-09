@@ -28,12 +28,12 @@ class AuthService {
             headers: _h,
             body: jsonEncode({'phone': phone, 'role': role}),
           )
-          .timeout(const Duration(seconds: 8));
+          .timeout(const Duration(seconds: 15));
       _check(res);
     } on SocketException {
       throw 'لا يوجد اتصال — تأكد من الشبكة';
     } on TimeoutException {
-      throw 'السيرفر لا يستجيب — تحقق من الـ IP';
+      throw 'إرسال رمز التحقق يستغرق وقتاً — حاول مجدداً';
     }
   }
 
@@ -41,15 +41,25 @@ class AuthService {
     String phone,
     String otp, {
     String role = 'DRIVER',
+    List<Map<String, String>>? consents,
   }) async {
     try {
+      final body = <String, dynamic>{
+        'phone': phone,
+        'otp': otp,
+        'role': role,
+      };
+      if (consents != null && consents.isNotEmpty) {
+        body['consents'] = consents;
+      }
+
       final res = await http
           .post(
             Uri.parse('${Api.base}${Api.verifyOtp}'),
             headers: _h,
-            body: jsonEncode({'phone': phone, 'otp': otp, 'role': role}),
+            body: jsonEncode(body),
           )
-          .timeout(const Duration(seconds: 8));
+          .timeout(const Duration(seconds: 15));
       final data = _check(res);
       final r = AuthResult.fromJson(data);
       // ← احفظ بـ driver_token مو access_token
@@ -70,7 +80,7 @@ class AuthService {
             headers: _auth(token),
             body: jsonEncode({'isAvailable': online}),
           )
-          .timeout(const Duration(seconds: 8));
+          .timeout(const Duration(seconds: 15));
 
       _check(res);
     } on SocketException {
@@ -83,7 +93,7 @@ class AuthService {
   Future<DriverModel> getMe(String token) async {
     final res = await http
         .get(Uri.parse('${Api.base}${Api.driversMe}'), headers: _auth(token))
-        .timeout(const Duration(seconds: 8));
+        .timeout(const Duration(seconds: 30));
     return DriverModel.fromJson(_check(res));
   }
 
@@ -94,7 +104,7 @@ class AuthService {
           headers: _auth(token),
           body: jsonEncode(data),
         )
-        .timeout(const Duration(seconds: 8));
+        .timeout(const Duration(seconds: 30));
     _check(res);
   }
 
@@ -104,7 +114,7 @@ class AuthService {
           Uri.parse('${Api.base}${Api.submitApplication}'),
           headers: _auth(token),
         )
-        .timeout(const Duration(seconds: 8));
+        .timeout(const Duration(seconds: 30));
     _check(res);
   }
 

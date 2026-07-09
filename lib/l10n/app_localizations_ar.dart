@@ -65,7 +65,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get getStarted => 'ابدأ الآن';
 
   @override
-  String get welcomeTitle => 'قد وابدأ الربح معنا';
+  String get welcomeTitle => 'مرحبًا بك ';
 
   @override
   String get welcomeSubtitle => 'انضم لآلاف السائقين وابدأ تحقيق الدخل اليوم.';
@@ -402,6 +402,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get insurance => 'التأمين';
 
   @override
+  String get wheelchairAccessible => 'مركبة ملائمة للكراسي المتحركة';
+
+  @override
   String get vehicleFrontPhoto => 'صورة أمامية للمركبة';
 
   @override
@@ -550,6 +553,31 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get trips => 'الرحلات';
+
+  @override
+  String get scheduledRidesTitle => 'الرحلات المجدولة';
+
+  @override
+  String get scheduledRidesEmpty => 'لا توجد رحلات مجدولة قريبة';
+
+  @override
+  String get scheduledRidesEmptyHint => 'ستظهر هنا الرحلات المجدولة في منطقتك قبل موعدها';
+
+  @override
+  String get scheduledRideBadge => 'مجدولة';
+
+  @override
+  String scheduledRideStartsIn(String time) {
+    return 'تبدأ خلال $time';
+  }
+
+  @override
+  String get scheduledRideDriverHint => 'ستصلك إشعار قبول تلقائي قبل 15 دقيقة من الموعد — ابقَ متصلاً';
+
+  @override
+  String incomingScheduledPickup(String time) {
+    return 'موعد الالتقاط: $time';
+  }
 
   @override
   String get earnings => 'الأرباح';
@@ -975,6 +1003,82 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noSubscriptionFound => 'لا يوجد اشتراك';
 
   @override
+  String get noSubscriptionPlanRequired => 'لا يوجد اشتراك. يرجى اختيار خطة من التطبيق.';
+
+  @override
+  String get subscriptionPaymentRequired => 'مطلوب دفع الاشتراك';
+
+  @override
+  String get subscriptionSuspended => 'الاشتراك موقوف. يرجى تسوية الدفع للاتصال.';
+
+  @override
+  String get monthlySubscriptionPaymentRequired => 'مطلوب دفع الاشتراك الشهري قبل الاتصال.';
+
+  @override
+  String get subscriptionPaymentOverdue => 'الدفع متأخر. يرجى تقديم الدفع من قسم الاشتراكات.';
+
+  @override
+  String get saved => 'تم الحفظ';
+
+  @override
+  String get preferencesLoadFailed => 'تعذّر تحميل التفضيلات';
+
+  @override
+  String get onlineStatus => 'متصل';
+
+  @override
+  String get offlineStatus => 'غير متصل';
+
+  @override
+  String todayEarningsBar(String amount) {
+    return 'اليوم: $amount';
+  }
+
+  @override
+  String rideEtaToPickup(int minutes) {
+    return 'الوصول لنقطة الالتقاط خلال $minutes د';
+  }
+
+  @override
+  String rideEtaToDropoff(int minutes) {
+    return 'الوصول للوجهة خلال $minutes د';
+  }
+
+  @override
+  String get rideTripDetails => 'تفاصيل المشوار';
+
+  @override
+  String get rideTripDetailsHint => 'التقِ بالراكب في موقع الالتقاط';
+
+  @override
+  String get safetyRecordAudio => 'سجّل الصوت لمزيد من السلامة';
+
+  @override
+  String get safetyRecordStart => 'ابدأ';
+
+  @override
+  String get safetyRecording => 'جاري التسجيل...';
+
+  @override
+  String incomingRideEtaHeadline(int minutes) {
+    return 'الوصول خلال $minutes د';
+  }
+
+  @override
+  String get minutesShort => 'د';
+
+  @override
+  String rideNumber(int id) {
+    return 'رحلة #$id';
+  }
+
+  @override
+  String get sendMessage => 'إرسال رسالة';
+
+  @override
+  String get call => 'اتصال';
+
+  @override
   String get choosePlan => 'اختر خطة';
 
   @override
@@ -1209,7 +1313,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notificationsTitle => 'الإشعارات';
 
   @override
-  String get notificationsEmpty => 'لا توجد إشعارات بعد';
+  String get notificationsEmpty => 'لا يوجد إشعارات';
 
   @override
   String get markAllRead => 'تعليم الكل كمقروء';
@@ -1319,6 +1423,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get workZonesOffShiftOnline => 'خارج ساعات الدوام. حدّث الجدول من مناطق العمل.';
 
   @override
+  String get language => 'اللغة';
+
+  @override
+  String get gpsPermissionRequired => 'يجب السماح بالموقع للذهاب أونلاين';
+
+  @override
+  String get locationRequiredForOnline => 'فعّل خدمات الموقع للذهاب أونلاين';
+
+  @override
+  String get outsideWorkZoneOnline => 'يجب أن تكون في منطقة عملك للذهاب أونلاين';
+
+  @override
   String get voiceNavOn => 'التنقل الصوتي مفعّل';
 
   @override
@@ -1329,4 +1445,273 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get rideTakenByAnother => 'أُخذت هذه الرحلة من سائق آخر';
+
+  @override
+  String get sosButton => 'طوارئ SOS';
+
+  @override
+  String get sosConfirm => 'إبلاغ الدعم ومشاركة موقعك؟';
+
+  @override
+  String get sosActivated => 'تم إرسال SOS — تم إبلاغ الدعم';
+
+  @override
+  String get driverIncentivesTitle => 'المكافآت والحوافز';
+
+  @override
+  String get driverIncentivesEmpty => 'لا يوجد مكافآت';
+
+  @override
+  String get driverIncentivesBonus => 'مكافأة المنطقة';
+
+  @override
+  String get driverIncentivesActiveCount => 'مكافآت نشطة';
+
+  @override
+  String get multiStopLabel => 'محطة';
+
+  @override
+  String get multiStopNext => 'المحطة التالية';
+
+  @override
+  String get multiStopReached => 'وصلت للمحطة — الانتقال للتالية';
+
+  @override
+  String get accessibilityRide => 'رحلة إمكانية وصول — عناية إضافية عند الالتقاط';
+
+  @override
+  String get camera => 'الكاميرا';
+
+  @override
+  String get gallery => 'المعرض';
+
+  @override
+  String get remove => 'حذف';
+
+  @override
+  String get readyToUpload => 'جاهزة للرفع';
+
+  @override
+  String get uploadFailedTryAgain => 'فشل الرفع. حاول مرة أخرى.';
+
+  @override
+  String get documentsSelected => 'الوثائق المحددة';
+
+  @override
+  String get uploading => 'جاري الرفع...';
+
+  @override
+  String get resubmitDocumentsTitle => 'إعادة رفع الوثائق';
+
+  @override
+  String get resubmitDocumentsSubtitle => 'يرجى إعادة رفع الوثائق المرفوضة فقط. باقي طلبك يبقى قيد المراجعة.';
+
+  @override
+  String get documentsSentReview => 'تم إرسال الوثائق. سيتم مراجعتها قريباً.';
+
+  @override
+  String get awaitingApproval => 'في انتظار الموافقة';
+
+  @override
+  String get documentsNeedResubmit => 'وثائق تحتاج إعادة رفع';
+
+  @override
+  String get resubmitPendingMessage => 'تم رفض بعض الوثائق. يرجى إعادة رفعها فقط.\nطلبك يبقى قيد المراجعة.';
+
+  @override
+  String get pendingReviewMessage => 'حسابك قيد المراجعة من قبل فريقنا.\nسيتم إشعارك فور الموافقة وتفعيل التطبيق.';
+
+  @override
+  String get reuploadDocuments => 'إعادة رفع الوثائق';
+
+  @override
+  String get autoChecking => 'يتم التحقق تلقائياً كل 30 ثانية';
+
+  @override
+  String get checkStatusNow => 'فحص الحالة الآن';
+
+  @override
+  String get checking => 'جاري الفحص...';
+
+  @override
+  String get signOut => 'تسجيل الخروج';
+
+  @override
+  String get applicationRejected => 'تم رفض طلبك';
+
+  @override
+  String get rejectedLogoutMessage => 'نأسف، تم رفض طلبك.\nسيتم تسجيل خروجك تلقائياً.';
+
+  @override
+  String get loggingOut => 'جاري تسجيل الخروج...';
+
+  @override
+  String get resubmitBadge => 'بانتظار إعادة الرفع';
+
+  @override
+  String get notSet => 'غير محدد';
+
+  @override
+  String get driverLabel => 'سائق';
+
+  @override
+  String get statusOnline => 'متصل';
+
+  @override
+  String get statusOffline => 'غير متصل';
+
+  @override
+  String get preferences => 'التفضيلات';
+
+  @override
+  String get referrals => 'الإحالات';
+
+  @override
+  String get preferencesTitle => 'تفضيلات السائق';
+
+  @override
+  String get destinationFilterTitle => 'فلتر الوجهة';
+
+  @override
+  String get destinationFilterDesc => 'اقبل رحلاتاً باتجاه وجهتك فقط';
+
+  @override
+  String get enableFilter => 'تفعيل الفلتر';
+
+  @override
+  String get destinationLabel => 'الوجهة';
+
+  @override
+  String acceptRadiusKm(String km) {
+    return 'نطاق القبول (كم): $km';
+  }
+
+  @override
+  String get saveFilter => 'حفظ الفلتر';
+
+  @override
+  String get autoAcceptTitle => 'قبول تلقائي';
+
+  @override
+  String get autoAcceptDesc => 'اقبل الرحلات تلقائياً حسب شروطك';
+
+  @override
+  String get enableAutoAccept => 'تفعيل القبول التلقائي';
+
+  @override
+  String maxPickupKmLabel(String km) {
+    return 'أقصى مسافة للالتقاط (كم): $km';
+  }
+
+  @override
+  String minFareLabel(String amount) {
+    return 'أقل أجرة: $amount';
+  }
+
+  @override
+  String get saveAutoAccept => 'حفظ القبول التلقائي';
+
+  @override
+  String get submitPaymentTitle => 'تقديم الدفع';
+
+  @override
+  String get paymentNote => 'ملاحظة';
+
+  @override
+  String get paymentSubmittedReview => 'تم تقديم الدفع — الإدارة ستراجعه';
+
+  @override
+  String get suspendedStatus => 'موقوف';
+
+  @override
+  String get pendingReview => 'بانتظار المراجعة';
+
+  @override
+  String get cannotGoOnlineUntilPaid => 'لا يمكنك الاتصال حتى يتم تأكيد الدفع.';
+
+  @override
+  String get referralsTitle => 'الإحالات';
+
+  @override
+  String get yourReferralCode => 'رمز الإحالة الخاص بك';
+
+  @override
+  String get copied => 'تم النسخ';
+
+  @override
+  String referralsCount(int count) {
+    return 'الإحالات: $count';
+  }
+
+  @override
+  String earnedAmount(String amount) {
+    return 'المكتسب: $amount';
+  }
+
+  @override
+  String get tripStatusScheduled => 'مجدولة';
+
+  @override
+  String get tripStatusSearching => 'بحث';
+
+  @override
+  String get tripStatusAssigned => 'مُعيَّنة';
+
+  @override
+  String get tripStatusArrived => 'وصلت';
+
+  @override
+  String get tripStatusOnboard => 'صعد الراكب';
+
+  @override
+  String get tripStatusStarted => 'جارية';
+
+  @override
+  String get tripStatusCompleted => 'مكتملة';
+
+  @override
+  String get tripStatusCancelled => 'ملغاة';
+
+  @override
+  String incomingReachPickup(int minutes) {
+    return 'الوصول للالتقاط خلال $minutes د';
+  }
+
+  @override
+  String get incomingOfferSubtitle => 'رحلة جديدة في منطقتك';
+
+  @override
+  String get activeRideMeetPassenger => 'التقِ بالراكب في موقع الالتقاط';
+
+  @override
+  String activeRideMeetPassengerEta(int minutes) {
+    return 'الالتقاء بالراكب خلال $minutes من الدقائق';
+  }
+
+  @override
+  String activeRideArriveDropoffEta(int minutes) {
+    return 'الوصول للوجهة خلال $minutes من الدقائق';
+  }
+
+  @override
+  String passengerTripsCount(int count) {
+    return '$count من المشاوير';
+  }
+
+  @override
+  String get ridePickupPoint => 'نقطة الالتقاء';
+
+  @override
+  String get activeRideMoreOptions => 'المزيد';
+
+  @override
+  String distanceKmUnit(String km) {
+    return '$km كم';
+  }
+
+  @override
+  String get invalidOtpCode => 'رمز غير صالح';
+
+  @override
+  String get actionFailed => 'فشلت العملية';
 }

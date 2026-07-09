@@ -1,7 +1,18 @@
-/// Google Maps Platform key (Directions + Places).
-/// Restrict this key in Google Cloud Console to your app bundle IDs.
+import '../config/app_config.dart';
+
+/// Centralized Google Maps / Places / Geocoding API key.
 class GoogleMapsConfig {
   GoogleMapsConfig._();
 
-  static const String apiKey = 'AIzaSyB1gKj8b7uFA7MeENH698IVk_2MnjxwkRY';
+  static const String _override = String.fromEnvironment('GOOGLE_MAPS_API_KEY');
+
+  static String get apiKey {
+    if (_override.isNotEmpty) return _override;
+    if (AppConfig.isProd) {
+      throw StateError(
+        'GOOGLE_MAPS_API_KEY is required for production builds',
+      );
+    }
+    return '';
+  }
 }

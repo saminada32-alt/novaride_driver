@@ -2,11 +2,12 @@
 // lib/features/driver/trips/trips_page.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/utils/currency_utils.dart';
+import '../../../../core/widgets/a11y.dart';
 import '../../../../core/widgets/fare_with_promo.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../rides/model/ride_model.dart';
 import 'provider/rides_provider.dart';
+import 'screens/active_ride_ui.dart';
 
 class TripsPage extends StatefulWidget {
   const TripsPage({super.key});
@@ -37,8 +38,8 @@ class _TripsPageState extends State<TripsPage> {
     }
   }
 
-  String _statusLabel(DriverRideStatus s) =>
-      s.name.replaceAll('_', ' ').toUpperCase();
+  String _statusLabel(DriverRideStatus s, AppLocalizations t) =>
+      ActiveRideUi.tripStatusLabel(s, t);
 
   String _formatDate(DateTime? d) {
     if (d == null) return '';
@@ -192,7 +193,7 @@ class _TripsPageState extends State<TripsPage> {
                                           ),
                                         ),
                                         child: Text(
-                                          _statusLabel(trip.status),
+                                          _statusLabel(trip.status, t),
                                           style: TextStyle(
                                             color: color,
                                             fontSize: 10,

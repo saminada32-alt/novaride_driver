@@ -46,14 +46,19 @@ class RouteNavigationService {
 
   Future<List<LatLng>> loadRouteWithVoice(
     LatLng origin,
-    LatLng destination,
-  ) async {
+    LatLng destination, {
+    List<LatLng> via = const [],
+  }) async {
     _steps = [];
     _currentIndex = 0;
 
     try {
-      final path =
-          '${origin.longitude},${origin.latitude};${destination.longitude},${destination.latitude}';
+      final coords = [
+        '${origin.longitude},${origin.latitude}',
+        ...via.map((p) => '${p.longitude},${p.latitude}'),
+        '${destination.longitude},${destination.latitude}',
+      ];
+      final path = coords.join(';');
       final uri = Uri.parse(
         'https://router.project-osrm.org/route/v1/driving/$path'
         '?steps=true&geometries=geojson&overview=full',
@@ -65,7 +70,7 @@ class RouteNavigationService {
       final route = data['routes']?[0];
       if (route == null) return [];
 
-      final coords = route['geometry']?['coordinates'] as List?;
+      final routeCoords = route['geometry']?['coordinates'] as List?;
       final legs = route['legs'] as List?;
       if (legs != null && legs.isNotEmpty) {
         final osrmSteps = legs[0]['steps'] as List? ?? [];
@@ -91,8 +96,8 @@ class RouteNavigationService {
         }
       }
 
-      if (coords == null || coords.isEmpty) return [];
-      return coords
+      if (routeCoords == null || routeCoords.isEmpty) return [];
+      return routeCoords
           .map((c) => LatLng((c[1] as num).toDouble(), (c[0] as num).toDouble()))
           .toList();
     } catch (e) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../model/location_model.dart';
 import '../service/location_service.dart';
+import '../syria_cities_catalog.dart';
 
 class LocationProvider extends ChangeNotifier {
   final LocationService _service = LocationService();
@@ -15,9 +16,16 @@ class LocationProvider extends ChangeNotifier {
   bool isLoading = false;
   String? errorMessage;
 
+  LocationProvider() {
+    final firstCity = SyriaCitiesCatalog.cities.first;
+    selectedCity = firstCity.id;
+    final areas = SyriaCitiesCatalog.areasFor(firstCity.id);
+    if (areas.isNotEmpty) selectedArea = areas.first.id;
+  }
+
   void updateCity(String city) {
     selectedCity = city;
-    selectedArea = null; // reset area when city changes
+    selectedArea = null;
     notifyListeners();
   }
 
@@ -68,7 +76,7 @@ class LocationProvider extends ChangeNotifier {
       );
       return await _service.submitLocation(model, token);
     } catch (e) {
-      errorMessage = e.toString();
+      errorMessage = e.toString().replaceAll('Exception: ', '');
       return false;
     } finally {
       isLoading = false;

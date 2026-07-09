@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/providers/auth_provider.dart';
-import '../../../../core/utils/media_url.dart';
+import '../../../../core/widgets/app_network_image.dart';
 import 'model/vehicle_model.dart';
 import 'provider/vehicle_provider.dart';
 import 'edit_vehicle_screen.dart';
@@ -173,23 +173,17 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
   );
 
   Widget _vehicleImage(VehicleModel vehicle) {
-    final url = resolveMediaUrl(vehicle.imageUrl);
-    if (url != null) {
-      return Image.network(
-        url,
-        fit: BoxFit.cover,
-        width: double.infinity,
-        errorBuilder: (_, __, ___) => const Icon(
-          Icons.directions_car_rounded,
-          size: 80,
-          color: Colors.grey,
-        ),
-      );
-    }
-    return const Icon(
+    const fallback = Icon(
       Icons.directions_car_rounded,
       size: 80,
       color: Colors.grey,
+    );
+    return AppNetworkImage(
+      url: vehicle.imageUrl,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      height: 180,
+      fallback: fallback,
     );
   }
 
@@ -199,6 +193,8 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
         return t.van;
       case 'motorcycle':
         return t.motorcycle;
+      case 'wheelchair_accessible':
+        return t.wheelchairAccessible;
       default:
         return t.car;
     }

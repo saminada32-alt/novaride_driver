@@ -1,4 +1,23 @@
+class DriverWaypoint {
+  final double lat;
+  final double lng;
+  final String? address;
+
+  const DriverWaypoint({
+    required this.lat,
+    required this.lng,
+    this.address,
+  });
+
+  factory DriverWaypoint.fromJson(Map<String, dynamic> j) => DriverWaypoint(
+    lat: double.tryParse(j['lat']?.toString() ?? '0') ?? 0,
+    lng: double.tryParse(j['lng']?.toString() ?? '0') ?? 0,
+    address: j['address']?.toString(),
+  );
+}
+
 enum DriverRideStatus {
+  scheduled,
   searching,
   driver_assigned,
   driver_arrived,
@@ -31,6 +50,22 @@ class DriverRideModel {
   final int? driverRating;
   final int? passengerRating;
   final String? paymentReference;
+  final List<DriverWaypoint> waypoints;
+  final List<Map<String, dynamic>> stopProgress;
+  final int currentStopIndex;
+  final String? rideMode;
+  final String? poolGroupId;
+  final bool accessibilityRequired;
+  final DateTime? scheduledAt;
+  final bool isScheduled;
+
+  bool get hasMultiStop => waypoints.isNotEmpty;
+  bool get isPool => rideMode == 'pool' || poolGroupId != null;
+
+  bool get isScheduledRide =>
+      isScheduled ||
+      status == DriverRideStatus.scheduled ||
+      (scheduledAt != null && scheduledAt!.isAfter(DateTime.now()));
 
   bool get hasPromoDiscount =>
       promoCode != null && discountAmount != null && discountAmount! > 0;
@@ -60,6 +95,14 @@ class DriverRideModel {
     this.driverRating,
     this.passengerRating,
     this.paymentReference,
+    this.waypoints = const [],
+    this.stopProgress = const [],
+    this.currentStopIndex = 0,
+    this.rideMode,
+    this.poolGroupId,
+    this.accessibilityRequired = false,
+    this.scheduledAt,
+    this.isScheduled = false,
   });
 
   bool get isActive =>
@@ -101,6 +144,8 @@ class DriverRideModel {
 
   static DriverRideStatus _parse(String? s) {
     switch (s?.toUpperCase()) {
+      case 'SCHEDULED':
+        return DriverRideStatus.scheduled;
       case 'DRIVER_ASSIGNED':
         return DriverRideStatus.driver_assigned;
       case 'DRIVER_ARRIVED':
@@ -149,5 +194,20 @@ class DriverRideModel {
     driverRating: int.tryParse(j['driverRating']?.toString() ?? ''),
     passengerRating: int.tryParse(j['passengerRating']?.toString() ?? ''),
     paymentReference: j['paymentReference']?.toString(),
+    waypoints: (j['waypoints'] as List<dynamic>? ?? [])
+        .map((e) => DriverWaypoint.fromJson(e as Map<String, dynamic>))
+        .where((w) => w.lat.abs() > 0.01 && w.lng.abs() > 0.01)
+        .toList(),
+    stopProgress: (j['stopProgress'] as List<dynamic>? ?? [])
+        .map((e) => Map<String, dynamic>.from(e as Map))
+        .toList(),
+    currentStopIndex: int.tryParse(j['currentStopIndex']?.toString() ?? '0') ?? 0,
+    rideMode: j['rideMode']?.toString(),
+    poolGroupId: j['poolGroupId']?.toString(),
+    accessibilityRequired: j['accessibilityRequired'] == true,
+    scheduledAt: j['scheduledAt'] != null
+        ? DateTime.tryParse(j['scheduledAt'].toString())
+        : null,
+    isScheduled: j['isScheduled'] == true,
   );
 }

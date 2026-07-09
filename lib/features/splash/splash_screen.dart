@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:novaride_driver/features/driver/pending/pending_approval_screen.dart';
 import 'package:provider/provider.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/auth/welcome/welcome_screen.dart';
-import '../../features/driver/home/home_screen.dart';
+import '../../features/driver/pending/pending_approval_screen.dart';
+import '../driver/navigation/driver_entry.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -35,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _check() async {
-    await Future.delayed(const Duration(milliseconds: 2000));
+    await Future.delayed(const Duration(milliseconds: 600));
     if (!mounted) return;
 
     final status = await context.read<AuthProvider>().checkDriverStatus();
@@ -44,7 +44,7 @@ class _SplashScreenState extends State<SplashScreen>
     switch (status) {
       // مسجّل ومعتمد أو معلّق → افتح التطبيق (HomeScreen يتعامل مع الحالتين)
       case DriverStatus.approved:
-        _go(const DriverHomeScreen());
+        await DriverEntry.goAfterAuth(context);
         break;
       case DriverStatus.pending:
         _go(const PendingApprovalScreen());

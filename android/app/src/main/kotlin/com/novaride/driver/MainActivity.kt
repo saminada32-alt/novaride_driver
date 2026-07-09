@@ -1,4 +1,4 @@
-package com.example.novaride_driver
+package com.novaride.driver
 
 import io.flutter.embedding.android.FlutterActivity
 

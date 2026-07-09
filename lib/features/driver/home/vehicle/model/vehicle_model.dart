@@ -1,3 +1,5 @@
+import '../../../../../core/utils/media_url.dart';
+
 class VehicleModel {
   final int id;
   String brand;
@@ -30,6 +32,6 @@ class VehicleModel {
     color: j['color'] ?? '',
     type: j['type'] ?? 'car',
     isVerified: j['isVerified'] ?? false,
-    imageUrl: j['imageUrl']?.toString(),
+    imageUrl: resolveMediaUrl(j['imageUrl']?.toString()),
   );
 }

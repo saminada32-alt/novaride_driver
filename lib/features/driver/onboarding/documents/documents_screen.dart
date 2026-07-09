@@ -6,10 +6,13 @@ import 'package:provider/provider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/providers/auth_provider.dart';
 import 'provider/document_provider.dart';
+import 'services/document_service.dart';
+import '../../../../core/widgets/app_network_image.dart';
 import '../location/location_info_screen.dart';
 
 class DocumentsScreen extends StatefulWidget {
-  const DocumentsScreen({super.key});
+  final bool resubmitOnly;
+  const DocumentsScreen({super.key, this.resubmitOnly = false});
   @override
   State<DocumentsScreen> createState() => _DocumentsScreenState();
 }
@@ -21,6 +24,19 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   late Map<String, String> _titles;
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.resubmitOnly) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final token = context.read<AuthProvider>().token;
+        if (token != null) {
+          await context.read<DocumentsProvider>().loadRejectedFields(token);
+        }
+      });
+    }
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final local = AppLocalizations.of(context)!;
@@ -30,6 +46,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       'driverIdBack': local.driverIdBack,
       'licenseFront': local.licenseFront,
       'licenseBack': local.licenseBack,
+      'insuranceFront': local.insurance,
       'vehicleFront': local.vehicleFrontPhoto,
       'vehicleBack': local.vehicleBackPhoto,
     };
@@ -37,6 +54,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
   Future<void> _pick(String key) async {
     final prov = context.read<DocumentsProvider>();
+    final local = AppLocalizations.of(context)!;
     await showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -48,7 +66,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.camera_alt, color: Colors.green),
-              title: const Text('Camera'),
+              title: Text(local.camera),
               onTap: () async {
                 Navigator.pop(context);
                 await _pickFrom(key, ImageSource.camera, prov);
@@ -56,7 +74,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.photo_library, color: Colors.green),
-              title: const Text('Gallery'),
+              title: Text(local.gallery),
               onTap: () async {
                 Navigator.pop(context);
                 await _pickFrom(key, ImageSource.gallery, prov);
@@ -65,7 +83,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             if (prov.files[key] != null)
               ListTile(
                 leading: const Icon(Icons.delete, color: Colors.red),
-                title: const Text('Remove'),
+                title: Text(local.remove),
                 onTap: () {
                   Navigator.pop(context);
                   prov.removeFile(key);
@@ -113,18 +131,30 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     final prov = context.read<DocumentsProvider>();
     if (token == null) return;
 
+    final local = AppLocalizations.of(context)!;
+
     final ok = await prov.uploadAll(token);
     if (!mounted) return;
 
     if (ok) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LocationInfoScreen()),
-      );
+      if (prov.resubmitMode) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(local.documentsSentReview),
+            backgroundColor: Colors.green.shade600,
+          ),
+        );
+        Navigator.pop(context);
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LocationInfoScreen()),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(prov.errorMessage ?? 'Upload failed. Try again.'),
+          content: Text(prov.errorMessage ?? local.uploadFailedTryAgain),
           backgroundColor: Colors.red.shade600,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -154,7 +184,38 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
   Widget _tile(String key, String title, {String? subtitle}) {
     final prov = context.watch<DocumentsProvider>();
+    final local = AppLocalizations.of(context)!;
     final file = prov.files[key];
+    final serverUrl = prov.serverUrls[key];
+    final apiField = DocumentsService.apiFieldForAppKey(key) ?? key;
+    final rejectionReason = prov.rejectedFields[apiField];
+    final isRejected = rejectionReason != null && rejectionReason.isNotEmpty;
+
+    Widget preview;
+    if (file != null) {
+      preview = Image.file(file, width: 52, height: 52, fit: BoxFit.cover);
+    } else if (serverUrl != null && !isRejected) {
+      preview = AppNetworkImage(
+        url: serverUrl,
+        width: 52,
+        height: 52,
+        fit: BoxFit.cover,
+        fallback: Container(
+          width: 52,
+          height: 52,
+          color: Colors.grey.shade100,
+          child: const Icon(Icons.upload_file, color: Colors.grey, size: 26),
+        ),
+      );
+    } else {
+      preview = Container(
+        width: 52,
+        height: 52,
+        color: Colors.grey.shade100,
+        child: const Icon(Icons.upload_file, color: Colors.grey, size: 26),
+      );
+    }
+
     return GestureDetector(
       onTap: () => _pick(key),
       child: Container(
@@ -163,28 +224,25 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: file != null ? Colors.green : Colors.grey.shade300,
+            color: isRejected
+                ? Colors.red
+                : file != null
+                    ? Colors.green
+                    : Colors.grey.shade300,
             width: 1.5,
           ),
-          color: file != null ? Colors.green.withOpacity(.02) : Colors.white,
+          color: isRejected
+              ? Colors.red.withOpacity(.03)
+              : file != null
+                  ? Colors.green.withOpacity(.02)
+                  : Colors.white,
         ),
         child: Row(
           children: [
             // Preview
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: file != null
-                  ? Image.file(file, width: 52, height: 52, fit: BoxFit.cover)
-                  : Container(
-                      width: 52,
-                      height: 52,
-                      color: Colors.grey.shade100,
-                      child: const Icon(
-                        Icons.upload_file,
-                        color: Colors.grey,
-                        size: 26,
-                      ),
-                    ),
+              child: preview,
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -202,17 +260,25 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                     const SizedBox(height: 3),
                     Text(
                       subtitle,
+                      style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+                    ),
+                  ],
+                  if (isRejected) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      rejectionReason,
                       style: const TextStyle(
                         fontSize: 11,
-                        color: Colors.black45,
+                        color: Colors.red,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                   if (file != null) ...[
                     const SizedBox(height: 3),
-                    const Text(
-                      '✓ Ready to upload',
-                      style: TextStyle(
+                    Text(
+                      '✓ ${local.readyToUpload}',
+                      style: const TextStyle(
                         fontSize: 11,
                         color: Colors.green,
                         fontWeight: FontWeight.w500,
@@ -237,11 +303,27 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
     final prov = context.watch<DocumentsProvider>();
-    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final resubmit = prov.resubmitMode || widget.resubmitOnly;
 
-    // كم صورة تم اختيارها
-    final uploadedCount = prov.files.values.where((f) => f != null).length;
-    final totalCount = prov.files.length;
+    final allTiles = <Map<String, String?>>[
+      {'key': 'profile', 'title': local.profilePicture, 'subtitle': local.profileDescription},
+      {'key': 'driverIdFront', 'title': local.driverIdFront},
+      {'key': 'driverIdBack', 'title': local.driverIdBack, 'subtitle': local.idDescription},
+      {'key': 'licenseFront', 'title': local.licenseFront},
+      {'key': 'licenseBack', 'title': local.licenseBack, 'subtitle': local.licenseDescription},
+      {'key': 'insuranceFront', 'title': local.insurance},
+      {'key': 'vehicleFront', 'title': local.vehicleFrontPhoto},
+      {'key': 'vehicleBack', 'title': local.vehicleBackPhoto},
+    ];
+
+    final visibleTiles = resubmit && prov.rejectedAppKeys.isNotEmpty
+        ? allTiles.where((t) => prov.rejectedAppKeys.contains(t['key'])).toList()
+        : allTiles;
+
+    final uploadedCount = visibleTiles
+        .where((t) => prov.files[t['key']] != null)
+        .length;
+    final totalCount = visibleTiles.length;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -252,11 +334,11 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         centerTitle: true,
         title: Row(
           mainAxisSize: MainAxisSize.min,
-          children: const [
+          children: [
             Icon(Icons.directions_car, color: Colors.green),
             SizedBox(width: 6),
             Text(
-              'NovaRide',
+              local.appName,
               style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
@@ -273,12 +355,12 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             const SizedBox(height: 24),
 
             Text(
-              local.documentsTitle,
+              resubmit ? local.resubmitDocumentsTitle : local.documentsTitle,
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
             Text(
-              local.documentsSubtitle,
+              resubmit ? local.resubmitDocumentsSubtitle : local.documentsSubtitle,
               style: const TextStyle(fontSize: 14, color: Colors.black54),
             ),
 
@@ -296,7 +378,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    isAr ? 'الوثائق المحددة' : 'Documents selected',
+                    local.documentsSelected,
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                   Text(
@@ -331,7 +413,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 child: Text(
                   prov.uploadProgress > 0
                       ? '${(prov.uploadProgress * 100).toInt()}%'
-                      : (isAr ? 'جاري الرفع...' : 'Uploading...'),
+                      : local.uploading,
                   style: const TextStyle(
                     color: Colors.green,
                     fontWeight: FontWeight.bold,
@@ -370,25 +452,13 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
               ),
 
             // Document Tiles
-            _tile(
-              'profile',
-              local.profilePicture,
-              subtitle: local.profileDescription,
+            ...visibleTiles.map(
+              (t) => _tile(
+                t['key']!,
+                t['title']!,
+                subtitle: t['subtitle'],
+              ),
             ),
-            _tile('driverIdFront', local.driverIdFront),
-            _tile(
-              'driverIdBack',
-              local.driverIdBack,
-              subtitle: local.idDescription,
-            ),
-            _tile('licenseFront', local.licenseFront),
-            _tile(
-              'licenseBack',
-              local.licenseBack,
-              subtitle: local.licenseDescription,
-            ),
-            _tile('vehicleFront', local.vehicleFrontPhoto),
-            _tile('vehicleBack', local.vehicleBackPhoto),
 
             const SizedBox(height: 28),
 

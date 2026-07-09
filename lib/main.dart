@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'core/services/driver_fcm_service.dart';
 import 'core/services/app_controller.dart';
 import 'core/services/crash_reporting.dart';
+import 'core/services/network_connectivity_service.dart';
 
 // Auth
 import 'features/auth/providers/auth_provider.dart';
@@ -40,12 +41,20 @@ Future<void> main() async {
   final appController = AppController();
   await appController.loadLocale();
 
-  runApp(MyAppRoot(appCtrl: appController));
+  final networkService = NetworkConnectivityService();
+  await networkService.start();
+
+  runApp(MyAppRoot(appCtrl: appController, networkService: networkService));
 }
 
 class MyAppRoot extends StatefulWidget {
   final AppController appCtrl;
-  const MyAppRoot({super.key, required this.appCtrl});
+  final NetworkConnectivityService networkService;
+  const MyAppRoot({
+    super.key,
+    required this.appCtrl,
+    required this.networkService,
+  });
 
   @override
   State<MyAppRoot> createState() => _MyAppRootState();
@@ -70,6 +79,7 @@ class _MyAppRootState extends State<MyAppRoot> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: widget.appCtrl),
+        ChangeNotifierProvider.value(value: widget.networkService),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
 
         ChangeNotifierProvider(create: (_) => DriverProvider()),

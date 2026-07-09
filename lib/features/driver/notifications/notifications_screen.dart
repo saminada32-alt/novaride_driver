@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/services/notification_inbox_service.dart';
+import '../../../core/widgets/empty_illustration.dart';
 import '../../../l10n/app_localizations.dart';
 
 class DriverNotificationsScreen extends StatefulWidget {
@@ -48,7 +49,10 @@ class _DriverNotificationsScreenState extends State<DriverNotificationsScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : items.isEmpty
-              ? Center(child: Text(t.notificationsEmpty))
+              ? EmptyIllustration(
+                  imageAsset: 'assets/images/Push notifications-bro.png',
+                  message: t.notificationsEmpty,
+                )
               : RefreshIndicator(
                   onRefresh: _refresh,
                   child: ListView.separated(

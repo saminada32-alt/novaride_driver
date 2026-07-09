@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../features/auth/providers/auth_provider.dart';
 import '../../../features/auth/welcome/welcome_screen.dart';
-import '../home/home_screen.dart';
+import '../navigation/driver_entry.dart';
+import '../onboarding/documents/documents_screen.dart';
+import '../onboarding/documents/provider/document_provider.dart';
 
 class PendingApprovalScreen extends StatefulWidget {
   const PendingApprovalScreen({super.key});
@@ -20,13 +23,33 @@ class _PendingApprovalScreenState extends State<PendingApprovalScreen> {
   LatLng _pos = const LatLng(33.5138, 36.2765);
   final Location _loc = Location();
   bool _rejected = false;
+  bool _loadingDocs = false;
 
   @override
   void initState() {
     super.initState();
     _initLocation();
-    // فحص كل 30 ثانية تلقائياً
     _timer = Timer.periodic(const Duration(seconds: 30), (_) => _check());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDocumentStatus());
+  }
+
+  Future<void> _loadDocumentStatus() async {
+    final token = context.read<AuthProvider>().token;
+    if (token == null) return;
+    setState(() => _loadingDocs = true);
+    await context.read<DocumentsProvider>().loadRejectedFields(token);
+    if (mounted) setState(() => _loadingDocs = false);
+  }
+
+  void _openResubmit() {
+    final prov = context.read<DocumentsProvider>();
+    if (!prov.hasRejectedFields) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const DocumentsScreen(resubmitOnly: true),
+      ),
+    ).then((_) => _loadDocumentStatus());
   }
 
   @override
@@ -58,19 +81,15 @@ class _PendingApprovalScreenState extends State<PendingApprovalScreen> {
     switch (status) {
       case DriverStatus.approved:
         _timer?.cancel();
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => const DriverHomeScreen()),
-          (_) => false,
-        );
+        await DriverEntry.goAfterAuth(context);
         break;
       case DriverStatus.rejected:
         setState(() => _rejected = true);
-        // انتظر 3 ثوان وبعدين سجّل خروج
         await Future.delayed(const Duration(seconds: 3));
         if (mounted) _logout();
         break;
       default:
+        await _loadDocumentStatus();
         break;
     }
   }
@@ -87,7 +106,7 @@ class _PendingApprovalScreenState extends State<PendingApprovalScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final t = AppLocalizations.of(context)!;
 
     return WillPopScope(
       onWillPop: () async => false,
@@ -147,8 +166,8 @@ class _PendingApprovalScreenState extends State<PendingApprovalScreen> {
                       size: 22,
                     ),
                     const SizedBox(width: 8),
-                    const Text(
-                      'NovaRide',
+                    Text(
+                      t.appName,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -181,7 +200,7 @@ class _PendingApprovalScreenState extends State<PendingApprovalScreen> {
                   boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 20)],
                 ),
                 padding: const EdgeInsets.fromLTRB(24, 24, 24, 36),
-                child: _rejected ? _buildRejected(isAr) : _buildPending(isAr),
+                child: _rejected ? _buildRejected(t) : _buildPending(t),
               ),
             ),
           ],
@@ -190,7 +209,11 @@ class _PendingApprovalScreenState extends State<PendingApprovalScreen> {
     );
   }
 
-  Widget _buildPending(bool isAr) => Column(
+  Widget _buildPending(AppLocalizations t) {
+    final docs = context.watch<DocumentsProvider>();
+    final needsResubmit = docs.hasRejectedFields;
+
+    return Column(
     mainAxisSize: MainAxisSize.min,
     children: [
       // Handle
@@ -221,17 +244,40 @@ class _PendingApprovalScreenState extends State<PendingApprovalScreen> {
       const SizedBox(height: 16),
 
       Text(
-        isAr ? 'في انتظار الموافقة' : 'Awaiting Approval',
+        needsResubmit ? t.documentsNeedResubmit : t.awaitingApproval,
         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
       const SizedBox(height: 8),
       Text(
-        isAr
-            ? 'حسابك قيد المراجعة من قبل فريقنا.\nسيتم إشعارك فور الموافقة وتفعيل التطبيق.'
-            : 'Your account is under review.\nYou\'ll be notified once approved and the app is activated.',
+        needsResubmit ? t.resubmitPendingMessage : t.pendingReviewMessage,
         textAlign: TextAlign.center,
         style: TextStyle(color: Colors.grey[600], height: 1.6, fontSize: 13),
       ),
+      if (needsResubmit) ...[
+        const SizedBox(height: 14),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange.shade700,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: _loadingDocs ? null : _openResubmit,
+            icon: const Icon(Icons.upload_file, color: Colors.white),
+            label: Text(
+              t.reuploadDocuments,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+            ),
+          ),
+        ),
+      ],
       const SizedBox(height: 20),
 
       // Auto check info
@@ -248,9 +294,7 @@ class _PendingApprovalScreenState extends State<PendingApprovalScreen> {
             const Icon(Icons.autorenew, color: Colors.green, size: 16),
             const SizedBox(width: 8),
             Text(
-              isAr
-                  ? 'يتم التحقق تلقائياً كل 30 ثانية'
-                  : 'Auto-checking every 30 seconds',
+              t.autoChecking,
               style: const TextStyle(
                 color: Colors.green,
                 fontSize: 12,
@@ -286,9 +330,7 @@ class _PendingApprovalScreenState extends State<PendingApprovalScreen> {
                 )
               : const Icon(Icons.refresh, color: Colors.white),
           label: Text(
-            _checking
-                ? (isAr ? 'جاري الفحص...' : 'Checking...')
-                : (isAr ? 'فحص الحالة الآن' : 'Check Status Now'),
+            _checking ? t.checking : t.checkStatusNow,
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -304,14 +346,15 @@ class _PendingApprovalScreenState extends State<PendingApprovalScreen> {
       TextButton(
         onPressed: _logout,
         child: Text(
-          isAr ? 'تسجيل الخروج' : 'Sign Out',
+          t.signOut,
           style: TextStyle(color: Colors.grey[500], fontSize: 13),
         ),
       ),
     ],
   );
+  }
 
-  Widget _buildRejected(bool isAr) => Column(
+  Widget _buildRejected(AppLocalizations t) => Column(
     mainAxisSize: MainAxisSize.min,
     children: [
       Container(
@@ -336,14 +379,12 @@ class _PendingApprovalScreenState extends State<PendingApprovalScreen> {
       const SizedBox(height: 16),
 
       Text(
-        isAr ? 'تم رفض طلبك' : 'Application Rejected',
+        t.applicationRejected,
         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
       const SizedBox(height: 8),
       Text(
-        isAr
-            ? 'نأسف، تم رفض طلبك.\nسيتم تسجيل خروجك تلقائياً.'
-            : 'Sorry, your application was rejected.\nYou will be logged out automatically.',
+        t.rejectedLogoutMessage,
         textAlign: TextAlign.center,
         style: TextStyle(color: Colors.grey[600], height: 1.6, fontSize: 13),
       ),
@@ -352,7 +393,7 @@ class _PendingApprovalScreenState extends State<PendingApprovalScreen> {
       const CircularProgressIndicator(color: Colors.red),
       const SizedBox(height: 10),
       Text(
-        isAr ? 'جاري تسجيل الخروج...' : 'Logging out...',
+        t.loggingOut,
         style: TextStyle(color: Colors.grey[500]),
       ),
     ],

@@ -1,5 +1,3 @@
-import '../../../../../core/utils/media_url.dart';
-
 class AccountModel {
   final String id, phone;
   String name, email, profileImage;
@@ -53,10 +51,8 @@ class AccountModel {
       phone: j['phone']?.toString() ?? '',
       name: fullName.isNotEmpty ? fullName : (j['name']?.toString() ?? ''),
       email: j['email']?.toString() ?? '',
-      profileImage: resolveMediaUrl(
-            j['profileImage']?.toString() ?? j['driverPhoto']?.toString(),
-          ) ??
-          '',
+      profileImage:
+          j['profileImage']?.toString() ?? j['driverPhoto']?.toString() ?? '',
       isVerified: j['isApproved'] == true,
       totalTrips: _parseInt(j['totalTrips']),
       rating: _parseDouble(j['rating']),

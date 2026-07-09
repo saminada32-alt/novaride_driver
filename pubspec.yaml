@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.0.0+4
 
 environment:
   sdk: ^3.10.8
@@ -38,6 +38,7 @@ dependencies:
   country_code_picker: ^3.4.1
   country_picker: ^2.0.27
   image_picker: ^1.0.3
+  image_cropper: ^9.1.0
   lottie: ^3.3.2
   intl_phone_number_input: ^0.7.0+2
   flutter_gen: ^4.0.0
@@ -49,12 +50,14 @@ dependencies:
   flutter_image_compress: ^2.4.0
   flutter_secure_storage: ^8.1.0
   http: ^1.6.0
+  connectivity_plus: ^6.1.4
   google_maps_flutter: ^2.17.0
   geolocator: ^14.0.2
   location: ^8.0.1
   url_launcher: ^6.3.2
   flutter_tts: ^4.2.0
   share_plus: ^10.1.4
+  path_provider: ^2.1.5
   firebase_core: ^4.7.0
   firebase_messaging: ^16.2.0
   firebase_crashlytics: ^5.0.0
@@ -88,6 +91,10 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+
+# Workaround: objective_c 9.3.x ships without valid dSYMs (App Store upload warning).
+dependency_overrides:
+  objective_c: 9.1.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

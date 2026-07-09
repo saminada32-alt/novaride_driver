@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:420049372283:android:e3554b4fc60e2f17a44ede",
         "android_client_info": {
-          "package_name": "com.example.novaride_driver"
+          "package_name": "com.novaride.driver"
         }
       },
       "oauth_client": [],
@@ -28,7 +28,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:420049372283:android:37360b8618cbf9c1a44ede",
         "android_client_info": {
-          "package_name": "com.example.novaride_rider"
+          "package_name": "com.novaride.rider"
         }
       },
       "oauth_client": [],

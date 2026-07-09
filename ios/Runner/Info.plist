@@ -4,7 +4,7 @@
 	<dict>
 		<key>NSAppTransportSecurity</key>
 		<dict>
-			<key>NSAllowsArbitraryLoads</key>
+			<key>NSAllowsLocalNetworking</key>
 			<true/>
 		</dict>
 		<key>NSLocalNetworkUsageDescription</key>
@@ -45,6 +45,11 @@
 <string>NovaRide needs your location to find nearby drivers</string>
 <key>NSLocationAlwaysUsageDescription</key>
 <string>NovaRide needs your location for ride tracking</string>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>location</string>
+			<string>fetch</string>
+		</array>
 		<key>UILaunchStoryboardName</key>
 		<string>LaunchScreen</string>
 		<key>UIMainStoryboardFile</key>

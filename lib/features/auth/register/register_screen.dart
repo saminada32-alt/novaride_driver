@@ -1,9 +1,13 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../core/services/legal_service.dart';
+import '../../legal/legal_document_screen.dart';
+import '../../../core/utils/phone_utils.dart';
 import '../providers/auth_provider.dart';
 import '../otp/otp_screen.dart';
 
@@ -23,6 +27,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _licenseCountry;
   String _code = '+963';
   bool _agreed = false;
+  bool _loadingLegal = false;
+  List<LegalDocumentView> _legalDocs = [];
 
   @override
   void initState() {
@@ -46,8 +52,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // ─── إصلاح الرقم ──────────────────────────────────────────
   void _onPhoneChanged(String value) {
     String cleaned = value.replaceAll(RegExp(r'\D'), '');
+    if (cleaned.startsWith('963')) cleaned = cleaned.substring(3);
     if (cleaned.startsWith('0')) cleaned = cleaned.substring(1);
-    if (cleaned.length > 10) cleaned = cleaned.substring(0, 10);
+    if (cleaned.length > 9) cleaned = cleaned.substring(0, 9);
     if (cleaned != value) {
       _phoneCtrl.value = TextEditingValue(
         text: cleaned,
@@ -110,25 +117,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _register() async {
     if (!_valid) return;
-    final phone = '$_code${_phoneCtrl.text.trim()}';
-    final prov = context.read<AuthProvider>();
-    setState(() {});
-    final ok = await prov.sendOtp(phone);
-    print('OTP sent: $ok'); // Debug print
+    final phone = buildAuthPhone(_code, _phoneCtrl.text.trim());
     if (!mounted) return;
-    if (!ok) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(prov.error ?? 'Error'),
-          backgroundColor: Colors.red.shade600,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      );
-      return;
-    }
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -144,51 +135,112 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
-  }
 
-  void _showTerms(AppLocalizations local) => showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.white,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-    ),
-    builder: (_) => FractionallySizedBox(
-      heightFactor: 0.75,
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  local.termsTitle,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Text(
-                  local.termsContent,
-                  style: const TextStyle(height: 1.6),
-                ),
-              ),
-            ),
-          ],
+    final prov = context.read<AuthProvider>();
+    final ok = await prov.sendOtp(phone);
+    if (kDebugMode) debugPrint('OTP sent: $ok');
+    if (!mounted || ok) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(prov.error ?? 'Error'),
+        backgroundColor: Colors.red.shade600,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
-    ),
-  );
+    );
+  }
+
+  Future<void> _loadLegal(bool isAr) async {
+    if (_legalDocs.isNotEmpty || _loadingLegal) return;
+    setState(() => _loadingLegal = true);
+    try {
+      final docs = await LegalService.instance.fetchDriverBundle(isAr: isAr);
+      if (mounted) setState(() => _legalDocs = docs);
+    } catch (_) {
+      /* fallback to arb */
+    } finally {
+      if (mounted) setState(() => _loadingLegal = false);
+    }
+  }
+
+  void _showTerms(AppLocalizations local) {
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    _loadLegal(isAr);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => FractionallySizedBox(
+        heightFactor: 0.75,
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    local.termsTitle,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: _loadingLegal
+                    ? const Center(child: CircularProgressIndicator())
+                    : _legalDocs.isEmpty
+                        ? SingleChildScrollView(
+                            child: Text(
+                              local.termsContent,
+                              style: const TextStyle(height: 1.6),
+                            ),
+                          )
+                        : ListView(
+                            children: _legalDocs
+                                .map(
+                                  (doc) => ListTile(
+                                    title: Text(
+                                      doc.title,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    subtitle: Text(doc.summary),
+                                    trailing: const Icon(Icons.chevron_right),
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              LegalDocumentScreen(document: doc),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                )
+                                .toList(),
+                          ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

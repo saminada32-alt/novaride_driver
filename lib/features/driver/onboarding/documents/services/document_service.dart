@@ -13,9 +13,49 @@ class DocumentsService {
     'driverIdBack': 'idBack',
     'licenseFront': 'licenseFront',
     'licenseBack': 'licenseBack',
+    'insuranceFront': 'insuranceFront',
     'vehicleFront': 'vehicleFront',
     'vehicleBack': 'vehicleBack',
   };
+
+  static Map<String, String> get fieldMap => _fieldMap;
+
+  static const Map<String, String> _apiToAppKey = {
+    'driverPhoto': 'profile',
+    'idFront': 'driverIdFront',
+    'idBack': 'driverIdBack',
+    'licenseFront': 'licenseFront',
+    'licenseBack': 'licenseBack',
+    'insuranceFront': 'insuranceFront',
+    'vehicleFront': 'vehicleFront',
+    'vehicleBack': 'vehicleBack',
+  };
+
+  static String? appKeyForApiField(String apiField) => _apiToAppKey[apiField];
+
+  static String? apiFieldForAppKey(String appKey) => _fieldMap[appKey];
+
+  Future<Map<String, dynamic>?> fetchMyDocuments(String token) async {
+    final uri = Uri.parse('${Api.base}${Api.documentsMe}');
+    final res = await http
+        .get(
+          uri,
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Accept': 'application/json',
+          },
+        )
+        .timeout(const Duration(seconds: 20));
+
+    if (res.statusCode == 404) return null;
+    if (res.statusCode < 200 || res.statusCode >= 300) {
+      throw Exception('Failed to load documents (${res.statusCode})');
+    }
+
+    final body = jsonDecode(res.body);
+    if (body is Map<String, dynamic>) return body;
+    return null;
+  }
 
   Future<void> uploadDocuments(
     Map<String, File?> files,

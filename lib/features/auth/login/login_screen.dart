@@ -5,6 +5,7 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../core/services/app_controller.dart';
+import '../../../core/utils/phone_utils.dart';
 import '../providers/auth_provider.dart';
 import '../otp/otp_screen.dart';
 
@@ -43,11 +44,8 @@ class _LoginScreenState extends State<LoginScreen>
   // ─── إصلاح الرقم: احذف الصفر الأول ───────────────────────
   void _onPhoneChanged(String value) {
     String cleaned = value.replaceAll(RegExp(r'\D'), '');
-
-    // احذف الصفر إذا كان الرقم الأول
-    if (cleaned.startsWith('0')) {
-      cleaned = cleaned.substring(1);
-    }
+    if (cleaned.startsWith('963')) cleaned = cleaned.substring(3);
+    if (cleaned.startsWith('0')) cleaned = cleaned.substring(1);
 
     // max 9 أرقام
     if (cleaned.length > 9) cleaned = cleaned.substring(0, 9);
@@ -64,21 +62,21 @@ class _LoginScreenState extends State<LoginScreen>
   bool get _valid => _phoneCtrl.text.trim().length >= 7;
 
   Future<void> _send() async {
-    final phone = '$_code${_phoneCtrl.text.trim()}';
+    final phone = buildAuthPhone(_code, _phoneCtrl.text.trim());
+    if (!mounted) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            OtpScreen(phone: phone, role: 'DRIVER', isLogin: true),
+      ),
+    );
+
     final provider = context.read<AuthProvider>();
     final ok = await provider.sendOtp(phone);
-    if (!mounted) return;
-    if (ok) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) =>
-              OtpScreen(phone: phone, role: 'DRIVER', isLogin: true),
-        ),
-      );
-    } else {
-      _snack(provider.error ?? 'Error', Colors.red.shade600);
-    }
+    if (!mounted || ok) return;
+    _snack(provider.error ?? 'Error', Colors.red.shade600);
   }
 
   void _snack(String m, Color c) => ScaffoldMessenger.of(context).showSnackBar(

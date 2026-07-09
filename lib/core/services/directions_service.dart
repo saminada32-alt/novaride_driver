@@ -13,14 +13,66 @@ class DirectionsService {
   final PolylinePoints _client =
       PolylinePoints.legacy(GoogleMapsConfig.apiKey);
 
-  Future<List<LatLng>> routeBetween(LatLng origin, LatLng destination) async {
-    final google = await _googleRoute(origin, destination);
-    if (google.length > 2) return google;
+  Future<List<LatLng>> routeBetween(
+    LatLng origin,
+    LatLng destination, {
+    List<LatLng> via = const [],
+  }) async {
+    if (via.isEmpty) {
+      final google = await _googleRoute(origin, destination);
+      if (google.length > 2) return google;
 
-    final osrm = await _osrmRoute(origin, destination);
+      final osrm = await _osrmRoute(origin, destination);
+      if (osrm.length > 2) return osrm;
+
+      return _interpolatedRoute(origin, destination, steps: 28);
+    }
+
+    final osrm = await _osrmMultiRoute(origin, destination, via);
     if (osrm.length > 2) return osrm;
 
-    return _interpolatedRoute(origin, destination, steps: 28);
+    var cursor = origin;
+    final merged = <LatLng>[];
+    for (final stop in via) {
+      final seg = await routeBetween(cursor, stop);
+      if (merged.isNotEmpty && seg.isNotEmpty) seg.removeAt(0);
+      merged.addAll(seg);
+      cursor = stop;
+    }
+    final last = await routeBetween(cursor, destination);
+    if (merged.isNotEmpty && last.isNotEmpty) last.removeAt(0);
+    merged.addAll(last);
+    return merged.length >= 2 ? merged : _interpolatedRoute(origin, destination);
+  }
+
+  Future<List<LatLng>> _osrmMultiRoute(
+    LatLng origin,
+    LatLng destination,
+    List<LatLng> via,
+  ) async {
+    try {
+      final coords = [
+        '${origin.longitude},${origin.latitude}',
+        ...via.map((p) => '${p.longitude},${p.latitude}'),
+        '${destination.longitude},${destination.latitude}',
+      ];
+      final uri = Uri.parse(
+        'https://router.project-osrm.org/route/v1/driving/${coords.join(';')}'
+        '?overview=full&geometries=geojson',
+      );
+      final res = await http.get(uri).timeout(const Duration(seconds: 15));
+      if (res.statusCode != 200) return [];
+
+      final data = jsonDecode(utf8.decode(res.bodyBytes));
+      final routeCoords = data['routes']?[0]?['geometry']?['coordinates'] as List?;
+      if (routeCoords == null || routeCoords.isEmpty) return [];
+      return routeCoords
+          .map((c) => LatLng((c[1] as num).toDouble(), (c[0] as num).toDouble()))
+          .toList();
+    } catch (e) {
+      debugPrint('OSRM multi-route error: $e');
+      return [];
+    }
   }
 
   Future<List<LatLng>> _googleRoute(LatLng origin, LatLng destination) async {

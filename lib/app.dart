@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'core/services/app_controller.dart';
+import 'core/widgets/connectivity_overlay.dart';
 import 'l10n/app_localizations.dart';
 import 'features/auth/login/login_screen.dart';
 import 'features/splash/splash_screen.dart';
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
         textDirection: ctrl.locale.languageCode == 'ar'
             ? TextDirection.rtl
             : TextDirection.ltr,
-        child: child!,
+        child: ConnectivityOverlay(child: child!),
       ),
       routes: {'/login': (_) => const LoginScreen()},
       home: const SplashScreen(),

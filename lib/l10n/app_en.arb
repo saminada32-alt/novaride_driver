@@ -18,7 +18,7 @@
   "profileTitle": "Profile",
   "tripsTitle": "Trips",
   "getStarted": "Get Started",
-  "welcomeTitle": "Drive and Earn with us",
+  "welcomeTitle": "Welcome",
   "welcomeSubtitle": "Join thousands of drivers and start earning today.",
   "personalInfoSubtitle": "Please provide your personal information to complete the registration process.",
   "fullNameHint": "Full Name",
@@ -129,6 +129,7 @@
   "drivingLicense": "Driving License",
   "vehicleRegistration": "Vehicle Registration",
   "insurance": "Insurance",
+  "wheelchairAccessible": "Wheelchair accessible",
   "vehicleFrontPhoto": "Vehicle Front Photo",
   "vehicleInteriorPhoto": "Vehicle Interior Photo",
   "documentsTitle": "Documents",
@@ -179,6 +180,23 @@
   "openApp": "Open the app",
   "home": "home",
   "trips": "trips",
+  "scheduledRidesTitle": "Scheduled rides",
+  "scheduledRidesEmpty": "No upcoming scheduled rides nearby",
+  "scheduledRidesEmptyHint": "Scheduled rides in your area will appear here before pickup time",
+  "scheduledRideBadge": "Scheduled",
+  "scheduledRideStartsIn": "Starts in {time}",
+  "@scheduledRideStartsIn": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "scheduledRideDriverHint": "You will get an accept offer ~15 min before pickup — stay online",
+  "incomingScheduledPickup": "Pickup at: {time}",
+  "@incomingScheduledPickup": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
   "earnings": "earning",
   "account": "account",
   "tripsToday": " trips for today",
@@ -320,6 +338,53 @@
   "mySubscriptions": "My Subscriptions",
   "mySubscriptionTitle": "My Subscription",
   "noSubscriptionFound": "No subscription found",
+  "noSubscriptionPlanRequired": "No subscription plan. Please choose a plan in the app.",
+  "subscriptionPaymentRequired": "Subscription payment required",
+  "subscriptionSuspended": "Subscription suspended. Please settle payment to go online.",
+  "monthlySubscriptionPaymentRequired": "Monthly subscription payment required before going online.",
+  "subscriptionPaymentOverdue": "Payment overdue. Please submit payment in Subscriptions.",
+  "saved": "Saved",
+  "preferencesLoadFailed": "Could not load preferences",
+  "onlineStatus": "Online",
+  "offlineStatus": "Offline",
+  "todayEarningsBar": "Today: {amount}",
+  "@todayEarningsBar": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "rideEtaToPickup": "Reach pickup in {minutes} min",
+  "@rideEtaToPickup": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "rideEtaToDropoff": "Arrive at destination in {minutes} min",
+  "@rideEtaToDropoff": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "rideTripDetails": "Trip details",
+  "rideTripDetailsHint": "Meet the passenger at the pickup point",
+  "safetyRecordAudio": "Record audio for added safety",
+  "safetyRecordStart": "Start",
+  "safetyRecording": "Recording...",
+  "incomingRideEtaHeadline": "Arrive in {minutes} min",
+  "@incomingRideEtaHeadline": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "minutesShort": "min",
+  "rideNumber": "Ride #{id}",
+  "@rideNumber": {
+    "placeholders": {
+      "id": {"type": "int"}
+    }
+  },
+  "sendMessage": "Send message",
+  "call": "Call",
   "choosePlan": "Choose Plan",
   "changePlan": "Change Plan",
   "commissionPlan": "Commission Plan",
@@ -398,7 +463,7 @@
   "rideNoPassengerPhone": "Passenger phone number is not available",
   "rideCallFailed": "Could not start a phone call",
   "notificationsTitle": "Notifications",
-  "notificationsEmpty": "No notifications yet",
+  "notificationsEmpty": "No notifications",
   "markAllRead": "Mark all read",
   "rideMessageFailed": "Could not open messaging app",
   "rideOpenInMaps": "Open in Google Maps",
@@ -407,7 +472,9 @@
   "incomingRideSec": "{seconds} sec",
   "@incomingRideSec": {
     "placeholders": {
-      "seconds": { "type": "int" }
+      "seconds": {
+        "type": "int"
+      }
     }
   },
   "incomingRideFare": "Fare",
@@ -439,8 +506,105 @@
   "workZonePrimary": "Primary",
   "workZonesEmpty": "No work zones yet. Add one to set your schedule.",
   "workZonesOffShiftOnline": "Outside scheduled hours. Update your schedule in Work zones.",
+  "language": "Language",
+  "gpsPermissionRequired": "Location permission is required to go online",
+  "locationRequiredForOnline": "Turn on location services to go online",
+  "outsideWorkZoneOnline": "You must be in your work area to go online",
   "voiceNavOn": "Voice navigation on",
   "voiceNavOff": "Voice navigation off",
   "voiceNavToggle": "Voice navigation",
-  "rideTakenByAnother": "This ride was taken by another driver"
+  "rideTakenByAnother": "This ride was taken by another driver",
+  "sosButton": "Emergency SOS",
+  "sosConfirm": "Notify support and share your location?",
+  "sosActivated": "SOS sent — support notified",
+  "driverIncentivesTitle": "Bonuses & incentives",
+  "driverIncentivesEmpty": "No rewards",
+  "driverIncentivesBonus": "Zone bonus",
+  "driverIncentivesActiveCount": "active bonuses",
+  "multiStopLabel": "Stop",
+  "multiStopNext": "Next stop",
+  "multiStopReached": "Stop reached — navigating to next",
+  "accessibilityRide": "Accessibility ride — extra care at pickup",
+  "camera": "Camera",
+  "gallery": "Gallery",
+  "remove": "Remove",
+  "readyToUpload": "Ready to upload",
+  "uploadFailedTryAgain": "Upload failed. Try again.",
+  "documentsSelected": "Documents selected",
+  "uploading": "Uploading...",
+  "resubmitDocumentsTitle": "Re-upload documents",
+  "resubmitDocumentsSubtitle": "Please re-upload only the rejected documents. Your application stays pending.",
+  "documentsSentReview": "Documents sent. They will be reviewed shortly.",
+  "awaitingApproval": "Awaiting Approval",
+  "documentsNeedResubmit": "Documents need re-upload",
+  "resubmitPendingMessage": "Some documents were rejected. Please re-upload them only.\nYour application stays pending.",
+  "pendingReviewMessage": "Your account is under review.\nYou'll be notified once approved and the app is activated.",
+  "reuploadDocuments": "Re-upload documents",
+  "autoChecking": "Auto-checking every 30 seconds",
+  "checkStatusNow": "Check Status Now",
+  "checking": "Checking...",
+  "signOut": "Sign Out",
+  "applicationRejected": "Application Rejected",
+  "rejectedLogoutMessage": "Sorry, your application was rejected.\nYou will be logged out automatically.",
+  "loggingOut": "Logging out...",
+  "resubmitBadge": "Resubmit",
+  "notSet": "Not set",
+  "driverLabel": "Driver",
+  "statusOnline": "ONLINE",
+  "statusOffline": "OFFLINE",
+  "preferences": "Preferences",
+  "referrals": "Referrals",
+  "preferencesTitle": "Driver preferences",
+  "destinationFilterTitle": "Destination filter",
+  "destinationFilterDesc": "Only accept rides heading toward your destination",
+  "enableFilter": "Enable filter",
+  "destinationLabel": "Destination",
+  "acceptRadiusKm": "Accept radius (km): {km}",
+  "@acceptRadiusKm": {"placeholders": {"km": {"type": "String"}}},
+  "saveFilter": "Save filter",
+  "autoAcceptTitle": "Auto-accept",
+  "autoAcceptDesc": "Automatically accept rides matching your criteria",
+  "enableAutoAccept": "Enable auto-accept",
+  "maxPickupKmLabel": "Max pickup distance (km): {km}",
+  "@maxPickupKmLabel": {"placeholders": {"km": {"type": "String"}}},
+  "minFareLabel": "Min fare: {amount}",
+  "@minFareLabel": {"placeholders": {"amount": {"type": "String"}}},
+  "saveAutoAccept": "Save auto-accept",
+  "submitPaymentTitle": "Submit payment",
+  "paymentNote": "Note",
+  "paymentSubmittedReview": "Payment submitted — admin will review",
+  "suspendedStatus": "Suspended",
+  "pendingReview": "Pending review",
+  "cannotGoOnlineUntilPaid": "You cannot go online until payment is confirmed.",
+  "referralsTitle": "Referrals",
+  "yourReferralCode": "Your referral code",
+  "copied": "Copied",
+  "referralsCount": "Referrals: {count}",
+  "@referralsCount": {"placeholders": {"count": {"type": "int"}}},
+  "earnedAmount": "Earned: {amount}",
+  "@earnedAmount": {"placeholders": {"amount": {"type": "String"}}},
+  "tripStatusScheduled": "Scheduled",
+  "tripStatusSearching": "Searching",
+  "tripStatusAssigned": "Assigned",
+  "tripStatusArrived": "Arrived",
+  "tripStatusOnboard": "On board",
+  "tripStatusStarted": "In progress",
+  "tripStatusCompleted": "Completed",
+  "tripStatusCancelled": "Cancelled",
+  "incomingReachPickup": "Reach pickup in {minutes} min",
+  "@incomingReachPickup": {"placeholders": {"minutes": {"type": "int"}}},
+  "incomingOfferSubtitle": "New ride in your area",
+  "activeRideMeetPassenger": "Meet the passenger at the pickup point",
+  "activeRideMeetPassengerEta": "Pick up passenger in {minutes} min",
+  "@activeRideMeetPassengerEta": {"placeholders": {"minutes": {"type": "int"}}},
+  "activeRideArriveDropoffEta": "Arrive at destination in {minutes} min",
+  "@activeRideArriveDropoffEta": {"placeholders": {"minutes": {"type": "int"}}},
+  "passengerTripsCount": "{count} trips",
+  "@passengerTripsCount": {"placeholders": {"count": {"type": "int"}}},
+  "ridePickupPoint": "Pickup point",
+  "activeRideMoreOptions": "More",
+  "distanceKmUnit": "{km} km",
+  "@distanceKmUnit": {"placeholders": {"km": {"type": "String"}}},
+  "invalidOtpCode": "Invalid code",
+  "actionFailed": "Something went wrong"
 }

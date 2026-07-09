@@ -8,7 +8,14 @@ class CarService {
 
   Future<void> sendCarInfo(Map<String, dynamic> body, String token) async {
     // ─── Map vehicleType للباك اند ────────────────────────────
-    final typeMap = {'car': 'car', 'motor': 'motorcycle', 'van': 'van'};
+    final typeMap = {
+      'car': 'car',
+      'motorcycle': 'motorcycle',
+      'bike': 'bike',
+      'scooter': 'scooter',
+      'van': 'van',
+      'wheelchair_accessible': 'wheelchair_accessible',
+    };
 
     final payload = {
       'type': typeMap[body['type']] ?? body['type'],
@@ -31,7 +38,7 @@ class CarService {
             'Accept': 'application/json',
             'Authorization': 'Bearer $token',
           },
-          body: jsonEncode(body),
+          body: jsonEncode(payload),
         )
         .timeout(const Duration(seconds: 15));
 

@@ -38,6 +38,12 @@ class WorkZonesService {
   static WorkZonesService instance = WorkZonesService._();
 
   static const _storage = FlutterSecureStorage();
+  static const _cacheTtl = Duration(minutes: 3);
+
+  List<WorkZone>? _zonesCache;
+  DateTime? _zonesCachedAt;
+  bool? _onShiftCache;
+  DateTime? _onShiftCachedAt;
 
   Future<String?> _token() => _storage.read(key: 'driver_token');
   Map<String, String> _auth(String t) => {
@@ -46,38 +52,67 @@ class WorkZonesService {
     'Content-Type': 'application/json',
   };
 
-  Future<List<WorkZone>> list() async {
+  Future<void> prefetch() async {
+    await Future.wait([list(), isOnShift()]);
+  }
+
+  void invalidateCache() {
+    _zonesCache = null;
+    _zonesCachedAt = null;
+    _onShiftCache = null;
+    _onShiftCachedAt = null;
+  }
+
+  Future<List<WorkZone>> list({bool forceRefresh = false}) async {
+    if (!forceRefresh &&
+        _zonesCache != null &&
+        _zonesCachedAt != null &&
+        DateTime.now().difference(_zonesCachedAt!) < _cacheTtl) {
+      return _zonesCache!;
+    }
+
     final tok = await _token();
     if (tok == null) return [];
 
     final res = await http
         .get(Uri.parse('${Api.base}${Api.workZones}'), headers: _auth(tok))
-        .timeout(const Duration(seconds: 12));
-
-    if (res.statusCode >= 200 && res.statusCode < 300) {
-      final data = jsonDecode(utf8.decode(res.bodyBytes));
-      if (data is List) {
-        return data
-            .map((e) => WorkZone.fromJson(Map<String, dynamic>.from(e as Map)))
-            .toList();
-      }
-    }
-    return [];
-  }
-
-  Future<bool> isOnShift() async {
-    final tok = await _token();
-    if (tok == null) return true;
-
-    final res = await http
-        .get(Uri.parse('${Api.base}${Api.onShift}'), headers: _auth(tok))
         .timeout(const Duration(seconds: 8));
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
       final data = jsonDecode(utf8.decode(res.bodyBytes));
-      return data['onShift'] == true;
+      if (data is List) {
+        _zonesCache = data
+            .map((e) => WorkZone.fromJson(Map<String, dynamic>.from(e as Map)))
+            .toList();
+        _zonesCachedAt = DateTime.now();
+        return _zonesCache!;
+      }
     }
-    return true;
+    return _zonesCache ?? [];
+  }
+
+  Future<bool> isOnShift({bool forceRefresh = false}) async {
+    if (!forceRefresh &&
+        _onShiftCache != null &&
+        _onShiftCachedAt != null &&
+        DateTime.now().difference(_onShiftCachedAt!) < _cacheTtl) {
+      return _onShiftCache!;
+    }
+
+    final tok = await _token();
+    if (tok == null) return false;
+
+    final res = await http
+        .get(Uri.parse('${Api.base}${Api.onShift}'), headers: _auth(tok))
+        .timeout(const Duration(seconds: 6));
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      final data = jsonDecode(utf8.decode(res.bodyBytes));
+      _onShiftCache = data['onShift'] == true;
+      _onShiftCachedAt = DateTime.now();
+      return _onShiftCache!;
+    }
+    return _onShiftCache ?? false;
   }
 
   Future<void> add(Map<String, dynamic> body) async {
@@ -95,6 +130,7 @@ class WorkZonesService {
     if (res.statusCode < 200 || res.statusCode >= 300) {
       throw Exception('Failed to add work zone');
     }
+    invalidateCache();
   }
 
   Future<void> update(int id, Map<String, dynamic> body) async {
@@ -112,6 +148,7 @@ class WorkZonesService {
     if (res.statusCode < 200 || res.statusCode >= 300) {
       throw Exception('Failed to update work zone');
     }
+    invalidateCache();
   }
 
   Future<void> delete(int id) async {
@@ -128,5 +165,6 @@ class WorkZonesService {
     if (res.statusCode < 200 || res.statusCode >= 300) {
       throw Exception('Failed to delete work zone');
     }
+    invalidateCache();
   }
 }

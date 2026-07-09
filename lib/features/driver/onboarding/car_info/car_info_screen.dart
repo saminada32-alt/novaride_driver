@@ -9,6 +9,7 @@ import 'package:dropdown_search/dropdown_search.dart';
 import '../../../../core/services/app_controller.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../car_info/provider/car_provider.dart';
+import '../car_info/driver_vehicle_catalog.dart';
 import '../../../../features/auth/providers/auth_provider.dart';
 
 class CarInfoScreen extends StatefulWidget {
@@ -55,6 +56,15 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
   );
 
   late CarProvider carProvider;
+  List<DriverVehicleType> _vehicleTypes = DriverVehicleCatalog.fallback;
+
+  @override
+  void initState() {
+    super.initState();
+    DriverVehicleCatalog.ensureLoaded().then((_) {
+      if (mounted) setState(() => _vehicleTypes = DriverVehicleCatalog.types);
+    });
+  }
 
   // إعادة تعيين الحقول عند تغيير نوع المركبة
   void resetFields(String type) {
@@ -149,7 +159,7 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
       }
 
       // دراجة
-      if (c.vehicleType == "motor") {
+      if (c.vehicleType == "motorcycle") {
         return (c.plateNumber?.isNotEmpty ?? false) &&
             c.brand != null &&
             ((c.brand == "Other" && (c.model?.isNotEmpty ?? false)) ||
@@ -238,28 +248,18 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
             ),
             const SizedBox(height: 30),
 
-            // الأنواع الأساسية + الأنواع الجديدة
-            buildVehicleOption("car", local.car, Icons.directions_car),
-            buildVehicleOption("motor", local.motorcycle, Icons.motorcycle),
-            buildVehicleOption("van", local.van, Icons.airport_shuttle),
-            buildVehicleOption("water_tanker", local.waterTanker, Icons.water),
-            buildVehicleOption(
-              "moving_truck",
-              local.movingTruck,
-              Icons.local_shipping,
-            ),
-            buildVehicleOption(
-              "car_wash",
-              local.carWash,
-              Icons.cleaning_services,
-            ),
+            // أنواع المركبات من السيرفر (مع fallback محلي)
+            ..._vehicleTypes.map((t) {
+              final label = isArabic ? t.labelAr : t.labelEn;
+              return buildVehicleOption(t.id, label, t.icon);
+            }),
 
             const SizedBox(height: 30),
 
             if (carProvider.car.vehicleType != null) ...[
               // رقم اللوحة
               requiredLabel(
-                carProvider.car.vehicleType == "motor"
+                carProvider.car.vehicleType == "motorcycle"
                     ? local.motorcyclePlateNumber
                     : local.licensePlate,
               ),
@@ -267,7 +267,7 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
               TextField(
                 controller: plateController,
                 decoration: inputDecoration(
-                  hint: carProvider.car.vehicleType == "motor"
+                  hint: carProvider.car.vehicleType == "motorcycle"
                       ? local.enterMotorPlate
                       : local.enterPlate,
                 ),
@@ -276,7 +276,8 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
               const SizedBox(height: 25),
 
               // السيارة (كما كانت)
-              if (carProvider.car.vehicleType == "car") ...[
+              if (carProvider.car.vehicleType == "car" ||
+                  carProvider.car.vehicleType == "wheelchair_accessible") ...[
                 requiredLabel(local.manufacturer),
                 const SizedBox(height: 6),
                 DropdownSearch<String>(
@@ -357,7 +358,7 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
               ],
 
               // الدراجة
-              if (carProvider.car.vehicleType == "motor") ...[
+              if (carProvider.car.vehicleType == "motorcycle") ...[
                 requiredLabel(local.motorcycleBrand),
                 const SizedBox(height: 6),
                 DropdownSearch<String>(
@@ -466,7 +467,7 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
               ],
 
               // السنة للسيارات والفان والصهريج ونقل العفش وغسيل السيارات
-              if (carProvider.car.vehicleType != "motor") ...[
+              if (carProvider.car.vehicleType != "motorcycle") ...[
                 requiredLabel(local.vehicleYear),
                 const SizedBox(height: 6),
                 DropdownSearch<String>(

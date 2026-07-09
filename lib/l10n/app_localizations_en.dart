@@ -65,7 +65,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get getStarted => 'Get Started';
 
   @override
-  String get welcomeTitle => 'Drive and Earn with us';
+  String get welcomeTitle => 'Welcome';
 
   @override
   String get welcomeSubtitle => 'Join thousands of drivers and start earning today.';
@@ -402,6 +402,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get insurance => 'Insurance';
 
   @override
+  String get wheelchairAccessible => 'Wheelchair accessible';
+
+  @override
   String get vehicleFrontPhoto => 'Vehicle Front Photo';
 
   @override
@@ -550,6 +553,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trips => 'trips';
+
+  @override
+  String get scheduledRidesTitle => 'Scheduled rides';
+
+  @override
+  String get scheduledRidesEmpty => 'No upcoming scheduled rides nearby';
+
+  @override
+  String get scheduledRidesEmptyHint => 'Scheduled rides in your area will appear here before pickup time';
+
+  @override
+  String get scheduledRideBadge => 'Scheduled';
+
+  @override
+  String scheduledRideStartsIn(String time) {
+    return 'Starts in $time';
+  }
+
+  @override
+  String get scheduledRideDriverHint => 'You will get an accept offer ~15 min before pickup — stay online';
+
+  @override
+  String incomingScheduledPickup(String time) {
+    return 'Pickup at: $time';
+  }
 
   @override
   String get earnings => 'earning';
@@ -975,6 +1003,82 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noSubscriptionFound => 'No subscription found';
 
   @override
+  String get noSubscriptionPlanRequired => 'No subscription plan. Please choose a plan in the app.';
+
+  @override
+  String get subscriptionPaymentRequired => 'Subscription payment required';
+
+  @override
+  String get subscriptionSuspended => 'Subscription suspended. Please settle payment to go online.';
+
+  @override
+  String get monthlySubscriptionPaymentRequired => 'Monthly subscription payment required before going online.';
+
+  @override
+  String get subscriptionPaymentOverdue => 'Payment overdue. Please submit payment in Subscriptions.';
+
+  @override
+  String get saved => 'Saved';
+
+  @override
+  String get preferencesLoadFailed => 'Could not load preferences';
+
+  @override
+  String get onlineStatus => 'Online';
+
+  @override
+  String get offlineStatus => 'Offline';
+
+  @override
+  String todayEarningsBar(String amount) {
+    return 'Today: $amount';
+  }
+
+  @override
+  String rideEtaToPickup(int minutes) {
+    return 'Reach pickup in $minutes min';
+  }
+
+  @override
+  String rideEtaToDropoff(int minutes) {
+    return 'Arrive at destination in $minutes min';
+  }
+
+  @override
+  String get rideTripDetails => 'Trip details';
+
+  @override
+  String get rideTripDetailsHint => 'Meet the passenger at the pickup point';
+
+  @override
+  String get safetyRecordAudio => 'Record audio for added safety';
+
+  @override
+  String get safetyRecordStart => 'Start';
+
+  @override
+  String get safetyRecording => 'Recording...';
+
+  @override
+  String incomingRideEtaHeadline(int minutes) {
+    return 'Arrive in $minutes min';
+  }
+
+  @override
+  String get minutesShort => 'min';
+
+  @override
+  String rideNumber(int id) {
+    return 'Ride #$id';
+  }
+
+  @override
+  String get sendMessage => 'Send message';
+
+  @override
+  String get call => 'Call';
+
+  @override
   String get choosePlan => 'Choose Plan';
 
   @override
@@ -1209,7 +1313,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationsTitle => 'Notifications';
 
   @override
-  String get notificationsEmpty => 'No notifications yet';
+  String get notificationsEmpty => 'No notifications';
 
   @override
   String get markAllRead => 'Mark all read';
@@ -1319,6 +1423,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get workZonesOffShiftOnline => 'Outside scheduled hours. Update your schedule in Work zones.';
 
   @override
+  String get language => 'Language';
+
+  @override
+  String get gpsPermissionRequired => 'Location permission is required to go online';
+
+  @override
+  String get locationRequiredForOnline => 'Turn on location services to go online';
+
+  @override
+  String get outsideWorkZoneOnline => 'You must be in your work area to go online';
+
+  @override
   String get voiceNavOn => 'Voice navigation on';
 
   @override
@@ -1329,4 +1445,273 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rideTakenByAnother => 'This ride was taken by another driver';
+
+  @override
+  String get sosButton => 'Emergency SOS';
+
+  @override
+  String get sosConfirm => 'Notify support and share your location?';
+
+  @override
+  String get sosActivated => 'SOS sent — support notified';
+
+  @override
+  String get driverIncentivesTitle => 'Bonuses & incentives';
+
+  @override
+  String get driverIncentivesEmpty => 'No rewards';
+
+  @override
+  String get driverIncentivesBonus => 'Zone bonus';
+
+  @override
+  String get driverIncentivesActiveCount => 'active bonuses';
+
+  @override
+  String get multiStopLabel => 'Stop';
+
+  @override
+  String get multiStopNext => 'Next stop';
+
+  @override
+  String get multiStopReached => 'Stop reached — navigating to next';
+
+  @override
+  String get accessibilityRide => 'Accessibility ride — extra care at pickup';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get gallery => 'Gallery';
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String get readyToUpload => 'Ready to upload';
+
+  @override
+  String get uploadFailedTryAgain => 'Upload failed. Try again.';
+
+  @override
+  String get documentsSelected => 'Documents selected';
+
+  @override
+  String get uploading => 'Uploading...';
+
+  @override
+  String get resubmitDocumentsTitle => 'Re-upload documents';
+
+  @override
+  String get resubmitDocumentsSubtitle => 'Please re-upload only the rejected documents. Your application stays pending.';
+
+  @override
+  String get documentsSentReview => 'Documents sent. They will be reviewed shortly.';
+
+  @override
+  String get awaitingApproval => 'Awaiting Approval';
+
+  @override
+  String get documentsNeedResubmit => 'Documents need re-upload';
+
+  @override
+  String get resubmitPendingMessage => 'Some documents were rejected. Please re-upload them only.\nYour application stays pending.';
+
+  @override
+  String get pendingReviewMessage => 'Your account is under review.\nYou\'ll be notified once approved and the app is activated.';
+
+  @override
+  String get reuploadDocuments => 'Re-upload documents';
+
+  @override
+  String get autoChecking => 'Auto-checking every 30 seconds';
+
+  @override
+  String get checkStatusNow => 'Check Status Now';
+
+  @override
+  String get checking => 'Checking...';
+
+  @override
+  String get signOut => 'Sign Out';
+
+  @override
+  String get applicationRejected => 'Application Rejected';
+
+  @override
+  String get rejectedLogoutMessage => 'Sorry, your application was rejected.\nYou will be logged out automatically.';
+
+  @override
+  String get loggingOut => 'Logging out...';
+
+  @override
+  String get resubmitBadge => 'Resubmit';
+
+  @override
+  String get notSet => 'Not set';
+
+  @override
+  String get driverLabel => 'Driver';
+
+  @override
+  String get statusOnline => 'ONLINE';
+
+  @override
+  String get statusOffline => 'OFFLINE';
+
+  @override
+  String get preferences => 'Preferences';
+
+  @override
+  String get referrals => 'Referrals';
+
+  @override
+  String get preferencesTitle => 'Driver preferences';
+
+  @override
+  String get destinationFilterTitle => 'Destination filter';
+
+  @override
+  String get destinationFilterDesc => 'Only accept rides heading toward your destination';
+
+  @override
+  String get enableFilter => 'Enable filter';
+
+  @override
+  String get destinationLabel => 'Destination';
+
+  @override
+  String acceptRadiusKm(String km) {
+    return 'Accept radius (km): $km';
+  }
+
+  @override
+  String get saveFilter => 'Save filter';
+
+  @override
+  String get autoAcceptTitle => 'Auto-accept';
+
+  @override
+  String get autoAcceptDesc => 'Automatically accept rides matching your criteria';
+
+  @override
+  String get enableAutoAccept => 'Enable auto-accept';
+
+  @override
+  String maxPickupKmLabel(String km) {
+    return 'Max pickup distance (km): $km';
+  }
+
+  @override
+  String minFareLabel(String amount) {
+    return 'Min fare: $amount';
+  }
+
+  @override
+  String get saveAutoAccept => 'Save auto-accept';
+
+  @override
+  String get submitPaymentTitle => 'Submit payment';
+
+  @override
+  String get paymentNote => 'Note';
+
+  @override
+  String get paymentSubmittedReview => 'Payment submitted — admin will review';
+
+  @override
+  String get suspendedStatus => 'Suspended';
+
+  @override
+  String get pendingReview => 'Pending review';
+
+  @override
+  String get cannotGoOnlineUntilPaid => 'You cannot go online until payment is confirmed.';
+
+  @override
+  String get referralsTitle => 'Referrals';
+
+  @override
+  String get yourReferralCode => 'Your referral code';
+
+  @override
+  String get copied => 'Copied';
+
+  @override
+  String referralsCount(int count) {
+    return 'Referrals: $count';
+  }
+
+  @override
+  String earnedAmount(String amount) {
+    return 'Earned: $amount';
+  }
+
+  @override
+  String get tripStatusScheduled => 'Scheduled';
+
+  @override
+  String get tripStatusSearching => 'Searching';
+
+  @override
+  String get tripStatusAssigned => 'Assigned';
+
+  @override
+  String get tripStatusArrived => 'Arrived';
+
+  @override
+  String get tripStatusOnboard => 'On board';
+
+  @override
+  String get tripStatusStarted => 'In progress';
+
+  @override
+  String get tripStatusCompleted => 'Completed';
+
+  @override
+  String get tripStatusCancelled => 'Cancelled';
+
+  @override
+  String incomingReachPickup(int minutes) {
+    return 'Reach pickup in $minutes min';
+  }
+
+  @override
+  String get incomingOfferSubtitle => 'New ride in your area';
+
+  @override
+  String get activeRideMeetPassenger => 'Meet the passenger at the pickup point';
+
+  @override
+  String activeRideMeetPassengerEta(int minutes) {
+    return 'Pick up passenger in $minutes min';
+  }
+
+  @override
+  String activeRideArriveDropoffEta(int minutes) {
+    return 'Arrive at destination in $minutes min';
+  }
+
+  @override
+  String passengerTripsCount(int count) {
+    return '$count trips';
+  }
+
+  @override
+  String get ridePickupPoint => 'Pickup point';
+
+  @override
+  String get activeRideMoreOptions => 'More';
+
+  @override
+  String distanceKmUnit(String km) {
+    return '$km km';
+  }
+
+  @override
+  String get invalidOtpCode => 'Invalid code';
+
+  @override
+  String get actionFailed => 'Something went wrong';
 }

@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:novaride_driver/features/driver/home/home_screen.dart';
+import 'package:novaride_driver/features/driver/navigation/driver_entry.dart';
 import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../core/services/legal_service.dart';
 import '../providers/auth_provider.dart';
 import '../../driver/onboarding/personal_info/personal_info_screen.dart';
 import '../../driver/pending/pending_approval_screen.dart';
-import '../../../core/services/socket_service.dart';
 
 class OtpScreen extends StatefulWidget {
   final String phone;
@@ -81,8 +81,17 @@ class _OtpScreenState extends State<OtpScreen> {
 
   Future<void> _verify() async {
     if (!_complete) return;
+    final t = AppLocalizations.of(context)!;
     final prov = context.read<AuthProvider>();
-    final ok = await prov.verifyOtp(widget.phone, _otp, role: widget.role);
+    final consents = widget.isLogin
+        ? null
+        : LegalService.instance.driverConsents();
+    final ok = await prov.verifyOtp(
+      widget.phone,
+      _otp,
+      role: widget.role,
+      consents: consents,
+    );
 
     if (!mounted) return;
 
@@ -90,12 +99,11 @@ class _OtpScreenState extends State<OtpScreen> {
       HapticFeedback.heavyImpact();
       setState(() => _isError = true);
       Future.delayed(const Duration(milliseconds: 400), _clear);
-      _snack(prov.error ?? 'Invalid code', Colors.red.shade600);
+      _snack(prov.error ?? t.invalidOtpCode, Colors.red.shade600);
       return;
     }
 
-    // Socket
-    await DriverSocketService.instance.connect();
+    // Socket connected via DriverEntry / home bootstrap
     // ══════════════════════════════════════════════════════════
     // FLOW:
     // LOGIN  → فحص الحالة → approved=Home | pending=PendingScreen
@@ -103,46 +111,47 @@ class _OtpScreenState extends State<OtpScreen> {
     // ══════════════════════════════════════════════════════════
 
     if (widget.isLogin) {
-      // ─── Login: فحص الحالة مباشرة ─────────────────────────
-      final status = await prov.checkDriverStatus();
-      if (!mounted) return;
-
-      if (status == DriverStatus.approved) {
-        _goHome();
-      } else {
+      final driver = prov.driver;
+      if (driver != null && driver.isApproved) {
+        await DriverEntry.goAfterAuth(context, driverId: driver.id);
+      } else if (driver != null && driver.isRejected) {
         _goPending();
+      } else if (driver != null) {
+        _goPending();
+      } else {
+        final status = await prov.checkDriverStatus();
+        if (!mounted) return;
+        if (status == DriverStatus.approved) {
+          await DriverEntry.goAfterAuth(context, driverId: prov.driver?.id);
+        } else {
+          _goPending();
+        }
       }
     } else {
-      // ─── Register: حدّث المعلومات الأساسية ─────────────────
-      if (widget.registerData != null) {
-        final d = widget.registerData!;
-        final parts = (d['name'] ?? '').split(' ');
-        final body = <String, dynamic>{};
-        if (parts.isNotEmpty && parts.first.isNotEmpty)
-          body['firstName'] = parts.first;
-        if (parts.length > 1) body['lastName'] = parts.sublist(1).join(' ');
-        if ((d['email'] ?? '').isNotEmpty) body['email'] = d['email'];
-        if ((d['licenseCountry'] ?? '').isNotEmpty)
-          body['licenseCountry'] = d['licenseCountry'];
-        if (body.isNotEmpty) await prov.updateInfo(body);
-      }
-
       if (!mounted) return;
 
-      // ─── روح للـ Onboarding ────────────────────────────────
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const PersonalInfoScreen()),
         (_) => false,
       );
+
+      if (widget.registerData != null) {
+        final d = widget.registerData!;
+        final parts = (d['name'] ?? '').split(' ');
+        final body = <String, dynamic>{};
+        if (parts.isNotEmpty && parts.first.isNotEmpty) {
+          body['firstName'] = parts.first;
+        }
+        if (parts.length > 1) body['lastName'] = parts.sublist(1).join(' ');
+        if ((d['email'] ?? '').isNotEmpty) body['email'] = d['email'];
+        if ((d['licenseCountry'] ?? '').isNotEmpty) {
+          body['licenseCountry'] = d['licenseCountry'];
+        }
+        if (body.isNotEmpty) unawaited(prov.updateInfo(body));
+      }
     }
   }
-
-  void _goHome() => Navigator.pushAndRemoveUntil(
-    context,
-    MaterialPageRoute(builder: (_) => const DriverHomeScreen()),
-    (_) => false,
-  );
 
   void _goPending() => Navigator.pushAndRemoveUntil(
     context,
@@ -151,6 +160,7 @@ class _OtpScreenState extends State<OtpScreen> {
   );
 
   Future<void> _resend() async {
+    final t = AppLocalizations.of(context)!;
     final prov = context.read<AuthProvider>();
     final ok = await prov.sendOtp(widget.phone, role: widget.role);
     if (!mounted) return;
@@ -159,7 +169,7 @@ class _OtpScreenState extends State<OtpScreen> {
       _startTimer();
       _snack('Code sent!', Colors.green);
     } else {
-      _snack(prov.error ?? 'Failed', Colors.red.shade600);
+      _snack(prov.error ?? t.actionFailed, Colors.red.shade600);
     }
   }
 

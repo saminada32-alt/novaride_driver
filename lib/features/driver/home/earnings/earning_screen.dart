@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../../core/utils/currency_utils.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/providers/auth_provider.dart';
 import 'earning_export.dart';
@@ -77,7 +78,7 @@ class _EarningsPageState extends State<EarningsPage> {
                 children: [
                   Text(t.totalEarnings),
                   Text(
-                    '${e.total.toStringAsFixed(2)}\$',
+                    CurrencyUtils.formatSyp(e.total),
                     style: const TextStyle(
                       fontSize: 34,
                       fontWeight: FontWeight.bold,
@@ -90,11 +91,11 @@ class _EarningsPageState extends State<EarningsPage> {
             const SizedBox(height: 20),
             Row(
               children: [
-                _mini(t.daily, e.today, Colors.blue),
+                _mini(t.daily, e.today, Colors.blue, t),
                 const SizedBox(width: 8),
-                _mini(t.weekly, e.week, Colors.purple),
+                _mini(t.weekly, e.week, Colors.purple, t),
                 const SizedBox(width: 8),
-                _mini(t.monthly, e.month, Colors.orange),
+                _mini(t.monthly, e.month, Colors.orange, t),
               ],
             ),
             const SizedBox(height: 20),
@@ -104,7 +105,7 @@ class _EarningsPageState extends State<EarningsPage> {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-              ...prov.chartData.map((c) => _chartRow(c, prov.selectedTotal)),
+              ...prov.chartData.map((c) => _chartRow(c, prov.selectedTotal, t)),
             ],
             const SizedBox(height: 24),
             Text(
@@ -112,7 +113,7 @@ class _EarningsPageState extends State<EarningsPage> {
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            ...e.recentRides.map(_rideItem),
+            ...e.recentRides.map((r) => _rideItem(r, t)),
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
@@ -136,7 +137,8 @@ class _EarningsPageState extends State<EarningsPage> {
     );
   }
 
-  Widget _mini(String label, double val, Color c) => Expanded(
+  Widget _mini(String label, double val, Color c, AppLocalizations t) =>
+      Expanded(
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
@@ -147,7 +149,7 @@ class _EarningsPageState extends State<EarningsPage> {
             children: [
               Text(label, style: TextStyle(color: c)),
               Text(
-                '${val.toStringAsFixed(0)}\$',
+                CurrencyUtils.formatSypCompact(val),
                 style: TextStyle(fontWeight: FontWeight.bold, color: c),
               ),
             ],
@@ -155,7 +157,7 @@ class _EarningsPageState extends State<EarningsPage> {
         ),
       );
 
-  Widget _chartRow(DailyEarning item, double total) {
+  Widget _chartRow(DailyEarning item, double total, AppLocalizations t) {
     final pct = total > 0 ? item.amount / total : 0.0;
 
     return Padding(
@@ -171,13 +173,13 @@ class _EarningsPageState extends State<EarningsPage> {
             ),
           ),
           const SizedBox(width: 10),
-          Text('${item.amount.toStringAsFixed(0)}\$'),
+          Text(CurrencyUtils.formatSypCompact(item.amount)),
         ],
       ),
     );
   }
 
-  Widget _rideItem(RecentRide r) {
+  Widget _rideItem(RecentRide r, AppLocalizations t) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -194,7 +196,7 @@ class _EarningsPageState extends State<EarningsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Ride #${r.rideId}',
+                  t.rideNumber(r.rideId),
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(
@@ -205,7 +207,7 @@ class _EarningsPageState extends State<EarningsPage> {
             ),
           ),
           Text(
-            '${r.amount.toStringAsFixed(2)}\$',
+            CurrencyUtils.formatSyp(r.amount),
             style: const TextStyle(
               color: Colors.green,
               fontWeight: FontWeight.bold,

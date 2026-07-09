@@ -212,7 +212,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                             local.welcomeSubtitle,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
-                              color: Colors.white70,
+                              color: Colors.black54,
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
                             ),
