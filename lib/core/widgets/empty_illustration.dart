@@ -25,7 +25,7 @@ class EmptyIllustration extends StatelessWidget {
               imageAsset,
               height: imageHeight,
               fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => Icon(
+              errorBuilder: (_, _, _) => Icon(
                 Icons.image_not_supported_outlined,
                 size: 72,
                 color: Colors.grey.shade400,

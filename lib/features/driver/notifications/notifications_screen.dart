@@ -49,42 +49,40 @@ class _DriverNotificationsScreenState extends State<DriverNotificationsScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : items.isEmpty
-              ? EmptyIllustration(
-                  imageAsset: 'assets/images/Push notifications-bro.png',
-                  message: t.notificationsEmpty,
-                )
-              : RefreshIndicator(
-                  onRefresh: _refresh,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: items.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 8),
-                    itemBuilder: (_, i) {
-                      final n = items[i];
-                      return ListTile(
-                        tileColor: n.read
-                            ? Colors.grey.shade100
-                            : Colors.green.shade50,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        title: Text(
-                          n.title,
-                          style: TextStyle(
-                            fontWeight:
-                                n.read ? FontWeight.w500 : FontWeight.bold,
-                          ),
-                        ),
-                        subtitle: Text(n.body),
-                        onTap: () async {
-                          await NotificationInboxService.instance
-                              .markRead(n.id);
-                          if (mounted) setState(() {});
-                        },
-                      );
+          ? EmptyIllustration(
+              imageAsset: 'assets/images/Push notifications-bro.png',
+              message: t.notificationsEmpty,
+            )
+          : RefreshIndicator(
+              onRefresh: _refresh,
+              child: ListView.separated(
+                padding: const EdgeInsets.all(16),
+                itemCount: items.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
+                itemBuilder: (_, i) {
+                  final n = items[i];
+                  return ListTile(
+                    tileColor: n.read
+                        ? Colors.grey.shade100
+                        : Colors.green.shade50,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    title: Text(
+                      n.title,
+                      style: TextStyle(
+                        fontWeight: n.read ? FontWeight.w500 : FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Text(n.body),
+                    onTap: () async {
+                      await NotificationInboxService.instance.markRead(n.id);
+                      if (mounted) setState(() {});
                     },
-                  ),
-                ),
+                  );
+                },
+              ),
+            ),
     );
   }
 }

@@ -152,7 +152,7 @@ class _BodyState extends State<_Body> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: prov.selectedCity,
+              initialValue: prov.selectedCity,
               decoration: _dec(icon: Icons.location_city),
               items: SyriaCitiesCatalog.cities
                   .map(
@@ -179,7 +179,7 @@ class _BodyState extends State<_Body> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: prov.selectedArea,
+              initialValue: prov.selectedArea,
               decoration: _dec(icon: Icons.map),
               items: areas
                   .map(

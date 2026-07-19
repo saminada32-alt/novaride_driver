@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import '../../../core/utils/auth_errors.dart';
 import '../models/auth_model.dart';
 import '../services/auth_service.dart';
 
@@ -15,7 +17,7 @@ class AuthProvider extends ChangeNotifier {
   String? get token => _token;
   bool get isNew => _isNew;
   String? get error => _error;
-  bool get loading => _load;
+  bool get isAccountNotFound => isAccountNotFoundError(_error);
 
   // ───────────────────────────────────────────────
   // CHECK DRIVER STATUS
@@ -37,25 +39,45 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  bool _sendingOtp = false;
+  bool _verifying = false;
+
+  bool get sendingOtp => _sendingOtp;
+  bool get verifying => _verifying;
+  bool get loading => _verifying;
+
   // ───────────────────────────────────────────────
   // SEND OTP
   // ───────────────────────────────────────────────
-  bool _sendingOtp = false;
-  Future<bool> sendOtp(String phone, {String role = 'DRIVER'}) async {
-    if (_sendingOtp) return false; // لمنع الطلبات المتكررة
+  Future<bool> sendLoginOtp(String phone, {String role = 'DRIVER'}) =>
+      sendOtp(phone, role: role, forLogin: true);
+
+  Future<bool> sendOtp(String phone, {String role = 'DRIVER', bool forLogin = false}) async {
+    if (_sendingOtp) return false;
     _sendingOtp = true;
-    _begin();
+    _error = null;
+    notifyListeners();
     try {
-      await AuthService.instance.sendOtp(phone, role: role);
-      _load = false;
+      await AuthService.instance.sendOtp(phone, role: role, forLogin: forLogin);
       _sendingOtp = false;
       notifyListeners();
       return true;
     } catch (e) {
       _sendingOtp = false;
-      _fail(e.toString());
+      _error = _mapError(e);
+      notifyListeners();
       return false;
     }
+  }
+
+  String _mapError(Object e) {
+    final raw = e.toString().replaceAll('Exception: ', '');
+    if (e is TimeoutException ||
+        raw.toLowerCase().contains('timeout') ||
+        raw.contains('مهلة')) {
+      return 'الشبكة بطيئة — حاول مجدداً';
+    }
+    return raw;
   }
 
   // ───────────────────────────────────────────────
@@ -67,7 +89,9 @@ class AuthProvider extends ChangeNotifier {
     String role = 'DRIVER',
     List<Map<String, String>>? consents,
   }) async {
-    _begin();
+    _verifying = true;
+    _error = null;
+    notifyListeners();
     try {
       final r = await AuthService.instance.verifyOtp(
         phone,
@@ -80,11 +104,13 @@ class AuthProvider extends ChangeNotifier {
       _token = r.accessToken;
       _isNew = r.isNew;
 
-      _load = false;
+      _verifying = false;
       notifyListeners();
       return true;
     } catch (e) {
-      _fail(e.toString());
+      _error = _mapError(e);
+      _verifying = false;
+      notifyListeners();
       return false;
     }
   }

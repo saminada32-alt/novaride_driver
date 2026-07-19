@@ -16,7 +16,7 @@ class ConnectivityOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final net = context.watch<NetworkConnectivityService>();
-    final showBanner = net.status != AppNetworkStatus.online;
+    final showBanner = net.status == AppNetworkStatus.offline;
 
     return Stack(
       children: [

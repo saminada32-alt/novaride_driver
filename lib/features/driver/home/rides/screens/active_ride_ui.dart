@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/utils/currency_utils.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../model/ride_model.dart';
 

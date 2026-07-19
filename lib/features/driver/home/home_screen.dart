@@ -15,6 +15,7 @@ import '../../../core/services/driver_fcm_service.dart';
 import '../../../core/services/socket_service.dart';
 import '../../../core/utils/api_error_messages.dart';
 import '../../../core/widgets/a11y.dart';
+import '../../../core/utils/resilient_http.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/welcome/welcome_screen.dart';
 import 'account/account_screen.dart';
@@ -45,7 +46,7 @@ class DriverHomeScreen extends StatefulWidget {
 class _DriverHomeScreenState extends State<DriverHomeScreen> {
   int _tab = 0;
   bool _isOnline = false;
-  bool _toggling = false;
+  final bool _toggling = false;
   bool _resumingRide = false;
 
   GoogleMapController? _map;
@@ -422,137 +423,115 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
   Future<void> _toggle() async {
     if (_toggling) return;
-    setState(() => _toggling = true);
 
     final newOnline = !_isOnline;
     final token = context.read<AuthProvider>().token;
-    if (token == null) {
-      setState(() => _toggling = false);
+    if (token == null) return;
+
+    if (!newOnline) {
+      setState(() => _isOnline = false);
+      unawaited(_stopOnlineTracking());
+      unawaited(_patchStatus(token, false));
       return;
     }
 
+    setState(() => _isOnline = true);
+    unawaited(_startOnlineTracking(token));
+    unawaited(_completeGoOnline(token));
+  }
+
+  Future<void> _completeGoOnline(String token) async {
     try {
-      if (newOnline) {
-        final t = AppLocalizations.of(context)!;
-        final checks = await Future.wait([
-          WorkZonesService.instance.isOnShift(),
-          DriverLocationGuard.checkBeforeOnline(
-            _loc,
-            cachedPosition: _hasGpsFix ? _pos : null,
-            cachedAt: _lastGpsAt,
+      final t = AppLocalizations.of(context)!;
+      final checks = await Future.wait([
+        WorkZonesService.instance.isOnShift(),
+        DriverLocationGuard.checkBeforeOnline(
+          _loc,
+          cachedPosition: _hasGpsFix ? _pos : null,
+          cachedAt: _lastGpsAt,
+        ),
+      ]);
+      final onShift = checks[0] as bool;
+      final locResult = checks[1] as LocationGuardResult;
+
+      if (!onShift && mounted) {
+        setState(() => _isOnline = false);
+        unawaited(_stopOnlineTracking());
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(t.workZonesOffShiftOnline),
+            backgroundColor: Colors.orange,
           ),
-        ]);
-        final onShift = checks[0] as bool;
-        final locResult = checks[1] as LocationGuardResult;
-
-        if (!onShift && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(t.workZonesOffShiftOnline),
-              backgroundColor: Colors.orange,
-              action: SnackBarAction(
-                label: t.workZonesTitle,
-                textColor: Colors.white,
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const WorkZonesScreen()),
-                ),
-              ),
-            ),
-          );
-          setState(() => _toggling = false);
-          return;
-        }
-
-        if (!locResult.ok && mounted) {
-          final msg = switch (locResult.failure) {
-            LocationGuardFailure.permissionDenied => t.gpsPermissionRequired,
-            LocationGuardFailure.serviceDisabled => t.locationRequiredForOnline,
-            LocationGuardFailure.outsideWorkZone => t.outsideWorkZoneOnline,
-            _ => t.locationRequiredForOnline,
-          };
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(msg),
-              backgroundColor: Colors.orange,
-              action: locResult.failure == LocationGuardFailure.outsideWorkZone
-                  ? SnackBarAction(
-                      label: t.workZonesTitle,
-                      textColor: Colors.white,
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const WorkZonesScreen(),
-                        ),
-                      ),
-                    )
-                  : null,
-            ),
-          );
-          setState(() => _toggling = false);
-          return;
-        }
-
-        if (locResult.position != null) {
-          setState(() => _pos = locResult.position!);
-          _map?.animateCamera(CameraUpdate.newLatLng(_pos));
-        }
+        );
+        return;
       }
 
-      final res = await http.patch(
+      if (!locResult.ok && mounted) {
+        setState(() => _isOnline = false);
+        unawaited(_stopOnlineTracking());
+        final msg = switch (locResult.failure) {
+          LocationGuardFailure.permissionDenied => t.gpsPermissionRequired,
+          LocationGuardFailure.serviceDisabled => t.locationRequiredForOnline,
+          LocationGuardFailure.outsideWorkZone => t.outsideWorkZoneOnline,
+          _ => t.locationRequiredForOnline,
+        };
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(msg), backgroundColor: Colors.orange),
+        );
+        return;
+      }
+
+      if (locResult.position != null && mounted) {
+        setState(() => _pos = locResult.position!);
+        _map?.animateCamera(CameraUpdate.newLatLng(_pos));
+      }
+
+      final ok = await _patchStatus(token, true);
+      if (!ok && mounted) {
+        setState(() => _isOnline = false);
+        unawaited(_stopOnlineTracking());
+        return;
+      }
+    } catch (e) {
+      debugPrint('Go online error: $e');
+      if (mounted) {
+        setState(() => _isOnline = false);
+        unawaited(_stopOnlineTracking());
+      }
+    }
+  }
+
+  Future<bool> _patchStatus(String token, bool online) async {
+    try {
+      final res = await ResilientHttp.patch(
         Uri.parse('${Api.base}/drivers/me/status'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({'status': newOnline ? 'online' : 'offline'}),
+        body: jsonEncode({'status': online ? 'online' : 'offline'}),
       );
 
-      if (res.statusCode == 200 || res.statusCode == 201) {
-        setState(() {
-          _isOnline = newOnline;
-          _toggling = false;
-        });
+      if (res.statusCode == 200 || res.statusCode == 201) return true;
 
-        if (newOnline) {
-          unawaited(_startOnlineTracking(token));
-          debugPrint('🟢 Online + location tracking started');
-        } else {
-          unawaited(_stopOnlineTracking());
-          debugPrint('🔴 Offline + location tracking stopped');
-        }
-      } else {
-        debugPrint('Toggle failed: ${res.statusCode} ${res.body}');
-        if (mounted && newOnline && (res.statusCode == 403 || res.statusCode == 400)) {
-          final t = AppLocalizations.of(context)!;
-          String msg = t.subscriptionPaymentRequired;
-          try {
-            final body = jsonDecode(res.body);
-            final m = body['message'];
-            final raw = m is List ? m.join(', ') : m?.toString() ?? msg;
-            msg = localizeApiError(raw, t);
-          } catch (_) {}
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(msg),
-              backgroundColor: Colors.orange,
-              action: SnackBarAction(
-                label: t.payment,
-                textColor: Colors.white,
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const MySubscriptionScreen()),
-                ),
-              ),
-            ),
-          );
-        }
+      if (mounted && online && (res.statusCode == 403 || res.statusCode == 400)) {
+        final t = AppLocalizations.of(context)!;
+        String msg = t.subscriptionPaymentRequired;
+        try {
+          final body = jsonDecode(res.body);
+          final m = body['message'];
+          final raw = m is List ? m.join(', ') : m?.toString() ?? msg;
+          msg = localizeApiError(raw, t);
+        } catch (_) {}
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(msg), backgroundColor: Colors.orange),
+        );
       }
+      return false;
     } catch (e) {
-      debugPrint('Toggle error: $e');
+      debugPrint('Status patch error: $e');
+      return false;
     }
-
-    if (mounted) setState(() => _toggling = false);
   }
 
   Future<void> _sendLocation(String token) async {

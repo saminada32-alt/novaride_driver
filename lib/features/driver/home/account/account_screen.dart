@@ -28,10 +28,11 @@ class _AccountScreenState extends State<AccountScreen> {
     final t = AppLocalizations.of(context)!;
     final prov = context.watch<AccountProvider>();
 
-    if (prov.isLoading)
+    if (prov.isLoading) {
       return const Center(
         child: CircularProgressIndicator(color: Colors.green),
       );
+    }
     final user = prov.account;
     if (user == null) return Center(child: Text(t.noData ?? 'No data'));
 
@@ -109,18 +110,20 @@ class _AccountScreenState extends State<AccountScreen> {
                   children: [
                     ...List.generate(5, (i) {
                       final r = user.rating;
-                      if (i < r.floor())
+                      if (i < r.floor()) {
                         return const Icon(
                           Icons.star,
                           color: Colors.amber,
                           size: 20,
                         );
-                      if (i < r)
+                      }
+                      if (i < r) {
                         return const Icon(
                           Icons.star_half,
                           color: Colors.amber,
                           size: 20,
                         );
+                      }
                       return const Icon(
                         Icons.star_border,
                         color: Colors.amber,

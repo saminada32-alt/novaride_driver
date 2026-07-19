@@ -27,6 +27,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get loginButton => 'إرسال رمز التحقق';
 
   @override
+  String get accountNotRegistered => 'هذا الرقم غير مسجل. أنشئ حساباً جديداً للمتابعة.';
+
+  @override
+  String get accountNotRegisteredTitle => 'غير مسجل';
+
+  @override
   String otpSubtitle(Object phone) {
     return 'لقد أرسلنا الرمز إلى $phone';
   }
@@ -595,7 +601,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get rating => 'التقييم';
 
   @override
-  String get goOnline => 'الذهاب أونلاين';
+  String get goOnline => 'بدء العمل';
 
   @override
   String get goOffline => 'إيقاف العمل';

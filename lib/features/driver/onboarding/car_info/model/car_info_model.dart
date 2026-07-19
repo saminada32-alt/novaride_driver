@@ -77,12 +77,8 @@ class CarModel {
         ? (json['manufactureYear'].toString())
         : (json['year']?.toString()),
     color: json['color'],
-    passengerCount: json['passengerCount'] != null
-        ? json['passengerCount'].toString()
-        : null,
-    engineSize: json['engineSize'] != null
-        ? json['engineSize'].toString()
-        : null,
+    passengerCount: json['passengerCount']?.toString(),
+    engineSize: json['engineSize']?.toString(),
     tankerCapacity: json['tankerCapacity'],
     cargoVolume: json['cargoVolume'],
     hasPressureWasher: json['hasPressureWasher'],

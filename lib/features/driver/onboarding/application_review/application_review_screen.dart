@@ -45,11 +45,12 @@ class _ApplicationReviewScreenState extends State<ApplicationReviewScreen> {
         });
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _submitting = false;
           _error = e.toString();
         });
+      }
     }
   }
 

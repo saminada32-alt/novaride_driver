@@ -82,14 +82,14 @@ class _AuthedNetworkImageState extends State<AuthedNetworkImage> {
       cacheKey: widget.url.split('?').first,
       fit: widget.fit,
       httpHeaders: _isApiUpload ? _headers : null,
-      placeholder: (_, __) => _localOrFallback(),
+      placeholder: (_, _) => _localOrFallback(),
       imageBuilder: (context, imageProvider) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.onNetworkLoaded?.call();
         });
         return Image(image: imageProvider, fit: widget.fit);
       },
-      errorWidget: (_, __, ___) => _localOrFallback(),
+      errorWidget: (_, _, _) => _localOrFallback(),
     );
   }
 }

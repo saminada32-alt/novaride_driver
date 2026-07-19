@@ -55,8 +55,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       context,
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 500),
-        pageBuilder: (_, __, ___) => p,
-        transitionsBuilder: (_, a, __, c) =>
+        pageBuilder: (_, _, _) => p,
+        transitionsBuilder: (_, a, _, c) =>
             FadeTransition(opacity: a, child: c),
       ),
     );
@@ -186,7 +186,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                                 ),
                                 AnimatedBuilder(
                                   animation: _rotate,
-                                  builder: (_, __) => Transform.rotate(
+                                  builder: (_, _) => Transform.rotate(
                                     angle: _rotate.value,
                                     child: const Icon(
                                       Icons.directions_car_rounded,

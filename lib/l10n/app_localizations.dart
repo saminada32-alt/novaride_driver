@@ -131,6 +131,18 @@ abstract class AppLocalizations {
   /// **'Send verification code'**
   String get loginButton;
 
+  /// No description provided for @accountNotRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'This number is not registered. Please create a new account.'**
+  String get accountNotRegistered;
+
+  /// No description provided for @accountNotRegisteredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not registered'**
+  String get accountNotRegisteredTitle;
+
   /// No description provided for @otpSubtitle.
   ///
   /// In en, this message translates to:
@@ -1250,13 +1262,13 @@ abstract class AppLocalizations {
   /// No description provided for @goOnline.
   ///
   /// In en, this message translates to:
-  /// **' go online'**
+  /// **'Start work'**
   String get goOnline;
 
   /// No description provided for @goOffline.
   ///
   /// In en, this message translates to:
-  /// **' go offline'**
+  /// **'Stop work'**
   String get goOffline;
 
   /// No description provided for @newRideRequest.
@@ -2880,15 +2892,27 @@ abstract class AppLocalizations {
   String get workZonesOffShiftOnline;
 
   /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
   String get language;
 
   /// No description provided for @gpsPermissionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission is required to go online'**
   String get gpsPermissionRequired;
 
   /// No description provided for @locationRequiredForOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on location services to go online'**
   String get locationRequiredForOnline;
 
   /// No description provided for @outsideWorkZoneOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'You must be in your work area to go online'**
   String get outsideWorkZoneOnline;
 
   /// No description provided for @voiceNavOn.

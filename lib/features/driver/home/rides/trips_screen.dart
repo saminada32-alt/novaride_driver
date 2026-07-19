@@ -2,7 +2,6 @@
 // lib/features/driver/trips/trips_page.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/widgets/a11y.dart';
 import '../../../../core/widgets/fare_with_promo.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../rides/model/ride_model.dart';

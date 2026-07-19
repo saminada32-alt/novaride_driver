@@ -347,7 +347,7 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                 requiredLabel(local.passengerCount),
                 const SizedBox(height: 6),
                 DropdownButtonFormField<String>(
-                  value: carProvider.car.passengerCount,
+                  initialValue: carProvider.car.passengerCount,
                   items: passengerOptions
                       .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                       .toList(),

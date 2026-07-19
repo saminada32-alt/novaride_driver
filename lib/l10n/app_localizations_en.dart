@@ -27,6 +27,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginButton => 'Send verification code';
 
   @override
+  String get accountNotRegistered => 'This number is not registered. Please create a new account.';
+
+  @override
+  String get accountNotRegisteredTitle => 'Not registered';
+
+  @override
   String otpSubtitle(Object phone) {
     return 'We sent a code to $phone';
   }
@@ -595,10 +601,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rating => 'rating';
 
   @override
-  String get goOnline => ' go online';
+  String get goOnline => 'Start work';
 
   @override
-  String get goOffline => ' go offline';
+  String get goOffline => 'Stop work';
 
   @override
   String get newRideRequest => 'new Ride Reqest';

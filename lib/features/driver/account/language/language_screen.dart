@@ -45,7 +45,7 @@ class LanguageScreen extends StatelessWidget {
                   child: Image.asset(
                     'assets/images/language.png',
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
+                    errorBuilder: (_, _, _) => Container(
                       color: Colors.green.shade50,
                       child: const Icon(
                         Icons.language,

@@ -7,6 +7,9 @@ cd "$ROOT"
 
 CONFIG="${1:-config/prod.json}"
 
+# Kotlin 2.x + Flutter Gradle plugin: in-process avoids "Could not connect to Kotlin compile daemon"
+export GRADLE_OPTS="${GRADLE_OPTS:-} -Dkotlin.compiler.execution.strategy=in-process -Dkotlin.daemon.enabled=false"
+
 MAPS_KEY=""
 if command -v python3 >/dev/null 2>&1; then
   MAPS_KEY="$(python3 -c "import json; print(json.load(open('$CONFIG')).get('GOOGLE_MAPS_API_KEY',''))" 2>/dev/null || true)"
@@ -25,7 +28,8 @@ echo "▶ Building APK ($CONFIG)..."
 flutter pub get
 
 if ! flutter build apk --release --dart-define-from-file="$CONFIG"; then
-  echo "▶ First build failed — retrying after Gradle settles..."
+  echo "▶ First build failed — clearing stale Kotlin daemon and retrying..."
+  rm -rf "${HOME}/.kotlin/daemon" 2>/dev/null || true
   sleep 3
   flutter build apk --release --dart-define-from-file="$CONFIG"
 fi

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../../../core/constants/api_constants.dart';
-import '../model/car_info_model.dart';
 
 class CarService {
   //static const String _base = 'http://127.0.0.1:3000';

@@ -52,11 +52,11 @@ class DriverPreferencesService {
           Uri.parse('${Api.base}${Api.driverDestinationFilter}'),
           headers: _auth(tok),
           body: jsonEncode({
-            if (enabled != null) 'enabled': enabled,
-            if (lat != null) 'lat': lat,
-            if (lng != null) 'lng': lng,
-            if (radiusKm != null) 'radiusKm': radiusKm,
-            if (address != null) 'address': address,
+            'enabled': ?enabled,
+            'lat': ?lat,
+            'lng': ?lng,
+            'radiusKm': ?radiusKm,
+            'address': ?address,
           }),
         )
         .timeout(const Duration(seconds: 10));
@@ -77,9 +77,9 @@ class DriverPreferencesService {
           Uri.parse('${Api.base}${Api.driverAutoAccept}'),
           headers: _auth(tok),
           body: jsonEncode({
-            if (enabled != null) 'enabled': enabled,
-            if (maxPickupKm != null) 'maxPickupKm': maxPickupKm,
-            if (minFare != null) 'minFare': minFare,
+            'enabled': ?enabled,
+            'maxPickupKm': ?maxPickupKm,
+            'minFare': ?minFare,
           }),
         )
         .timeout(const Duration(seconds: 10));

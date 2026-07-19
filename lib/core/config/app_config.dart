@@ -41,7 +41,10 @@ class AppConfig {
     if (Platform.isAndroid) {
       return 'http://10.0.2.2:3000';
     }
-    return 'http://172.20.10.4:3000';
+    if (Platform.isIOS || Platform.isMacOS) {
+      return 'http://localhost:3000';
+    }
+    return 'http://127.0.0.1:3000';
   }
 
   /// Crash reporting is enabled outside of local dev by default, but can be

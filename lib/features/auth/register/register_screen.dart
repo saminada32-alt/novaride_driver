@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../core/services/legal_service.dart';
 import '../../legal/legal_document_screen.dart';
+import '../../../core/utils/auth_send_guard.dart';
 import '../../../core/utils/phone_utils.dart';
 import '../providers/auth_provider.dart';
 import '../otp/otp_screen.dart';
@@ -28,6 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _code = '+963';
   bool _agreed = false;
   bool _loadingLegal = false;
+  bool _sending = false;
   List<LegalDocumentView> _legalDocs = [];
 
   @override
@@ -116,9 +118,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
   );
 
   Future<void> _register() async {
-    if (!_valid) return;
+    if (!_valid || _sending) return;
+    setState(() => _sending = true);
+
     final phone = buildAuthPhone(_code, _phoneCtrl.text.trim());
+    final prov = context.read<AuthProvider>();
+
+    final ok = await withMinAuthLoading(prov.sendOtp(phone));
+
     if (!mounted) return;
+    setState(() => _sending = false);
+
+    if (kDebugMode) debugPrint('OTP sent: $ok');
+    if (!ok) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(prov.error ?? 'Error'),
+          backgroundColor: Colors.red.shade600,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+      return;
+    }
 
     Navigator.push(
       context,
@@ -132,21 +156,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
             'email': _emailCtrl.text.trim(),
             'licenseCountry': _licenseCountry!,
           },
-        ),
-      ),
-    );
-
-    final prov = context.read<AuthProvider>();
-    final ok = await prov.sendOtp(phone);
-    if (kDebugMode) debugPrint('OTP sent: $ok');
-    if (!mounted || ok) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(prov.error ?? 'Error'),
-        backgroundColor: Colors.red.shade600,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
         ),
       ),
     );
@@ -481,11 +490,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ),
                                   child: InkWell(
                                     borderRadius: BorderRadius.circular(18),
-                                    onTap: (_valid && !prov.loading)
-                                        ? _register
-                                        : null,
+                                    onTap: (_valid && !_sending) ? _register : null,
                                     child: Center(
-                                      child: prov.loading
+                                      child: _sending
                                           ? const CircularProgressIndicator(
                                               color: Colors.white,
                                             )

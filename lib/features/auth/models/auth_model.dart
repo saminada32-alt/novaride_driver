@@ -54,9 +54,23 @@ class AuthResult {
     required this.isNew,
   });
 
-  factory AuthResult.fromJson(Map<String, dynamic> j) => AuthResult(
-    accessToken: j['access_token'],
-    driver: DriverModel.fromJson(j['user']),
-    isNew: j['isNew'] ?? false,
-  );
+  factory AuthResult.fromJson(Map<String, dynamic> j) {
+    final token = j['access_token'] ?? j['accessToken'] ?? j['token'];
+    final driverJson =
+        j['user'] ?? j['driver'] ?? j['data']?['user'] ?? j['data']?['driver'];
+
+    if (token == null || driverJson == null) {
+      throw FormatException(
+        'Invalid auth response: missing token or user data',
+      );
+    }
+
+    return AuthResult(
+      accessToken: token.toString(),
+      driver: DriverModel.fromJson(
+        Map<String, dynamic>.from(driverJson as Map),
+      ),
+      isNew: j['isNew'] ?? j['is_new'] ?? false,
+    );
+  }
 }

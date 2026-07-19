@@ -46,8 +46,8 @@ class DriverRideSafetyService {
             'Content-Type': 'application/json',
           },
           body: jsonEncode({
-            if (lat != null) 'lat': lat,
-            if (lng != null) 'lng': lng,
+            'lat': ?lat,
+            'lng': ?lng,
           }),
         )
         .timeout(const Duration(seconds: 15));

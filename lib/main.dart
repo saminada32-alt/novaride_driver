@@ -42,7 +42,7 @@ Future<void> main() async {
   await appController.loadLocale();
 
   final networkService = NetworkConnectivityService();
-  await networkService.start();
+  unawaited(networkService.start());
 
   runApp(MyAppRoot(appCtrl: appController, networkService: networkService));
 }

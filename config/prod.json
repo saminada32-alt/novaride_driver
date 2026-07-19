@@ -1,5 +1,6 @@
 {
   "APP_ENV": "prod",
   "API_BASE_URL": "https://api.novaride.app",
-  "ENABLE_CRASHLYTICS": "true"
+  "ENABLE_CRASHLYTICS": "true",
+  "GOOGLE_MAPS_API_KEY": "AIzaSyBJ1lFi166_QIZYH9tQuJkg5EDco5hTvpw"
 }

@@ -8,10 +8,12 @@ import '../config/app_config.dart';
 
 enum AppNetworkStatus { online, offline, weak }
 
+/// Syria-friendly connectivity: assumes the network works unless the device
+/// has no link at all. Slow API probes must not block OTP or ride flows.
 class NetworkConnectivityService extends ChangeNotifier {
-  static const _weakThresholdMs = 2500;
-  static const _probeTimeout = Duration(seconds: 5);
-  static const _probeInterval = Duration(seconds: 12);
+  static const _weakThresholdMs = 12000;
+  static const _probeTimeout = Duration(seconds: 12);
+  static const _probeInterval = Duration(seconds: 45);
 
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<List<ConnectivityResult>>? _sub;
@@ -20,10 +22,14 @@ class NetworkConnectivityService extends ChangeNotifier {
 
   AppNetworkStatus status = AppNetworkStatus.online;
 
-  bool get isOnline => status == AppNetworkStatus.online;
+  /// True when the app should attempt API calls (online or slow but linked).
+  bool get hasUsableNetwork =>
+      status == AppNetworkStatus.online || status == AppNetworkStatus.weak;
+
+  bool get isOnline => hasUsableNetwork;
 
   Future<void> start() async {
-    await probe();
+    unawaited(probe());
     _sub = _connectivity.onConnectivityChanged.listen((_) => probe());
     _probeTimer = Timer.periodic(_probeInterval, (_) => probe());
   }
@@ -41,20 +47,22 @@ class NetworkConnectivityService extends ChangeNotifier {
 
       final uri = Uri.parse('${AppConfig.apiBaseUrl}/health/live');
       final sw = Stopwatch()..start();
-      final res = await http.get(uri).timeout(_probeTimeout);
-      sw.stop();
-
-      if (res.statusCode >= 200 && res.statusCode < 300) {
-        _setStatus(
-          sw.elapsedMilliseconds >= _weakThresholdMs
-              ? AppNetworkStatus.weak
-              : AppNetworkStatus.online,
-        );
-      } else {
-        _setStatus(AppNetworkStatus.offline);
+      try {
+        final res = await http.get(uri).timeout(_probeTimeout);
+        sw.stop();
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          _setStatus(
+            sw.elapsedMilliseconds >= _weakThresholdMs
+                ? AppNetworkStatus.weak
+                : AppNetworkStatus.online,
+          );
+          return;
+        }
+      } catch (_) {
+        sw.stop();
       }
-    } catch (_) {
-      _setStatus(AppNetworkStatus.offline);
+
+      _setStatus(AppNetworkStatus.weak);
     } finally {
       _probing = false;
     }

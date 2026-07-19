@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../features/auth/providers/auth_provider.dart';
@@ -35,16 +36,19 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _check() async {
-    await Future.delayed(const Duration(milliseconds: 600));
+    final results = await Future.wait([
+      context.read<AuthProvider>().checkDriverStatus(),
+      Future.delayed(const Duration(milliseconds: 500)),
+    ]);
     if (!mounted) return;
 
-    final status = await context.read<AuthProvider>().checkDriverStatus();
-    if (!mounted) return;
+    final status = results[0] as DriverStatus;
 
     switch (status) {
       // مسجّل ومعتمد أو معلّق → افتح التطبيق (HomeScreen يتعامل مع الحالتين)
       case DriverStatus.approved:
-        await DriverEntry.goAfterAuth(context);
+        if (!mounted) return;
+        unawaited(DriverEntry.goAfterAuth(context));
         break;
       case DriverStatus.pending:
         _go(const PendingApprovalScreen());
@@ -67,8 +71,8 @@ class _SplashScreenState extends State<SplashScreen>
     context,
     PageRouteBuilder(
       transitionDuration: const Duration(milliseconds: 500),
-      pageBuilder: (_, __, ___) => w,
-      transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c),
+      pageBuilder: (_, _, _) => w,
+      transitionsBuilder: (_, a, _, c) => FadeTransition(opacity: a, child: c),
     ),
   );
 
