@@ -39,7 +39,7 @@ class ResilientHttp {
     );
   }
 
-  /// OTP send: API waits for Aman Gate accept (~12s max).
+  /// OTP send: API returns immediately; SMS is sent on the server in background.
   static Future<http.Response> authSendPost(
     Uri uri, {
     Map<String, String>? headers,
@@ -49,7 +49,7 @@ class ResilientHttp {
       uri,
       headers: headers,
       body: body,
-      timeout: const Duration(seconds: 18),
+      timeout: const Duration(seconds: 15),
       maxAttempts: 2,
     );
   }

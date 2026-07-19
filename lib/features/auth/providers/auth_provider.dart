@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../../core/utils/auth_errors.dart';
 import '../models/auth_model.dart';
@@ -74,8 +75,12 @@ class AuthProvider extends ChangeNotifier {
     final raw = e.toString().replaceAll('Exception: ', '');
     if (e is TimeoutException ||
         raw.toLowerCase().contains('timeout') ||
-        raw.contains('مهلة')) {
-      return 'الشبكة بطيئة — حاول مجدداً';
+        raw.contains('مهلة') ||
+        raw.contains('تأخر')) {
+      return 'الخادم تأخر في الرد — حاول مجدداً';
+    }
+    if (e is SocketException || raw.contains('SocketException')) {
+      return 'تعذّر الاتصال بالخادم — تحقق من الإنترنت';
     }
     return raw;
   }

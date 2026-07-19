@@ -163,8 +163,11 @@ class _OtpScreenState extends State<OtpScreen> {
     final lower = raw.toLowerCase();
     if (lower.contains('timeout') ||
         raw.contains('مهلة') ||
-        lower.contains('network')) {
-      return 'الشبكة بطيئة — حاول مجدداً';
+        raw.contains('تأخر')) {
+      return 'الخادم تأخر في الرد — حاول مجدداً';
+    }
+    if (lower.contains('socket') || raw.contains('الاتصال بالخادم')) {
+      return 'تعذّر الاتصال بالخادم — تحقق من الإنترنت';
     }
     if (lower.contains('invalid') && lower.contains('otp')) {
       return 'رمز غير صحيح — استخدم آخر SMS واضغط إعادة إرسال إذا لزم';

@@ -43,9 +43,9 @@ class AuthService {
       }
       _check(res);
     } on SocketException {
-      throw 'الشبكة بطيئة — حاول مجدداً';
+      throw 'تعذّر الاتصال بالخادم — تحقق من الإنترنت';
     } on TimeoutException {
-      throw 'الشبكة بطيئة — حاول مجدداً';
+      throw 'الخادم تأخر في الرد — حاول مجدداً';
     }
   }
 
@@ -71,9 +71,9 @@ class AuthService {
       await _storage.write(key: 'driver_token', value: r.accessToken);
       return r;
     } on SocketException {
-      throw 'الشبكة بطيئة — حاول مجدداً';
+      throw 'تعذّر الاتصال بالخادم — تحقق من الإنترنت';
     } on TimeoutException {
-      throw 'الشبكة بطيئة — حاول مجدداً';
+      throw 'الخادم تأخر في الرد — حاول مجدداً';
     }
   }
 
@@ -86,9 +86,9 @@ class AuthService {
       );
       _check(res);
     } on SocketException {
-      throw 'الشبكة بطيئة — حاول مجدداً';
+      throw 'تعذّر الاتصال بالخادم — تحقق من الإنترنت';
     } on TimeoutException {
-      throw 'الشبكة بطيئة — حاول مجدداً';
+      throw 'الخادم تأخر في الرد — حاول مجدداً';
     }
   }
 
