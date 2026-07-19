@@ -5,7 +5,6 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../core/services/app_controller.dart';
-import '../../../core/utils/auth_send_guard.dart';
 import '../../../core/utils/phone_utils.dart';
 import '../providers/auth_provider.dart';
 import '../otp/otp_screen.dart';
@@ -72,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen>
     final phone = buildAuthPhone(_code, _phoneCtrl.text.trim());
     final provider = context.read<AuthProvider>();
 
-    final ok = await withMinAuthLoading(provider.sendLoginOtp(phone));
+    final ok = await provider.sendLoginOtp(phone);
 
     if (!mounted) return;
     setState(() => _sending = false);

@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../core/services/legal_service.dart';
 import '../../legal/legal_document_screen.dart';
-import '../../../core/utils/auth_send_guard.dart';
 import '../../../core/utils/phone_utils.dart';
 import '../providers/auth_provider.dart';
 import '../otp/otp_screen.dart';
@@ -124,7 +123,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final phone = buildAuthPhone(_code, _phoneCtrl.text.trim());
     final prov = context.read<AuthProvider>();
 
-    final ok = await withMinAuthLoading(prov.sendOtp(phone));
+    final ok = await prov.sendOtp(phone);
 
     if (!mounted) return;
     setState(() => _sending = false);

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../onboarding/documents/services/document_service.dart';
 import '../model/account_model.dart';
 import '../service/account_service.dart';
+import '../../../../auth/models/auth_model.dart';
 import '../../../../auth/providers/auth_provider.dart';
 import '../../../../auth/welcome/welcome_screen.dart';
 
@@ -20,6 +21,24 @@ class AccountProvider extends ChangeNotifier {
   String? get localProfilePreview => _localProfilePreview;
   bool get isLoading => _loading;
   String? get error => _error;
+
+  /// Instant home shell from splash auth — full profile loads in background.
+  void seedFromDriver(DriverModel driver) {
+    if (_account != null) return;
+    _account = AccountModel(
+      id: driver.id.toString(),
+      phone: driver.phone,
+      name: driver.fullName,
+      email: driver.email ?? '',
+      profileImage: '',
+      isVerified: driver.isApproved,
+      totalTrips: 0,
+      rating: driver.rating,
+      acceptedTrips: 0,
+      cancelledTrips: 0,
+    );
+    notifyListeners();
+  }
 
   Future<void> loadAccount(String token) async {
     if (_loading) return;

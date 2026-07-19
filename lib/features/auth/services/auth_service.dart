@@ -92,11 +92,12 @@ class AuthService {
     }
   }
 
-  Future<DriverModel> getMe(String token) async {
-    final res = await ResilientHttp.get(
-      Uri.parse('${Api.base}${Api.driversMe}'),
-      headers: _auth(token),
-    );
+  Future<DriverModel> getMe(String token, {bool session = false}) async {
+    final uri = Uri.parse('${Api.base}${Api.driversMe}');
+    final headers = _auth(token);
+    final res = session
+        ? await ResilientHttp.sessionGet(uri, headers: headers)
+        : await ResilientHttp.get(uri, headers: headers);
     return DriverModel.fromJson(_check(res));
   }
 

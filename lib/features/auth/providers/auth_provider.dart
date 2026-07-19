@@ -28,7 +28,7 @@ class AuthProvider extends ChangeNotifier {
       if (tok == null) return DriverStatus.notLoggedIn;
 
       _token = tok;
-      _driver = await AuthService.instance.getMe(tok);
+      _driver = await AuthService.instance.getMe(tok, session: true);
       notifyListeners();
 
       if (_driver!.isApproved) return DriverStatus.approved;

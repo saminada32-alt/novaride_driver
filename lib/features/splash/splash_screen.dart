@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     _ctrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 700),
     );
     _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeIn);
     _ctrl.forward();
@@ -36,16 +36,10 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _check() async {
-    final results = await Future.wait([
-      context.read<AuthProvider>().checkDriverStatus(),
-      Future.delayed(const Duration(milliseconds: 500)),
-    ]);
+    final status = await context.read<AuthProvider>().checkDriverStatus();
     if (!mounted) return;
 
-    final status = results[0] as DriverStatus;
-
     switch (status) {
-      // مسجّل ومعتمد أو معلّق → افتح التطبيق (HomeScreen يتعامل مع الحالتين)
       case DriverStatus.approved:
         if (!mounted) return;
         unawaited(DriverEntry.goAfterAuth(context));
@@ -53,14 +47,10 @@ class _SplashScreenState extends State<SplashScreen>
       case DriverStatus.pending:
         _go(const PendingApprovalScreen());
         break;
-
-      // مرفوض → خروج وWelcome
       case DriverStatus.rejected:
         await context.read<AuthProvider>().logout();
         if (mounted) _go(const WelcomeScreen());
         break;
-
-      // مو مسجّل
       case DriverStatus.notLoggedIn:
         _go(const WelcomeScreen());
         break;
@@ -70,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen>
   void _go(Widget w) => Navigator.pushReplacement(
     context,
     PageRouteBuilder(
-      transitionDuration: const Duration(milliseconds: 500),
+      transitionDuration: const Duration(milliseconds: 200),
       pageBuilder: (_, _, _) => w,
       transitionsBuilder: (_, a, _, c) => FadeTransition(opacity: a, child: c),
     ),

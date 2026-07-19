@@ -78,6 +78,19 @@ class ResilientHttp {
     );
   }
 
+  /// Splash / session restore — one fast attempt so cold start reaches home quickly.
+  static Future<http.Response> sessionGet(
+    Uri uri, {
+    Map<String, String>? headers,
+  }) async {
+    return get(
+      uri,
+      headers: headers,
+      timeout: const Duration(seconds: 8),
+      maxAttempts: 1,
+    );
+  }
+
   static Future<http.Response> patch(
     Uri uri, {
     Map<String, String>? headers,

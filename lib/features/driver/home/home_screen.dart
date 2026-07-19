@@ -70,22 +70,26 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   }
 
   Future<void> _bootstrap() async {
-    final account = context.read<AccountProvider>().account;
-    _driverId = account?.id is int
-        ? account!.id as int
-        : int.tryParse(account?.id.toString() ?? '');
+    final auth = context.read<AuthProvider>();
+    final driver = auth.driver;
+    if (driver != null) {
+      context.read<AccountProvider>().seedFromDriver(driver);
+      _driverId = driver.id;
+      if (mounted) setState(() => _isOnline = driver.status == 'online');
+    }
 
-    await Future.wait([
-      _loadAll(),
-      DriverSocketService.instance.connect(driverId: _driverId),
-      WorkZonesService.instance.prefetch(),
-    ]);
     _bindSocket();
-    await _initLoc();
-    await Future.wait([
-      _syncOnlineStatus(),
-      _resumeActiveRideIfAny(),
-    ]);
+    unawaited(DriverSocketService.instance.connect(driverId: _driverId));
+    unawaited(WorkZonesService.instance.prefetch());
+
+    final token = auth.token;
+    if (token != null) {
+      if (_isOnline) unawaited(_startOnlineTracking(token));
+      unawaited(_loadDeferredData(token));
+    }
+
+    unawaited(_initLoc());
+    unawaited(_resumeActiveRideIfAny());
     _wireFcm();
   }
 
@@ -136,28 +140,30 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     }
   }
 
-  Future<void> _loadAll() async {
-    final token = context.read<AuthProvider>().token;
-    if (token == null) return;
-
+  Future<void> _loadDeferredData(String token) async {
     await context.read<AccountProvider>().loadAccount(token);
+    if (!mounted) return;
+
     final account = context.read<AccountProvider>().account;
     _driverId = account?.id is int
         ? account!.id as int
         : int.tryParse(account?.id.toString() ?? '');
     DriverSocketService.instance.setDriverId(_driverId);
 
-    await Future.wait([
-      context.read<EarningProvider>().loadEarnings(token),
-      context.read<RidesProvider>().loadTrips(),
-      context.read<VehicleProvider>().loadVehicle(token),
-    ]);
+    final status = account != null && mounted
+        ? await _fetchOnlineStatus(token)
+        : null;
+    if (status != null && mounted) {
+      setState(() => _isOnline = status);
+      if (status) await _startOnlineTracking(token);
+    }
+
+    unawaited(context.read<EarningProvider>().loadEarnings(token));
+    unawaited(context.read<RidesProvider>().loadTrips());
+    unawaited(context.read<VehicleProvider>().loadVehicle(token));
   }
 
-  Future<void> _syncOnlineStatus() async {
-    final token = context.read<AuthProvider>().token;
-    if (token == null) return;
-
+  Future<bool?> _fetchOnlineStatus(String token) async {
     try {
       final res = await http.get(
         Uri.parse('${Api.base}${Api.driversMe}'),
@@ -165,18 +171,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           'Authorization': 'Bearer $token',
           'Accept': 'application/json',
         },
-      );
-      if (res.statusCode != 200 || !mounted) return;
-
+      ).timeout(const Duration(seconds: 8));
+      if (res.statusCode != 200) return null;
       final body = jsonDecode(res.body) as Map<String, dynamic>;
-      final online = body['status']?.toString() == 'online';
-      setState(() => _isOnline = online);
-
-      if (online) {
-        await _startOnlineTracking(token);
-      }
+      return body['status']?.toString() == 'online';
     } catch (e) {
-      debugPrint('Sync online status error: $e');
+      debugPrint('Fetch online status error: $e');
+      return null;
     }
   }
 
