@@ -1,7 +1,7 @@
-/// Minimum loading on login — send-otp now waits for SMS (~35s max).
+/// Minimum loading on login — brief spinner so UI does not flash.
 Future<T> withMinAuthLoading<T>(
   Future<T> task, {
-  Duration min = const Duration(milliseconds: 800),
+  Duration min = const Duration(milliseconds: 400),
 }) async {
   final sw = Stopwatch()..start();
   final result = await task;

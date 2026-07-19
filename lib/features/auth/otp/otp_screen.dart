@@ -260,7 +260,7 @@ class _OtpScreenState extends State<OtpScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'قد يستغرق وصول الرسالة حتى 60 ثانية. إذا لم تصل، اضغط إعادة إرسال.',
+              'قد يستغرق وصول الرسالة 10–30 ثانية. إذا لم تصل، اضغط إعادة إرسال.',
               style: TextStyle(color: Colors.grey[500], fontSize: 13, height: 1.4),
             ),
             const SizedBox(height: 40),
