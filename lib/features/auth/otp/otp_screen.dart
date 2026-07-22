@@ -2,13 +2,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:novaride_driver/features/driver/navigation/driver_entry.dart';
+import 'package:novaride_driver/features/driver/navigation/driver_onboarding_router.dart';
 import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../core/services/legal_service.dart';
 import '../../../core/widgets/otp_code_input.dart';
 import '../providers/auth_provider.dart';
 import '../../driver/onboarding/personal_info/personal_info_screen.dart';
-import '../../driver/pending/pending_approval_screen.dart';
 import '../welcome/welcome_screen.dart';
 
 class OtpScreen extends StatefulWidget {
@@ -126,7 +126,9 @@ class _OtpScreenState extends State<OtpScreen> {
         return;
       }
       if (driver != null) {
-        _goPending();
+        unawaited(
+          DriverOnboardingRouter.resumePending(context, driver: driver),
+        );
         return;
       }
       if (!mounted) return;
@@ -135,6 +137,7 @@ class _OtpScreenState extends State<OtpScreen> {
     }
 
     if (!mounted) return;
+    unawaited(DriverOnboardingRouter.saveStep(DriverOnboardingStep.personalInfo));
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const PersonalInfoScreen()),
@@ -194,14 +197,20 @@ class _OtpScreenState extends State<OtpScreen> {
     if (status == DriverStatus.approved) {
       unawaited(DriverEntry.goAfterAuth(context, driverId: prov.driver?.id));
     } else {
-      _goPending();
+      unawaited(
+        DriverOnboardingRouter.resumePending(
+          context,
+          driver: prov.driver,
+        ),
+      );
     }
   }
 
-  void _goPending() => Navigator.pushAndRemoveUntil(
-    context,
-    MaterialPageRoute(builder: (_) => const PendingApprovalScreen()),
-    (_) => false,
+  void _goPending() => unawaited(
+    DriverOnboardingRouter.resumePending(
+      context,
+      driver: context.read<AuthProvider>().driver,
+    ),
   );
 
   Future<void> _resend() async {

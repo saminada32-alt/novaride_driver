@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../../core/utils/auth_errors.dart';
+import '../../../core/utils/session_cache.dart';
 import '../models/auth_model.dart';
 import '../services/auth_service.dart';
 
@@ -24,20 +25,58 @@ class AuthProvider extends ChangeNotifier {
   // CHECK DRIVER STATUS
   // ───────────────────────────────────────────────
   Future<DriverStatus> checkDriverStatus() async {
+    String? tok;
     try {
-      final tok = await AuthService.instance.getToken();
+      tok = await AuthService.instance.getToken();
       if (tok == null) return DriverStatus.notLoggedIn;
 
       _token = tok;
       _driver = await AuthService.instance.getMe(tok, session: true);
       notifyListeners();
 
-      if (_driver!.isApproved) return DriverStatus.approved;
-      if (_driver!.isRejected) return DriverStatus.rejected;
-      return DriverStatus.pending;
+      final status = _statusFromDriver(_driver!);
+      await SessionCache.saveDriverStatus(status.name);
+      return status;
+    } on SessionExpiredException {
+      await logout();
+      return DriverStatus.notLoggedIn;
     } catch (_) {
+      if (tok != null) {
+        final status = await _statusFromCache(fallback: DriverStatus.pending);
+        unawaited(_refreshDriverInBackground(tok));
+        return status;
+      }
       return DriverStatus.notLoggedIn;
     }
+  }
+
+  Future<void> _refreshDriverInBackground(String tok) async {
+    try {
+      _driver = await AuthService.instance.getMe(tok);
+      await _cacheDriverSession(_driver!);
+      notifyListeners();
+    } catch (_) {}
+  }
+
+  DriverStatus _statusFromDriver(DriverModel driver) {
+    if (driver.isApproved) return DriverStatus.approved;
+    if (driver.isRejected) return DriverStatus.rejected;
+    return DriverStatus.pending;
+  }
+
+  Future<DriverStatus> _statusFromCache({
+    required DriverStatus fallback,
+  }) async {
+    final cached = await SessionCache.loadDriverStatus();
+    if (cached == null) return fallback;
+    for (final status in DriverStatus.values) {
+      if (status.name == cached) return status;
+    }
+    return fallback;
+  }
+
+  Future<void> _cacheDriverSession(DriverModel driver) async {
+    await SessionCache.saveDriverStatus(_statusFromDriver(driver).name);
   }
 
   bool _sendingOtp = false;
@@ -108,6 +147,7 @@ class AuthProvider extends ChangeNotifier {
       _driver = r.driver;
       _token = r.accessToken;
       _isNew = r.isNew;
+      await _cacheDriverSession(r.driver);
 
       _verifying = false;
       notifyListeners();
@@ -164,6 +204,7 @@ class AuthProvider extends ChangeNotifier {
   // ───────────────────────────────────────────────
   Future<void> logout() async {
     await AuthService.instance.logout();
+    await SessionCache.clearDriver();
     _driver = null;
     _token = null;
     notifyListeners();

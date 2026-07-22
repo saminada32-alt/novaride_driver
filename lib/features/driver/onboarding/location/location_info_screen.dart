@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:novaride_driver/features/driver/navigation/driver_onboarding_router.dart';
 import 'package:provider/provider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/providers/auth_provider.dart';
@@ -27,6 +29,14 @@ class _Body extends StatefulWidget {
 
 class _BodyState extends State<_Body> {
   final _addrCtrl = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(
+      DriverOnboardingRouter.saveStep(DriverOnboardingStep.location),
+    );
+  }
 
   @override
   void dispose() {
@@ -77,6 +87,7 @@ class _BodyState extends State<_Body> {
     if (!mounted) return;
 
     if (ok) {
+      unawaited(DriverOnboardingRouter.saveStep(DriverOnboardingStep.review));
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const ApplicationReviewScreen()),

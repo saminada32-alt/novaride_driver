@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/auth/welcome/welcome_screen.dart';
-import '../../features/driver/pending/pending_approval_screen.dart';
 import '../driver/navigation/driver_entry.dart';
+import '../driver/navigation/driver_onboarding_router.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -36,24 +37,40 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _check() async {
-    final status = await context.read<AuthProvider>().checkDriverStatus();
-    if (!mounted) return;
+    try {
+      final status = await context.read<AuthProvider>().checkDriverStatus();
+      if (!mounted) return;
 
-    switch (status) {
-      case DriverStatus.approved:
-        if (!mounted) return;
-        unawaited(DriverEntry.goAfterAuth(context));
-        break;
-      case DriverStatus.pending:
-        _go(const PendingApprovalScreen());
-        break;
-      case DriverStatus.rejected:
-        await context.read<AuthProvider>().logout();
-        if (mounted) _go(const WelcomeScreen());
-        break;
-      case DriverStatus.notLoggedIn:
+      switch (status) {
+        case DriverStatus.approved:
+          if (!mounted) return;
+          unawaited(DriverEntry.goAfterAuth(context));
+          break;
+        case DriverStatus.pending:
+          unawaited(
+            DriverOnboardingRouter.resumePending(
+              context,
+              driver: context.read<AuthProvider>().driver,
+            ),
+          );
+          break;
+        case DriverStatus.rejected:
+          await context.read<AuthProvider>().logout();
+          if (mounted) _go(const WelcomeScreen());
+          break;
+        case DriverStatus.notLoggedIn:
+          _go(const WelcomeScreen());
+          break;
+      }
+    } catch (e, st) {
+      debugPrint('Splash check failed: $e\n$st');
+      if (!mounted) return;
+      final tok = context.read<AuthProvider>().token;
+      if (tok != null) {
+        unawaited(DriverOnboardingRouter.resumePending(context));
+      } else {
         _go(const WelcomeScreen());
-        break;
+      }
     }
   }
 

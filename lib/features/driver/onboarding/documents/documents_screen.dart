@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:novaride_driver/features/driver/navigation/driver_onboarding_router.dart';
 import 'package:provider/provider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/providers/auth_provider.dart';
@@ -26,6 +28,11 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   @override
   void initState() {
     super.initState();
+    if (!widget.resubmitOnly) {
+      unawaited(
+        DriverOnboardingRouter.saveStep(DriverOnboardingStep.documents),
+      );
+    }
     if (widget.resubmitOnly) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         final token = context.read<AuthProvider>().token;
@@ -146,6 +153,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         );
         Navigator.pop(context);
       } else {
+        unawaited(
+          DriverOnboardingRouter.saveStep(DriverOnboardingStep.location),
+        );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const LocationInfoScreen()),

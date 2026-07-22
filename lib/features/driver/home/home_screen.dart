@@ -350,6 +350,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
   Future<void> _initLoc() async {
     final p = await _loc.requestPermission();
+    if (!mounted) return;
     if (p != PermissionStatus.granted) return;
 
     final token = context.read<AuthProvider>().token;
@@ -368,21 +369,24 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       }
     };
 
-    _loc.onLocationChanged.listen((l) async {
-      if (!mounted || l.latitude == null) return;
-      final lat = l.latitude!;
-      final lng = l.longitude!;
-      setState(() {
-        _pos = LatLng(lat, lng);
-        _hasGpsFix = true;
-        _lastGpsAt = DateTime.now();
-      });
-      _map?.animateCamera(CameraUpdate.newLatLng(_pos));
+    _loc.onLocationChanged.listen(
+      (l) async {
+        if (!mounted || l.latitude == null) return;
+        final lat = l.latitude!;
+        final lng = l.longitude!;
+        setState(() {
+          _pos = LatLng(lat, lng);
+          _hasGpsFix = true;
+          _lastGpsAt = DateTime.now();
+        });
+        _map?.animateCamera(CameraUpdate.newLatLng(_pos));
 
-      if (token != null && _isOnline) {
-        await _pushLocation(token, lat, lng);
-      }
-    });
+        if (token != null && _isOnline) {
+          await _pushLocation(token, lat, lng);
+        }
+      },
+      onError: (e) => debugPrint('Driver location stream: $e'),
+    );
   }
 
   Future<void> _pushLocation(String token, double lat, double lng) async {

@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:novaride_driver/features/auth/providers/auth_provider.dart';
+import 'package:novaride_driver/features/driver/navigation/driver_onboarding_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../car_info/car_info_screen.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +19,14 @@ class PersonalInfoScreen extends StatefulWidget {
 
 class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   String? joinType;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(
+      DriverOnboardingRouter.saveStep(DriverOnboardingStep.personalInfo),
+    );
+  }
 
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController(); // ✅ جديد
@@ -458,6 +468,11 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                               );
 
                               if (ok && mounted) {
+                                unawaited(
+                                  DriverOnboardingRouter.saveStep(
+                                    DriverOnboardingStep.carInfo,
+                                  ),
+                                );
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(

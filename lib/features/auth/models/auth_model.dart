@@ -7,6 +7,7 @@ class DriverModel {
   final String? licenseCountry;
   final bool isApproved;
   final bool isRejected;
+  final bool applicationSubmitted;
   final String status;
   final double rating;
 
@@ -19,6 +20,7 @@ class DriverModel {
     this.licenseCountry,
     required this.isApproved,
     required this.isRejected,
+    required this.applicationSubmitted,
     required this.status,
     required this.rating,
   });
@@ -37,6 +39,7 @@ class DriverModel {
     licenseCountry: j['licenseCountry'],
     isApproved: j['isApproved'] ?? false,
     isRejected: j['isRejected'] ?? false,
+    applicationSubmitted: j['applicationSubmitted'] ?? false,
     status: j['status'] ?? 'offline',
     // ─── إصلاح rating String/double ──────────────────────
     rating: double.tryParse(j['rating']?.toString() ?? '0') ?? 0.0,

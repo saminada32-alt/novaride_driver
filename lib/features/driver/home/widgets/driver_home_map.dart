@@ -33,7 +33,7 @@ class DriverHomeMap extends StatelessWidget {
       children: [
         GoogleMap(
           initialCameraPosition: CameraPosition(target: position, zoom: 15),
-          myLocationEnabled: true,
+          myLocationEnabled: false,
           myLocationButtonEnabled: false,
           zoomControlsEnabled: false,
           onMapCreated: onMapCreated,

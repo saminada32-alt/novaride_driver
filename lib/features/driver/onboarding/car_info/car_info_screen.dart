@@ -2,7 +2,9 @@
 //  CAR INFO SCREEN (MERGED + ENHANCED VERSION)
 // ———————————————————————————————————————————————
 // ملف: car_info_screen.dart (معدل)
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:novaride_driver/features/driver/navigation/driver_onboarding_router.dart';
 import 'package:novaride_driver/features/driver/onboarding/documents/documents_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:dropdown_search/dropdown_search.dart';
@@ -61,6 +63,7 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
   @override
   void initState() {
     super.initState();
+    unawaited(DriverOnboardingRouter.saveStep(DriverOnboardingStep.carInfo));
     DriverVehicleCatalog.ensureLoaded().then((_) {
       if (mounted) setState(() => _vehicleTypes = DriverVehicleCatalog.types);
     });
@@ -527,6 +530,11 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                               if (!mounted) return;
 
                               if (ok) {
+                                unawaited(
+                                  DriverOnboardingRouter.saveStep(
+                                    DriverOnboardingStep.documents,
+                                  ),
+                                );
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(

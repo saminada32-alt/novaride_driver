@@ -98,6 +98,7 @@ class AuthService {
     final res = session
         ? await ResilientHttp.sessionGet(uri, headers: headers)
         : await ResilientHttp.get(uri, headers: headers);
+    if (res.statusCode == 401) throw const SessionExpiredException();
     return DriverModel.fromJson(_check(res));
   }
 

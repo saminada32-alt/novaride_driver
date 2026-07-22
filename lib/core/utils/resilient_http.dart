@@ -78,7 +78,7 @@ class ResilientHttp {
     );
   }
 
-  /// Splash / session restore — one fast attempt so cold start reaches home quickly.
+  /// Splash / session restore — tolerant of slow Syria networks; auth uses cached status on failure.
   static Future<http.Response> sessionGet(
     Uri uri, {
     Map<String, String>? headers,
@@ -86,8 +86,8 @@ class ResilientHttp {
     return get(
       uri,
       headers: headers,
-      timeout: const Duration(seconds: 8),
-      maxAttempts: 1,
+      timeout: const Duration(seconds: 25),
+      maxAttempts: 3,
     );
   }
 

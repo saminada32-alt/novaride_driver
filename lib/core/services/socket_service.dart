@@ -24,6 +24,19 @@ class DriverSocketService {
 
   void setDriverId(int? id) => _driverId = id;
 
+  void _safe(String event, void Function() fn) {
+    try {
+      fn();
+    } catch (e) {
+      if (kDebugMode) debugPrint('Driver socket $event: $e');
+    }
+  }
+
+  Map<String, dynamic>? _asMap(dynamic data) {
+    if (data is! Map) return null;
+    return Map<String, dynamic>.from(data);
+  }
+
   Future<void> connect({int? driverId}) async {
     if (driverId != null) _driverId = driverId;
 
@@ -51,48 +64,69 @@ class DriverSocketService {
     });
 
     _socket!.on('new_ride_offer', (data) {
-      final map = Map<String, dynamic>.from(data as Map);
-      onNewRideOffer?.call(map);
-      onTripEvent?.call({'event': 'new_ride_offer', ...map});
+      _safe('new_ride_offer', () {
+        final map = _asMap(data);
+        if (map == null) return;
+        onNewRideOffer?.call(map);
+        onTripEvent?.call({'event': 'new_ride_offer', ...map});
+      });
     });
 
     _socket!.on('ride_taken', (data) {
-      final rideId = data is Map ? data['rideId'] : null;
-      final id = rideId is int ? rideId : int.tryParse('$rideId');
-      onRideTaken?.call(id);
+      _safe('ride_taken', () {
+        final rideId = data is Map ? data['rideId'] : null;
+        final id = rideId is int ? rideId : int.tryParse('$rideId');
+        onRideTaken?.call(id);
+      });
     });
 
     _socket!.on('driver_accepted_ride', (data) {
-      if (data is! Map) return;
-      final rideId = data['rideId'];
-      final id = int.tryParse('$rideId');
-      if (id != null && id > 0) onDriverAcceptedRide?.call(id);
+      _safe('driver_accepted_ride', () {
+        final map = _asMap(data);
+        if (map == null) return;
+        final id = int.tryParse('${map['rideId']}');
+        if (id != null && id > 0) onDriverAcceptedRide?.call(id);
+      });
     });
 
     _socket!.on('ride_status_changed', (data) {
-      onTripEvent?.call({
-        'event': 'ride_status_changed',
-        ...Map<String, dynamic>.from(data as Map),
+      _safe('ride_status_changed', () {
+        final map = _asMap(data);
+        if (map == null) return;
+        onTripEvent?.call({'event': 'ride_status_changed', ...map});
       });
     });
 
     _socket!.on('ride_cancelled', (data) {
-      onTripEvent?.call({
-        'event': 'ride_cancelled',
-        ...Map<String, dynamic>.from(data as Map),
+      _safe('ride_cancelled', () {
+        final map = _asMap(data);
+        if (map == null) return;
+        onTripEvent?.call({'event': 'ride_cancelled', ...map});
       });
     });
 
     _socket!.on('driver:event', (data) {
-      onTripEvent?.call(Map<String, dynamic>.from(data as Map));
+      _safe('driver:event', () {
+        final map = _asMap(data);
+        if (map == null) return;
+        onTripEvent?.call(map);
+      });
     });
 
     _socket!.on('chat:message', (data) {
-      onChatMessage?.call(Map<String, dynamic>.from(data as Map));
+      _safe('chat:message', () {
+        final map = _asMap(data);
+        if (map == null) return;
+        onChatMessage?.call(map);
+      });
     });
 
     _socket!.on('support_chat:message', (data) {
-      onSupportChatMessage?.call(Map<String, dynamic>.from(data as Map));
+      _safe('support_chat:message', () {
+        final map = _asMap(data);
+        if (map == null) return;
+        onSupportChatMessage?.call(map);
+      });
     });
 
     _socket!.connect();

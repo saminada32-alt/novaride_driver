@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:novaride_driver/features/driver/navigation/driver_onboarding_router.dart';
 import 'package:provider/provider.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../pending/pending_approval_screen.dart';
@@ -18,6 +20,7 @@ class _ApplicationReviewScreenState extends State<ApplicationReviewScreen> {
   @override
   void initState() {
     super.initState();
+    unawaited(DriverOnboardingRouter.saveStep(DriverOnboardingStep.review));
     // ─── يُرسل الطلب فقط من هون ─────────────────────────────
     WidgetsBinding.instance.addPostFrameCallback((_) => _submit());
   }
@@ -34,6 +37,9 @@ class _ApplicationReviewScreenState extends State<ApplicationReviewScreen> {
       final ok = await prov.submitApplication();
       if (!mounted) return;
       if (ok) {
+        unawaited(
+          DriverOnboardingRouter.saveStep(DriverOnboardingStep.pendingApproval),
+        );
         setState(() {
           _submitting = false;
           _submitted = true;
@@ -272,11 +278,18 @@ class _ApplicationReviewScreenState extends State<ApplicationReviewScreen> {
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          onPressed: () => Navigator.pushAndRemoveUntil(
+          onPressed: () {
+            unawaited(
+              DriverOnboardingRouter.saveStep(
+                DriverOnboardingStep.pendingApproval,
+              ),
+            );
+            Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => const PendingApprovalScreen()),
             (_) => false,
-          ),
+          );
+          },
           child: Text(
             isAr ? 'متابعة' : 'Continue',
             style: const TextStyle(

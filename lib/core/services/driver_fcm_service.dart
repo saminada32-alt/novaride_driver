@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -54,8 +55,12 @@ class DriverFcmService {
     if (_initialized) return;
     _initialized = true;
 
-    await _initLocalNotifications();
-    await _initFirebase();
+    try {
+      await _initLocalNotifications();
+      await _initFirebase();
+    } catch (e, st) {
+      debugPrint('DriverFcmService init failed: $e');
+    }
   }
 
   // ---------------- LOCAL NOTIFICATIONS ----------------

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -28,18 +29,30 @@ import 'app.dart';
 
 @pragma('vm:entry-point')
 Future<void> _fcmBackground(RemoteMessage msg) async {
-  await Firebase.initializeApp();
+  try {
+    await Firebase.initializeApp();
+  } catch (_) {}
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  FirebaseMessaging.onBackgroundMessage(_fcmBackground);
+
+  try {
+    FirebaseMessaging.onBackgroundMessage(_fcmBackground);
+  } catch (e, st) {
+    debugPrint('FCM background handler setup failed: $e');
+  }
 
   final appController = AppController();
-  await Future.wait([
-    Firebase.initializeApp(),
-    appController.loadLocale(),
-  ]);
+
+  try {
+    await Firebase.initializeApp();
+  } catch (e, st) {
+    debugPrint('Firebase init failed: $e');
+  }
+
+  await CrashReporting.init();
+  await appController.loadLocale();
 
   final networkService = NetworkConnectivityService();
   unawaited(networkService.start());
@@ -66,15 +79,18 @@ class _MyAppRootState extends State<MyAppRoot> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initServices();
+      unawaited(_initServices());
     });
   }
 
   Future<void> _initServices() async {
-    unawaited(CrashReporting.init());
-    await Future.delayed(const Duration(milliseconds: 800));
     if (!mounted) return;
-    await DriverFcmService.instance.init();
+    try {
+      await DriverFcmService.instance.init();
+    } catch (e, st) {
+      debugPrint('Driver FCM init failed: $e');
+      unawaited(CrashReporting.recordError(e, st));
+    }
   }
 
   @override
