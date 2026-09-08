@@ -15,6 +15,7 @@ class _MapSelectionScreenState extends State<MapSelectionScreen> {
   LatLng? _selected;
   String? _address;
   bool _loading = false;
+  bool _locationGranted = false;
 
   // دمشق كموقع افتراضي
   static const _damascus = LatLng(33.5138, 36.2765);
@@ -29,7 +30,11 @@ class _MapSelectionScreenState extends State<MapSelectionScreen> {
     try {
       final loc = loc_service.Location();
       final perm = await loc.requestPermission();
-      if (perm != PermissionStatus.granted) return;
+      if (perm != PermissionStatus.granted &&
+          perm != PermissionStatus.grantedLimited) {
+        return;
+      }
+      if (mounted) setState(() => _locationGranted = true);
       final data = await loc.getLocation();
       if (data.latitude == null || data.longitude == null) return;
       final pos = LatLng(data.latitude!, data.longitude!);
@@ -82,7 +87,7 @@ class _MapSelectionScreenState extends State<MapSelectionScreen> {
             ),
             onMapCreated: (c) => _ctrl = c,
             onTap: _onTap,
-            myLocationEnabled: true,
+            myLocationEnabled: _locationGranted,
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
             markers: _selected != null
@@ -179,7 +184,7 @@ class _MapSelectionScreenState extends State<MapSelectionScreen> {
                       ],
                     ),
                   ] else if (_loading) ...[
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SizedBox(
@@ -191,7 +196,7 @@ class _MapSelectionScreenState extends State<MapSelectionScreen> {
                           ),
                         ),
                         SizedBox(width: 12),
-                        Text('Getting address...'),
+                        Text(isAr ? 'جارٍ تحديد العنوان...' : 'Getting address...'),
                       ],
                     ),
                   ] else ...[
@@ -201,7 +206,7 @@ class _MapSelectionScreenState extends State<MapSelectionScreen> {
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            _address ?? 'Unknown location',
+                            _address ?? (isAr ? 'موقع غير معروف' : 'Unknown location'),
                             style: const TextStyle(fontWeight: FontWeight.w500),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
@@ -229,7 +234,8 @@ class _MapSelectionScreenState extends State<MapSelectionScreen> {
                           ? () => Navigator.pop(context, {
                               'lat': _selected!.latitude,
                               'lng': _selected!.longitude,
-                              'address': _address ?? 'Selected Location',
+                              'address': _address ??
+                                  (isAr ? 'الموقع المحدد' : 'Selected Location'),
                             })
                           : null,
                       icon: const Icon(Icons.check, color: Colors.white),

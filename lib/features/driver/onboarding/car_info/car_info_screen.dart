@@ -24,7 +24,7 @@ class CarInfoScreen extends StatefulWidget {
 class _CarInfoScreenState extends State<CarInfoScreen> {
   final plateController = TextEditingController();
   final otherBrandController = TextEditingController();
-  final otherModelController = TextEditingController();
+  final customVehicleTypeController = TextEditingController();
 
   final Map<String, List<String>> carData = {
     "Toyota": ["Corolla", "Camry", "Yaris"],
@@ -41,10 +41,6 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
   };
 
   List<String> get brands => carData.keys.toList();
-  List<String> get models =>
-      carProvider.car.brand != null && carProvider.car.brand != "Other"
-      ? carData[carProvider.car.brand]!
-      : [];
 
   final List<String> years = List.generate(
     30,
@@ -73,7 +69,7 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
   void resetFields(String type) {
     plateController.clear();
     otherBrandController.clear();
-    otherModelController.clear();
+    customVehicleTypeController.clear();
     carProvider.reset();
     carProvider.setVehicleType(type);
   }
@@ -165,8 +161,6 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
       if (c.vehicleType == "motorcycle") {
         return (c.plateNumber?.isNotEmpty ?? false) &&
             c.brand != null &&
-            ((c.brand == "Other" && (c.model?.isNotEmpty ?? false)) ||
-                (c.brand != "Other" && c.model != null)) &&
             c.color != null &&
             c.passengerCount != null;
       }
@@ -195,12 +189,17 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
             (c.hasPressureWasher != null);
       }
 
+      // نوع آخر (كتابة يدوية)
+      if (c.vehicleType == "other") {
+        return (c.customVehicleType?.trim().isNotEmpty ?? false) &&
+            (c.plateNumber?.isNotEmpty ?? false) &&
+            c.year != null &&
+            c.color != null;
+      }
+
       // سيارات عادية
       return c.brand != null &&
-          ((c.brand == "Other" &&
-                  (c.brand?.isNotEmpty ?? false) &&
-                  (c.model?.isNotEmpty ?? false)) ||
-              (c.brand != "Other" && c.model != null)) &&
+          (c.brand != "Other" || (c.brand?.isNotEmpty ?? false)) &&
           (c.plateNumber?.isNotEmpty ?? false) &&
           c.year != null &&
           c.color != null;
@@ -256,10 +255,21 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
               final label = isArabic ? t.labelAr : t.labelEn;
               return buildVehicleOption(t.id, label, t.icon);
             }),
+            buildVehicleOption('other', local.other, Icons.edit_outlined),
 
             const SizedBox(height: 30),
 
             if (carProvider.car.vehicleType != null) ...[
+              if (carProvider.car.vehicleType == 'other') ...[
+                requiredLabel(local.enterCustomVehicleType),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: customVehicleTypeController,
+                  decoration: inputDecoration(hint: local.enterCustomVehicleType),
+                  onChanged: carProvider.setCustomVehicleType,
+                ),
+                const SizedBox(height: 25),
+              ],
               // رقم اللوحة
               requiredLabel(
                 carProvider.car.vehicleType == "motorcycle"
@@ -280,7 +290,8 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
 
               // السيارة (كما كانت)
               if (carProvider.car.vehicleType == "car" ||
-                  carProvider.car.vehicleType == "wheelchair_accessible") ...[
+                  carProvider.car.vehicleType == "wheelchair_accessible" ||
+                  carProvider.car.vehicleType == "other") ...[
                 requiredLabel(local.manufacturer),
                 const SizedBox(height: 6),
                 DropdownSearch<String>(
@@ -292,7 +303,6 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                   ),
                   onChanged: (val) {
                     carProvider.setBrand(val);
-                    carProvider.setModel(null);
                   },
                 ),
                 const SizedBox(height: 15),
@@ -303,29 +313,6 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                     controller: otherBrandController,
                     decoration: inputDecoration(hint: local.enterOtherBrand),
                     onChanged: (val) => carProvider.setBrand(val),
-                  ),
-                  const SizedBox(height: 15),
-                  requiredLabel(local.enterOtherModel),
-                  const SizedBox(height: 6),
-                  TextField(
-                    controller: otherModelController,
-                    decoration: inputDecoration(hint: local.enterOtherModel),
-                    onChanged: (val) => carProvider.setModel(val),
-                  ),
-                  const SizedBox(height: 15),
-                ],
-                if (carProvider.car.brand != null &&
-                    carProvider.car.brand != "Other") ...[
-                  requiredLabel(local.modelLabel),
-                  const SizedBox(height: 6),
-                  DropdownSearch<String>(
-                    items: models,
-                    selectedItem: carProvider.car.model,
-                    popupProps: PopupProps.dialog(showSearchBox: true),
-                    dropdownDecoratorProps: DropDownDecoratorProps(
-                      dropdownSearchDecoration: inputDecoration(),
-                    ),
-                    onChanged: (val) => carProvider.setModel(val),
                   ),
                   const SizedBox(height: 15),
                 ],
@@ -373,40 +360,16 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                   ),
                   onChanged: (val) {
                     carProvider.setBrand(val);
-                    carProvider.setModel(null);
                   },
                 ),
                 const SizedBox(height: 15),
                 if (carProvider.car.brand == "Other") ...[
-                  requiredLabel(local.enterOtherModel),
+                  requiredLabel(local.enterOtherBrand),
                   const SizedBox(height: 6),
                   TextField(
-                    controller: otherModelController,
-                    decoration: inputDecoration(hint: local.enterOtherModel),
-                    onChanged: (val) => carProvider.setModel(val),
-                  ),
-                  const SizedBox(height: 15),
-                ],
-                if (carProvider.car.brand != null &&
-                    carProvider.car.brand != "Other") ...[
-                  requiredLabel(local.motorcycleModel),
-                  const SizedBox(height: 6),
-                  DropdownSearch<String>(
-                    items: carProvider.car.brand == "Honda"
-                        ? ["CBR", "CB500", "CRF"]
-                        : carProvider.car.brand == "Yamaha"
-                        ? ["YZF", "MT-07", "FZ6"]
-                        : carProvider.car.brand == "Kawasaki"
-                        ? ["Ninja", "Z650", "Versys"]
-                        : carProvider.car.brand == "Suzuki"
-                        ? ["GSX-R", "V-Strom", "SV650"]
-                        : [],
-                    selectedItem: carProvider.car.model,
-                    popupProps: PopupProps.dialog(showSearchBox: true),
-                    dropdownDecoratorProps: DropDownDecoratorProps(
-                      dropdownSearchDecoration: inputDecoration(),
-                    ),
-                    onChanged: (val) => carProvider.setModel(val),
+                    controller: otherBrandController,
+                    decoration: inputDecoration(hint: local.enterOtherBrand),
+                    onChanged: (val) => carProvider.setBrand(val),
                   ),
                   const SizedBox(height: 15),
                 ],
@@ -469,7 +432,7 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                 const SizedBox(height: 15),
               ],
 
-              // السنة للسيارات والفان والصهريج ونقل العفش وغسيل السيارات
+              // السنة للسيارات والفان والصهريج ونقل العفش وغسيل السيارات ونوع آخر
               if (carProvider.car.vehicleType != "motorcycle") ...[
                 requiredLabel(local.vehicleYear),
                 const SizedBox(height: 6),
@@ -545,7 +508,8 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                      carProvider.errorMessage ?? 'حدث خطأ',
+                                      carProvider.errorMessage ??
+                                          AppLocalizations.of(context)!.actionFailed,
                                     ),
                                     backgroundColor: Colors.red.shade600,
                                     behavior: SnackBarBehavior.floating,

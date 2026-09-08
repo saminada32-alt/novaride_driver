@@ -194,7 +194,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'First monthly payment required before going online.',
+                          local.monthlySubscriptionPaymentRequired,
                           style: TextStyle(color: Colors.orange.shade900, fontSize: 12),
                         ),
                       ),

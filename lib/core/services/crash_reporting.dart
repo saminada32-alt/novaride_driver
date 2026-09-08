@@ -25,13 +25,13 @@ class CrashReporting {
         FlutterError.presentError(details);
       }
       if (_enabled) {
-        _crashlytics!.recordFlutterFatalError(details);
+        _crashlytics!.recordFlutterError(details);
       }
     };
 
     PlatformDispatcher.instance.onError = (error, stack) {
       if (_enabled) {
-        _crashlytics!.recordError(error, stack, fatal: true);
+        _crashlytics!.recordError(error, stack, fatal: false);
       } else if (kDebugMode) {
         debugPrint('Uncaught error: $error\n$stack');
       }

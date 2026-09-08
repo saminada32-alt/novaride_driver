@@ -16,7 +16,6 @@ class DocumentsProvider extends ChangeNotifier {
     'driverIdFront': null,
     'driverIdBack': null,
     'licenseFront': null,
-    'insuranceFront': null,
     'licenseBack': null,
     'vehicleFront': null,
     'vehicleBack': null,

@@ -164,7 +164,7 @@ class DriverRideModel {
   }
 
   factory DriverRideModel.fromJson(Map<String, dynamic> j) => DriverRideModel(
-    id: j['id'],
+    id: int.tryParse('${j['id']}') ?? 0,
     status: _parse(j['status']?.toString()),
     pickupLat: double.tryParse(j['pickupLat']?.toString() ?? '0') ?? 0,
     pickupLng: double.tryParse(j['pickupLng']?.toString() ?? '0') ?? 0,

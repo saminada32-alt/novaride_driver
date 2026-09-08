@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import '../constants/api_constants.dart';
@@ -23,7 +24,7 @@ class WorkZone {
   });
 
   factory WorkZone.fromJson(Map<String, dynamic> j) => WorkZone(
-    id: j['id'] as int,
+    id: int.tryParse('${j['id']}') ?? 0,
     city: j['city']?.toString() ?? '',
     workArea: j['workArea']?.toString() ?? '',
     address: j['address']?.toString(),
@@ -36,6 +37,9 @@ class WorkZone {
 class WorkZonesService {
   WorkZonesService._();
   static WorkZonesService instance = WorkZonesService._();
+
+  /// Temporary — match API WORK_HOURS_DISABLED=true (set false to re-enable).
+  static const workHoursDisabled = true;
 
   static const _storage = FlutterSecureStorage();
   static const _cacheTtl = Duration(minutes: 3);
@@ -53,7 +57,11 @@ class WorkZonesService {
   };
 
   Future<void> prefetch() async {
-    await Future.wait([list(), isOnShift()]);
+    try {
+      await Future.wait([list(), isOnShift()]);
+    } catch (e) {
+      debugPrint('WorkZones prefetch: $e');
+    }
   }
 
   void invalidateCache() {
@@ -64,6 +72,7 @@ class WorkZonesService {
   }
 
   Future<List<WorkZone>> list({bool forceRefresh = false}) async {
+    if (workHoursDisabled) return [];
     if (!forceRefresh &&
         _zonesCache != null &&
         _zonesCachedAt != null &&
@@ -92,6 +101,7 @@ class WorkZonesService {
   }
 
   Future<bool> isOnShift({bool forceRefresh = false}) async {
+    if (workHoursDisabled) return true;
     if (!forceRefresh &&
         _onShiftCache != null &&
         _onShiftCachedAt != null &&
@@ -112,7 +122,7 @@ class WorkZonesService {
       _onShiftCachedAt = DateTime.now();
       return _onShiftCache!;
     }
-    return _onShiftCache ?? false;
+    return _onShiftCache ?? true;
   }
 
   Future<void> add(Map<String, dynamic> body) async {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:sms_autofill/sms_autofill.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../core/services/app_controller.dart';
 import '../../../core/utils/phone_utils.dart';
@@ -71,6 +72,10 @@ class _LoginScreenState extends State<LoginScreen>
     final phone = buildAuthPhone(_code, _phoneCtrl.text.trim());
     final provider = context.read<AuthProvider>();
 
+    try {
+      await SmsAutoFill().listenForCode();
+    } catch (_) {}
+
     final ok = await provider.sendLoginOtp(phone);
 
     if (!mounted) return;
@@ -88,7 +93,10 @@ class _LoginScreenState extends State<LoginScreen>
         );
         return;
       }
-      _snack(provider.error ?? 'Error', Colors.red.shade600);
+      _snack(
+        provider.error ?? AppLocalizations.of(context)!.actionFailed,
+        Colors.red.shade600,
+      );
       return;
     }
 

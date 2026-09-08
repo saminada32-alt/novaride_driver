@@ -31,34 +31,38 @@ class DriverBackgroundLocationService {
   }
 
   Future<void> start() async {
-    await stop();
-    if (!await ensurePermission()) {
-      if (kDebugMode) debugPrint('Background location permission denied');
-      return;
+    try {
+      await stop();
+      if (!await ensurePermission()) {
+        if (kDebugMode) debugPrint('Background location permission denied');
+        return;
+      }
+
+      final settings = Platform.isAndroid
+          ? AndroidSettings(
+              accuracy: LocationAccuracy.high,
+              distanceFilter: 15,
+              foregroundNotificationConfig: const ForegroundNotificationConfig(
+                notificationTitle: 'NovaRide Driver',
+                notificationText: 'Location active while you are online',
+                enableWakeLock: true,
+              ),
+            )
+          : AppleSettings(
+              accuracy: LocationAccuracy.high,
+              distanceFilter: 15,
+              showBackgroundLocationIndicator: true,
+            );
+
+      _sub = Geolocator.getPositionStream(locationSettings: settings).listen(
+        (p) => onPosition?.call(p.latitude, p.longitude),
+        onError: (e) {
+          if (kDebugMode) debugPrint('Background location error: $e');
+        },
+      );
+    } catch (e, st) {
+      if (kDebugMode) debugPrint('Background location start error: $e\n$st');
     }
-
-    final settings = Platform.isAndroid
-        ? AndroidSettings(
-            accuracy: LocationAccuracy.high,
-            distanceFilter: 15,
-            foregroundNotificationConfig: const ForegroundNotificationConfig(
-              notificationTitle: 'NovaRide Driver',
-              notificationText: 'Location active while you are online',
-              enableWakeLock: true,
-            ),
-          )
-        : AppleSettings(
-            accuracy: LocationAccuracy.high,
-            distanceFilter: 15,
-            showBackgroundLocationIndicator: true,
-          );
-
-    _sub = Geolocator.getPositionStream(locationSettings: settings).listen(
-      (p) => onPosition?.call(p.latitude, p.longitude),
-      onError: (e) {
-        if (kDebugMode) debugPrint('Background location error: $e');
-      },
-    );
   }
 
   Future<void> stop() async {

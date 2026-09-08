@@ -13,7 +13,6 @@ class DocumentsService {
     'driverIdBack': 'idBack',
     'licenseFront': 'licenseFront',
     'licenseBack': 'licenseBack',
-    'insuranceFront': 'insuranceFront',
     'vehicleFront': 'vehicleFront',
     'vehicleBack': 'vehicleBack',
   };
@@ -26,7 +25,6 @@ class DocumentsService {
     'idBack': 'driverIdBack',
     'licenseFront': 'licenseFront',
     'licenseBack': 'licenseBack',
-    'insuranceFront': 'insuranceFront',
     'vehicleFront': 'vehicleFront',
     'vehicleBack': 'vehicleBack',
   };

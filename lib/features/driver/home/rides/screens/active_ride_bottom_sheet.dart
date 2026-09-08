@@ -11,13 +11,11 @@ class ActiveRideBottomSheet extends StatelessWidget {
   final String passengerName;
   final String passengerRatingText;
   final Map<String, dynamic>? passenger;
-  final bool audioRecording;
   final bool updating;
   final bool navigatingToDropoff;
   final int legIndex;
   final String? currentLegLabel;
   final Animation<double> btnScale;
-  final VoidCallback onToggleAudio;
   final VoidCallback onMessage;
   final VoidCallback onCall;
   final VoidCallback onUpdateStatus;
@@ -32,13 +30,11 @@ class ActiveRideBottomSheet extends StatelessWidget {
     required this.passengerName,
     required this.passengerRatingText,
     required this.passenger,
-    required this.audioRecording,
     required this.updating,
     required this.navigatingToDropoff,
     required this.legIndex,
     required this.currentLegLabel,
     required this.btnScale,
-    required this.onToggleAudio,
     required this.onMessage,
     required this.onCall,
     required this.onUpdateStatus,
@@ -140,11 +136,6 @@ class ActiveRideBottomSheet extends StatelessWidget {
         children: [
           ActiveRideUi.sheetHandle(),
           ActiveRideUi.etaHeadline(etaHeadline),
-          ActiveRideUi.safetyAudioCard(
-            t: t,
-            recording: audioRecording,
-            onToggle: onToggleAudio,
-          ),
           ActiveRideUi.tripInstructionCard(
             t: t,
             instruction: instruction,

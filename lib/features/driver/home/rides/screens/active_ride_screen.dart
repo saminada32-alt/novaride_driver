@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../../core/services/directions_service.dart';
 import '../../../../../core/services/route_navigation_service.dart';
 import '../../../../../core/services/socket_service.dart';
+import '../../../../../core/utils/api_error_messages.dart';
 import '../../../../../core/utils/map_icons.dart';
 import '../../../../../core/widgets/a11y.dart';
 import '../../../../../core/widgets/fare_with_promo.dart';
@@ -50,13 +51,13 @@ class _ActiveRideScreenState extends State<ActiveRideScreen>
   bool _fetchingDirections = false;
   bool _voiceNavEnabled = false;
   bool _sosSending = false;
-  bool _audioRecording = false;
   int _legIndex = 0;
   final Set<int> _arrivedStops = {};
   bool _stopApiBusy = false;
   BitmapDescriptor? _carIcon;
   double _driverBearing = 0;
   StreamSubscription<LocationData>? _locSub;
+  bool _locationGranted = false;
   late AnimationController _btnCtrl;
   late Animation<double> _btnScale;
   final DraggableScrollableController _sheetController =
@@ -429,6 +430,8 @@ class _ActiveRideScreenState extends State<ActiveRideScreen>
       return;
     }
 
+    if (mounted) setState(() => _locationGranted = true);
+
     if (_driverPos == null) {
       await _refreshDriverPosition();
     } else {
@@ -493,6 +496,7 @@ class _ActiveRideScreenState extends State<ActiveRideScreen>
   void _syncOverlays() {
     if (!mounted) return;
 
+    final t = AppLocalizations.of(context)!;
     final toDropoff = _navigatingToDropoff;
     final dest = _routeDestination;
     final carIcon = _carIcon ??
@@ -504,7 +508,7 @@ class _ActiveRideScreenState extends State<ActiveRideScreen>
           markerId: const MarkerId('pickup'),
           position: _pickup,
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-          infoWindow: const InfoWindow(title: 'Pickup'),
+          infoWindow: InfoWindow(title: t.ridePickupLabel),
         ),
       if (toDropoff) ...[
         for (var i = 0; i < _ride.waypoints.length; i++)
@@ -517,14 +521,14 @@ class _ActiveRideScreenState extends State<ActiveRideScreen>
                     ? BitmapDescriptor.hueOrange
                     : BitmapDescriptor.hueYellow,
               ),
-              infoWindow: InfoWindow(title: 'Stop ${i + 1}'),
+              infoWindow: InfoWindow(title: '${t.multiStopLabel} ${i + 1}'),
             ),
         if (_validCoord(_dropoff.latitude, _dropoff.longitude))
           Marker(
             markerId: const MarkerId('dropoff'),
             position: _dropoff,
             icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-            infoWindow: const InfoWindow(title: 'Dropoff'),
+            infoWindow: InfoWindow(title: t.rideDropoffLabel),
           ),
       ],
       if (_driverPos != null)
@@ -722,7 +726,12 @@ class _ActiveRideScreenState extends State<ActiveRideScreen>
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(
+              localizeApiError(e.toString(), AppLocalizations.of(context)!),
+            ),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
@@ -868,7 +877,7 @@ class _ActiveRideScreenState extends State<ActiveRideScreen>
                       controller: refCtrl,
                       decoration: InputDecoration(
                         labelText: t.shamCash,
-                        hintText: 'رقم مرجع التحويل',
+                        hintText: t.shamCashReferenceHint,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -905,7 +914,7 @@ class _ActiveRideScreenState extends State<ActiveRideScreen>
                                 if (mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text(e.toString()),
+                                      content: Text(localizeApiError(e.toString(), t)),
                                       backgroundColor: Colors.red,
                                     ),
                                   );
@@ -967,7 +976,7 @@ class _ActiveRideScreenState extends State<ActiveRideScreen>
     final passengerRatingText = _passengerRatingText(passenger);
 
     return A11yScreen(
-      label: '${t.rideInProgress}. Ride ${_ride.id}',
+      label: '${t.rideInProgress}. ${t.rideNumber(_ride.id)}',
       child: Scaffold(
       body: Stack(
         children: [
@@ -979,7 +988,7 @@ class _ActiveRideScreenState extends State<ActiveRideScreen>
                 zoom: 14,
               ),
               onMapCreated: _onMapCreated,
-              myLocationEnabled: true,
+              myLocationEnabled: _locationGranted,
               myLocationButtonEnabled: false,
               zoomControlsEnabled: false,
               compassEnabled: true,
@@ -1096,14 +1105,11 @@ class _ActiveRideScreenState extends State<ActiveRideScreen>
               passengerName: name,
               passengerRatingText: passengerRatingText,
               passenger: passenger,
-              audioRecording: _audioRecording,
               updating: _updating,
               navigatingToDropoff: _navigatingToDropoff,
               legIndex: _legIndex,
               currentLegLabel: _currentLegLabel,
               btnScale: _btnScale,
-              onToggleAudio: () =>
-                  setState(() => _audioRecording = !_audioRecording),
               onMessage: _messagePassenger,
               onCall: _callPassenger,
               onUpdateStatus: _updateStatus,
@@ -1115,8 +1121,23 @@ class _ActiveRideScreenState extends State<ActiveRideScreen>
                 );
               },
               onCancelRide: () async {
-                await DriverRidesService.instance.cancelRide(_ride.id);
-                if (mounted) Navigator.pop(context);
+                bool ok;
+                try {
+                  ok = await DriverRidesService.instance.cancelRide(_ride.id);
+                } catch (_) {
+                  ok = false;
+                }
+                if (!mounted) return;
+                if (ok) {
+                  Navigator.pop(context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(AppLocalizations.of(context)!.actionFailed),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
               },
             ),
           ),

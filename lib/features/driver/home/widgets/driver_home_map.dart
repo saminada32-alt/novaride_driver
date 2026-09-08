@@ -33,14 +33,14 @@ class DriverHomeMap extends StatelessWidget {
       children: [
         GoogleMap(
           initialCameraPosition: CameraPosition(target: position, zoom: 15),
-          myLocationEnabled: false,
+          myLocationEnabled: true,
           myLocationButtonEnabled: false,
           zoomControlsEnabled: false,
           onMapCreated: onMapCreated,
         ),
-        Positioned(
+        PositionedDirectional(
           top: 20,
-          right: 16,
+          end: 16,
           child: FloatingActionButton(
             heroTag: 'driver_recenter',
             mini: true,
@@ -49,9 +49,9 @@ class DriverHomeMap extends StatelessWidget {
             child: const Icon(Icons.my_location, color: Colors.green),
           ),
         ),
-        Positioned(
+        PositionedDirectional(
           top: 20,
-          left: 16,
+          start: 16,
           child: A11yLiveStatus(
             message: isOnline ? t.onlineStatus : t.offlineStatus,
             child: Container(

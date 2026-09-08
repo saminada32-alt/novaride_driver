@@ -5,6 +5,10 @@ import 'package:share_plus/share_plus.dart';
 import '../../../../core/utils/currency_utils.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/providers/auth_provider.dart';
+import '../rides/model/ride_model.dart';
+import '../rides/screens/active_ride_ui.dart';
+import '../rides/service/rides_service.dart';
+import '../rides/widgets/trip_details_sheet.dart';
 import 'earning_export.dart';
 import 'model/earning_model.dart';
 import 'provider/earning_provider.dart';
@@ -30,8 +34,71 @@ class _EarningsPageState extends State<EarningsPage> {
 
   Future<void> _exportStatement(EarningModel e) async {
     final t = AppLocalizations.of(context)!;
-    final csv = buildEarningsCsv(e);
+    final csv = buildEarningsCsv(e, t);
     await Share.share(csv, subject: t.exportStatement);
+  }
+
+  Color _statusColor(DriverRideStatus s) {
+    switch (s) {
+      case DriverRideStatus.completed:
+        return Colors.green;
+      case DriverRideStatus.cancelled:
+        return Colors.red;
+      case DriverRideStatus.trip_started:
+        return Colors.blue;
+      default:
+        return Colors.orange;
+    }
+  }
+
+  Future<void> _showRideDetails(RecentRide r) async {
+    final t = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator(color: Colors.green)),
+    );
+
+    DriverRideModel? full;
+    try {
+      // The earnings summary only carries id/amount/date — this app has no
+      // single-ride-by-id endpoint, so we reuse the same ride-history call
+      // the Trips tab uses and pick out the matching one.
+      final rides = await DriverRidesService.instance.getMyRides();
+      for (final ride in rides) {
+        if (ride.id == r.rideId) {
+          full = ride;
+          break;
+        }
+      }
+    } catch (_) {
+      // fall through — full stays null, handled below
+    }
+
+    if (!mounted) return;
+    Navigator.pop(context); // close the loading dialog
+
+    if (full == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(t.genericLoadError)),
+      );
+      return;
+    }
+
+    final resolved = full;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => TripDetailsSheet(
+        trip: resolved,
+        statusColor: _statusColor(resolved.status),
+        statusLabel: ActiveRideUi.tripStatusLabel(resolved.status, t),
+        dateLabel: _fmtDate(resolved.createdAt ?? r.date),
+      ),
+    );
   }
 
   @override
@@ -47,6 +114,37 @@ class _EarningsPageState extends State<EarningsPage> {
     }
 
     final e = prov.earning;
+
+    if (e == null && prov.error != null) {
+      return Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.cloud_off_rounded, size: 64, color: Colors.grey[400]),
+                const SizedBox(height: 12),
+                Text(
+                  t.genericLoadError,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    final tok = auth.token;
+                    if (tok != null) prov.loadEarnings(tok);
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  child: Text(t.retry, style: const TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     if (e == null) {
       return Scaffold(body: Center(child: Text(t.noData)));
@@ -182,11 +280,18 @@ class _EarningsPageState extends State<EarningsPage> {
   Widget _rideItem(RecentRide r, AppLocalizations t) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
       ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: () => _showRideDetails(r),
+          child: Padding(
+      padding: const EdgeInsets.all(14),
       child: Row(
         children: [
           const Icon(Icons.directions_car, color: Colors.green),
@@ -214,6 +319,9 @@ class _EarningsPageState extends State<EarningsPage> {
             ),
           ),
         ],
+      ),
+          ),
+        ),
       ),
     );
   }

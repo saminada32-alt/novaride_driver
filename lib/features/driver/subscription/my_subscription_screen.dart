@@ -447,10 +447,29 @@ class _MySubscriptionScreenState extends State<MySubscriptionScreen> {
     );
   }
 
+  String _paymentStatusLabel(String st) {
+    final t = AppLocalizations.of(context)!;
+    switch (st) {
+      case 'pending':
+        return t.subscriptionPaymentStatusPending;
+      case 'approved':
+        return t.subscriptionPaymentStatusApproved;
+      case 'rejected':
+        return t.subscriptionPaymentStatusRejected;
+      default:
+        return st;
+    }
+  }
+
   Widget _paymentTile(dynamic p, {bool pending = false}) {
+    final t = AppLocalizations.of(context)!;
     final amount = _num(p['amount']);
-    final method = (p['method']?.toString() ?? '').replaceAll('_', ' ').toUpperCase();
+    final methodRaw = p['method']?.toString() ?? '';
+    final method = methodRaw == 'sham_cash'
+        ? t.shamCash
+        : methodRaw.replaceAll('_', ' ').toUpperCase();
     final st = p['status']?.toString() ?? (pending ? 'pending' : 'approved');
+    final statusLabel = _paymentStatusLabel(st);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -473,7 +492,7 @@ class _MySubscriptionScreenState extends State<MySubscriptionScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(_fmtMoney(amount), style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text('$method · $st', style: TextStyle(color: Colors.grey[500], fontSize: 11)),
+                Text('$method · $statusLabel', style: TextStyle(color: Colors.grey[500], fontSize: 11)),
               ],
             ),
           ),

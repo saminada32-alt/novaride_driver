@@ -45,6 +45,33 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
       ),
       body: provider.isLoading
           ? const Center(child: CircularProgressIndicator(color: Colors.green))
+          : (provider.vehicle == null && provider.error != null)
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.cloud_off_rounded, size: 60, color: Colors.grey[400]),
+                    const SizedBox(height: 12),
+                    Text(
+                      t.genericLoadError,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        final token = context.read<AuthProvider>().token;
+                        if (token != null) provider.loadVehicle(token);
+                      },
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                      child: Text(t.retry, style: const TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ),
+              ),
+            )
           : provider.vehicle == null
           ? Center(
               child: Column(
@@ -57,7 +84,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    t.noData ?? 'No vehicle found',
+                    t.noData,
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                 ],
@@ -86,7 +113,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${provider.vehicle!.brand} ${provider.vehicle!.model}',
+                        provider.vehicle!.brand,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,

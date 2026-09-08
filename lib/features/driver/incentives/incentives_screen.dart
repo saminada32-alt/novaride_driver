@@ -15,6 +15,7 @@ class DriverIncentivesScreen extends StatefulWidget {
 class _DriverIncentivesScreenState extends State<DriverIncentivesScreen> {
   List<DriverIncentiveZone> _zones = [];
   bool _loading = true;
+  bool _error = false;
 
   @override
   void initState() {
@@ -23,11 +24,15 @@ class _DriverIncentivesScreenState extends State<DriverIncentivesScreen> {
   }
 
   Future<void> _load() async {
-    setState(() => _loading = true);
+    setState(() {
+      _loading = true;
+      _error = false;
+    });
     try {
       _zones = await DriverIncentivesService.instance.fetchActive();
     } catch (_) {
       _zones = [];
+      _error = true;
     }
     if (mounted) setState(() => _loading = false);
   }
@@ -60,10 +65,33 @@ class _DriverIncentivesScreenState extends State<DriverIncentivesScreen> {
                         SizedBox(
                           height: MediaQuery.sizeOf(context).height * 0.12,
                         ),
-                        EmptyIllustration(
-                          imageAsset: 'assets/images/Gift card-bro.png',
-                          message: t.driverIncentivesEmpty,
-                        ),
+                        if (_error) ...[
+                          Icon(Icons.cloud_off_rounded,
+                              size: 64, color: Colors.grey.shade400),
+                          const SizedBox(height: 12),
+                          Text(
+                            t.genericLoadError,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
+                          const SizedBox(height: 16),
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: _load,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                              ),
+                              child: Text(
+                                t.retry,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ] else
+                          EmptyIllustration(
+                            imageAsset: 'assets/images/Gift card-bro.png',
+                            message: t.driverIncentivesEmpty,
+                          ),
                       ],
                     )
                   : ListView.builder(

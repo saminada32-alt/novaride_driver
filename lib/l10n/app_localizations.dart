@@ -101,6 +101,18 @@ abstract class AppLocalizations {
   /// **'NovaRide'**
   String get appName;
 
+  /// No description provided for @genericLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this. Check your connection and try again.'**
+  String get genericLoadError;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
   /// No description provided for @splashTitle.
   ///
   /// In en, this message translates to:
@@ -148,6 +160,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We sent a code to {phone}'**
   String otpSubtitle(Object phone);
+
+  /// No description provided for @otpDeliveryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The message may take 10–30 seconds to arrive. If it doesn\'t, tap resend.'**
+  String get otpDeliveryHint;
 
   /// No description provided for @confirm.
   ///
@@ -707,6 +725,12 @@ abstract class AppLocalizations {
   /// **'Other'**
   String get other;
 
+  /// No description provided for @enterCustomVehicleType.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your vehicle type (e.g. pickup, SUV, truck)'**
+  String get enterCustomVehicleType;
+
   /// No description provided for @enterPlate.
   ///
   /// In en, this message translates to:
@@ -1223,6 +1247,30 @@ abstract class AppLocalizations {
   /// **'You will get an accept offer ~15 min before pickup — stay online'**
   String get scheduledRideDriverHint;
 
+  /// No description provided for @scheduledRideHide.
+  ///
+  /// In en, this message translates to:
+  /// **'Not interested'**
+  String get scheduledRideHide;
+
+  /// No description provided for @scheduledRideHideConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide this ride?'**
+  String get scheduledRideHideConfirmTitle;
+
+  /// No description provided for @scheduledRideHideConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This ride isn\'t assigned to you yet, so it can\'t be cancelled — this only removes it from your list and you won\'t get an accept offer for it. Other nearby drivers can still take it.'**
+  String get scheduledRideHideConfirmBody;
+
+  /// No description provided for @scheduledRideHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden from your list'**
+  String get scheduledRideHidden;
+
   /// No description provided for @incomingScheduledPickup.
   ///
   /// In en, this message translates to:
@@ -1475,11 +1523,29 @@ abstract class AppLocalizations {
   /// **'Edit Information'**
   String get editVehicle;
 
+  /// No description provided for @vehicleUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle updated!'**
+  String get vehicleUpdated;
+
+  /// No description provided for @yearInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid year'**
+  String get yearInvalid;
+
   /// No description provided for @editProfile.
   ///
   /// In en, this message translates to:
   /// **'Edit Profile'**
   String get editProfile;
+
+  /// No description provided for @accountUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Account updated!'**
+  String get accountUpdated;
 
   /// No description provided for @all.
   ///
@@ -1588,6 +1654,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total Earnings'**
   String get totalEarnings;
+
+  /// No description provided for @csvGeneratedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated'**
+  String get csvGeneratedOn;
+
+  /// No description provided for @csvSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get csvSummary;
+
+  /// No description provided for @csvRecentRides.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Rides'**
+  String get csvRecentRides;
+
+  /// No description provided for @csvRideId.
+  ///
+  /// In en, this message translates to:
+  /// **'Ride ID'**
+  String get csvRideId;
+
+  /// No description provided for @csvAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get csvAmount;
+
+  /// No description provided for @csvDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get csvDate;
 
   /// No description provided for @recentTransactions.
   ///
@@ -2189,6 +2291,12 @@ abstract class AppLocalizations {
   /// **'min'**
   String get minutesShort;
 
+  /// No description provided for @hoursShort.
+  ///
+  /// In en, this message translates to:
+  /// **'h'**
+  String get hoursShort;
+
   /// No description provided for @rideNumber.
   ///
   /// In en, this message translates to:
@@ -2297,6 +2405,12 @@ abstract class AppLocalizations {
   /// **'Sham Cash'**
   String get shamCash;
 
+  /// No description provided for @shamCashReferenceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer reference number'**
+  String get shamCashReferenceHint;
+
   /// No description provided for @mobileBalance.
   ///
   /// In en, this message translates to:
@@ -2338,6 +2452,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'My Method'**
   String get myMethod;
+
+  /// No description provided for @subscriptionPaymentStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get subscriptionPaymentStatusPending;
+
+  /// No description provided for @subscriptionPaymentStatusApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get subscriptionPaymentStatusApproved;
+
+  /// No description provided for @subscriptionPaymentStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get subscriptionPaymentStatusRejected;
 
   /// No description provided for @currencyShort.
   ///
@@ -2825,6 +2957,24 @@ abstract class AppLocalizations {
   /// **'No payouts yet'**
   String get walletNoPayouts;
 
+  /// No description provided for @payoutStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get payoutStatusPending;
+
+  /// No description provided for @payoutStatusPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get payoutStatusPaid;
+
+  /// No description provided for @payoutStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get payoutStatusRejected;
+
   /// No description provided for @walletInvalidAmount.
   ///
   /// In en, this message translates to:
@@ -2884,6 +3034,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No work zones yet. Add one to set your schedule.'**
   String get workZonesEmpty;
+
+  /// No description provided for @workZonesDisabledBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Work hours are temporarily disabled — you can go online anytime.'**
+  String get workZonesDisabledBanner;
+
+  /// No description provided for @workZoneDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete work zone?'**
+  String get workZoneDeleteTitle;
+
+  /// No description provided for @workZoneDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You won\'t receive ride offers in this area anymore.'**
+  String get workZoneDeleteBody;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
 
   /// No description provided for @workZonesOffShiftOnline.
   ///
@@ -3436,6 +3616,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Something went wrong'**
   String get actionFailed;
+
+  /// No description provided for @otpServerTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'The server is taking too long to respond — try again'**
+  String get otpServerTimeout;
+
+  /// No description provided for @otpConnectionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach the server — check your internet connection'**
+  String get otpConnectionFailed;
+
+  /// No description provided for @otpInvalidCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong code — use the latest SMS, or resend if needed'**
+  String get otpInvalidCodeHint;
+
+  /// No description provided for @otpSmsSendFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t send the SMS — try again shortly'**
+  String get otpSmsSendFailed;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

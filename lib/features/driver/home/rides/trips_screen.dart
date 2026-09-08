@@ -7,6 +7,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../rides/model/ride_model.dart';
 import 'provider/rides_provider.dart';
 import 'screens/active_ride_ui.dart';
+import 'widgets/trip_details_sheet.dart';
 
 class TripsPage extends StatefulWidget {
   const TripsPage({super.key});
@@ -48,6 +49,22 @@ class _TripsPageState extends State<TripsPage> {
         '${l.minute.toString().padLeft(2, '0')}';
   }
 
+  void _showTripDetails(DriverRideModel trip) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => TripDetailsSheet(
+        trip: trip,
+        statusColor: _statusColor(trip.status),
+        statusLabel: _statusLabel(trip.status, AppLocalizations.of(context)!),
+        dateLabel: _formatDate(trip.createdAt),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
@@ -75,7 +92,31 @@ class _TripsPageState extends State<TripsPage> {
 
         // ─── List ─────────────────────────────────────────────
         Expanded(
-          child: provider.trips.isEmpty
+          child: provider.trips.isEmpty && provider.error != null
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.cloud_off_rounded, size: 64, color: Colors.grey[400]),
+                        const SizedBox(height: 12),
+                        Text(
+                          t.genericLoadError,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () => provider.loadTrips(),
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                          child: Text(t.retry, style: const TextStyle(color: Colors.white)),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : provider.trips.isEmpty
               ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -98,7 +139,7 @@ class _TripsPageState extends State<TripsPage> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        t.noTrips ?? 'No trips yet',
+                        t.noTrips,
                         style: TextStyle(color: Colors.grey[600]),
                       ),
                     ],
@@ -116,7 +157,6 @@ class _TripsPageState extends State<TripsPage> {
 
                       return Container(
                         margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(18),
@@ -124,6 +164,14 @@ class _TripsPageState extends State<TripsPage> {
                             BoxShadow(color: Colors.black12, blurRadius: 8),
                           ],
                         ),
+                        child: Material(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(18),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(18),
+                            onTap: () => _showTripDetails(trip),
+                            child: Padding(
+                        padding: const EdgeInsets.all(16),
                         child: Row(
                           children: [
                             Container(
@@ -214,6 +262,9 @@ class _TripsPageState extends State<TripsPage> {
                               ),
                             ),
                           ],
+                        ),
+                            ),
+                          ),
                         ),
                       );
                     },

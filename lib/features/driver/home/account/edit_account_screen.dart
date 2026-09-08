@@ -33,6 +33,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
 
   Future<void> _save() async {
     if (!_form.currentState!.validate()) return;
+    final t = AppLocalizations.of(context)!;
     final token = context.read<AuthProvider>().token;
     final prov = context.read<AccountProvider>();
     if (token == null) return;
@@ -45,8 +46,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     if (!mounted) return;
     if (ok) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Updated!'),
+        SnackBar(
+          content: Text(t.accountUpdated),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
         ),
@@ -54,8 +55,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
       Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed!'),
+        SnackBar(
+          content: Text(t.actionFailed),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
         ),
@@ -93,14 +94,19 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 _name,
                 t.fullName,
                 Icons.person_outline,
-                (v) => v!.trim().isEmpty ? 'Required' : null,
+                (v) => (v == null || v.trim().isEmpty) ? t.fieldRequired : null,
               ),
               const SizedBox(height: 14),
               _f(
                 _email,
                 t.email,
                 Icons.mail_outline,
-                (v) => v!.contains('@') ? null : 'Invalid email',
+                (v) {
+                  final value = v?.trim() ?? '';
+                  if (value.isEmpty) return null;
+                  final valid = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value);
+                  return valid ? null : t.invalidEmail;
+                },
                 type: TextInputType.emailAddress,
               ),
               const SizedBox(height: 14),
@@ -108,7 +114,10 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 _phone,
                 t.phone,
                 Icons.phone_outlined,
-                (v) => v!.length < 8 ? 'Invalid' : null,
+                (v) {
+                  final digits = (v ?? '').replaceAll(RegExp(r'\D'), '');
+                  return digits.length < 8 ? t.invalidPhone : null;
+                },
                 type: TextInputType.phone,
               ),
               const SizedBox(height: 32),
@@ -133,7 +142,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                           ),
                         )
                       : Text(
-                          t.saveChanges ?? 'Save',
+                          t.saveChanges,
                           style: const TextStyle(
                             fontSize: 16,
                             color: Colors.white,

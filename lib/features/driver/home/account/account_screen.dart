@@ -34,7 +34,35 @@ class _AccountScreenState extends State<AccountScreen> {
       );
     }
     final user = prov.account;
-    if (user == null) return Center(child: Text(t.noData ?? 'No data'));
+    if (user == null && prov.error != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.cloud_off_rounded, size: 64, color: Colors.grey[400]),
+              const SizedBox(height: 12),
+              Text(
+                t.genericLoadError,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  final token = context.read<AuthProvider>().token;
+                  if (token != null) prov.loadAccount(token);
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                child: Text(t.retry, style: const TextStyle(color: Colors.white)),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    if (user == null) return Center(child: Text(t.noData));
 
     return RefreshIndicator(
       color: Colors.green,
@@ -151,9 +179,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    user.isVerified
-                        ? (t.verifiedDriver ?? 'Verified')
-                        : (t.pending ?? 'Pending'),
+                    user.isVerified ? t.verifiedDriver : t.pending,
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),
@@ -188,7 +214,7 @@ class _AccountScreenState extends State<AccountScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  t.driverPerformance ?? 'Performance',
+                  t.driverPerformance,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -196,11 +222,11 @@ class _AccountScreenState extends State<AccountScreen> {
                 ),
                 const SizedBox(height: 14),
                 _row(
-                  t.acceptanceRate ?? 'Acceptance Rate',
+                  t.acceptanceRate,
                   '${user.acceptanceRate.toStringAsFixed(1)}%',
                 ),
                 _row(
-                  t.cancellationRate ?? 'Cancellation Rate',
+                  t.cancellationRate,
                   '${user.cancelRate.toStringAsFixed(1)}%',
                 ),
               ],
@@ -244,7 +270,7 @@ class _AccountScreenState extends State<AccountScreen> {
             ),
             onPressed: () => prov.logout(context),
             icon: const Icon(Icons.logout),
-            label: Text(t.logout ?? 'Logout'),
+            label: Text(t.logout),
           ),
 
           const SizedBox(height: 20),

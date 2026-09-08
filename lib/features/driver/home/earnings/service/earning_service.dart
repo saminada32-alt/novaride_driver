@@ -23,8 +23,13 @@ class EarningService {
       return _empty();
     }
 
-    final j = jsonDecode(utf8.decode(res.bodyBytes)) as Map<String, dynamic>;
-    return _parse(j);
+    try {
+      final j = jsonDecode(utf8.decode(res.bodyBytes)) as Map<String, dynamic>;
+      return _parse(j);
+    } catch (e) {
+      debugPrint('Earnings parse error: $e');
+      return _empty();
+    }
   }
 
   EarningModel _parse(Map<String, dynamic> j) {

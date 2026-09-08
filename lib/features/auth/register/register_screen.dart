@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:country_picker/country_picker.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:sms_autofill/sms_autofill.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../core/services/legal_service.dart';
 import '../../legal/legal_document_screen.dart';
@@ -24,7 +24,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameFocus = FocusNode();
   final _phoneFocus = FocusNode();
 
-  String? _licenseCountry;
   String _code = '+963';
   bool _agreed = false;
   bool _loadingLegal = false;
@@ -68,7 +67,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool get _valid =>
       _nameCtrl.text.trim().isNotEmpty &&
       _phoneCtrl.text.trim().length >= 7 &&
-      _licenseCountry != null &&
       _agreed;
 
   InputDecoration _dec(
@@ -123,6 +121,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final phone = buildAuthPhone(_code, _phoneCtrl.text.trim());
     final prov = context.read<AuthProvider>();
 
+    try {
+      await SmsAutoFill().listenForCode();
+    } catch (_) {}
+
     final ok = await prov.sendOtp(phone);
 
     if (!mounted) return;
@@ -132,7 +134,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!ok) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(prov.error ?? 'Error'),
+          content: Text(prov.error ?? AppLocalizations.of(context)!.actionFailed),
           backgroundColor: Colors.red.shade600,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -153,7 +155,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           registerData: {
             'name': _nameCtrl.text.trim(),
             'email': _emailCtrl.text.trim(),
-            'licenseCountry': _licenseCountry!,
           },
         ),
       ),
@@ -400,55 +401,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 onChanged: _onPhoneChanged,
                               ),
                               const SizedBox(height: 14),
-
-                              // License Country
-                              GestureDetector(
-                                onTap: () => showCountryPicker(
-                                  context: context,
-                                  showPhoneCode: false,
-                                  onSelect: (c) =>
-                                      setState(() => _licenseCountry = c.name),
-                                ),
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 14,
-                                    vertical: 16,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade100,
-                                    borderRadius: BorderRadius.circular(18),
-                                    border: Border.all(
-                                      color: _licenseCountry != null
-                                          ? Colors.green
-                                          : Colors.transparent,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          const Icon(Icons.flag_circle_rounded),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            _licenseCountry ??
-                                                local.licenseCountryHint,
-                                          ),
-                                          const Text(
-                                            ' *',
-                                            style: TextStyle(color: Colors.red),
-                                          ),
-                                        ],
-                                      ),
-                                      const Icon(Icons.expand_more),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 16),
 
                               // Terms
                               Row(

@@ -38,30 +38,39 @@ class DriverSocketService {
   }
 
   Future<void> connect({int? driverId}) async {
-    if (driverId != null) _driverId = driverId;
+    try {
+      if (driverId != null) _driverId = driverId;
 
-    final tok = await _storage.read(key: 'driver_token');
-    if (tok == null) return;
+      final tok = await _storage.read(key: 'driver_token');
+      if (tok == null) return;
 
-    if (_socket?.connected == true) {
-      _emitOnline();
-      return;
-    }
+      if (_socket?.connected == true) {
+        _emitOnline();
+        return;
+      }
 
-    _socket?.dispose();
-    _socket = IO.io(
-      '${Api.base}/tracking',
-      IO.OptionBuilder()
-          .setTransports(['websocket'])
-          .setAuth({'token': tok})
-          .enableReconnection()
-          .build(),
-    );
+      _socket?.dispose();
+      _socket = IO.io(
+        '${Api.base}/tracking',
+        IO.OptionBuilder()
+            .setTransports(['websocket'])
+            .setAuth({'token': tok})
+            .enableReconnection()
+            .build(),
+      );
 
-    _socket!.onConnect((_) {
-      if (kDebugMode) debugPrint('Driver Socket Connected');
-      _emitOnline();
-    });
+      _socket!.onConnect((_) {
+        if (kDebugMode) debugPrint('Driver Socket Connected');
+        _emitOnline();
+      });
+
+      _socket!.onConnectError((data) {
+        if (kDebugMode) debugPrint('Driver socket connect_error: $data');
+      });
+
+      _socket!.onError((data) {
+        if (kDebugMode) debugPrint('Driver socket error: $data');
+      });
 
     _socket!.on('new_ride_offer', (data) {
       _safe('new_ride_offer', () {
@@ -130,6 +139,9 @@ class DriverSocketService {
     });
 
     _socket!.connect();
+    } catch (e) {
+      if (kDebugMode) debugPrint('Driver socket connect failed: $e');
+    }
   }
 
   void _emitOnline() {

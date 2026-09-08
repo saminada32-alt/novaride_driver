@@ -17,7 +17,7 @@ class CarService {
     };
 
     final payload = {
-      'type': typeMap[body['type']] ?? body['type'],
+      'type': body['type'] == 'other' ? 'car' : (typeMap[body['type']] ?? body['type']),
       'plateNumber': body['plateNumber'],
       'brand': body['brand'],
       'model': body['model'],

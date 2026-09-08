@@ -80,6 +80,10 @@ class DriverLocationGuard {
       return const LocationGuardResult(failure: LocationGuardFailure.noFix);
     }
 
+    if (WorkZonesService.workHoursDisabled) {
+      return LocationGuardResult(position: pos);
+    }
+
     final zones = await WorkZonesService.instance.list();
     if (zones.isEmpty) {
       return LocationGuardResult(position: pos);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/services/socket_service.dart';
+import '../../../core/utils/api_error_messages.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../auth/providers/auth_provider.dart';
 import 'chat_message.dart';
@@ -92,7 +93,10 @@ class _DriverRideChatScreenState extends State<DriverRideChatScreen> {
       if (!mounted) return;
       setState(() => _loading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text(localizeApiError(e.toString(), AppLocalizations.of(context)!)),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -117,7 +121,10 @@ class _DriverRideChatScreenState extends State<DriverRideChatScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(localizeApiError(e.toString(), AppLocalizations.of(context)!)),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {

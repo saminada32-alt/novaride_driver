@@ -1,21 +1,22 @@
 import 'package:intl/intl.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'model/earning_model.dart';
 
-String buildEarningsCsv(EarningModel e) {
+String buildEarningsCsv(EarningModel e, AppLocalizations t) {
   final dateFmt = DateFormat('yyyy-MM-dd HH:mm');
   final buf = StringBuffer()
     ..writeln('NovaRide Driver Earnings Statement')
-    ..writeln('Generated,${dateFmt.format(DateTime.now())}')
+    ..writeln('${t.csvGeneratedOn},${dateFmt.format(DateTime.now())}')
     ..writeln()
-    ..writeln('Summary')
-    ..writeln('Total,${e.total.toStringAsFixed(2)}')
-    ..writeln('Today,${e.today.toStringAsFixed(2)}')
-    ..writeln('Week,${e.week.toStringAsFixed(2)}')
-    ..writeln('Month,${e.month.toStringAsFixed(2)}')
-    ..writeln('Trips,${e.trips}')
+    ..writeln(t.csvSummary)
+    ..writeln('${t.totalEarnings},${e.total.toStringAsFixed(2)}')
+    ..writeln('${t.today},${e.today.toStringAsFixed(2)}')
+    ..writeln('${t.weekly},${e.week.toStringAsFixed(2)}')
+    ..writeln('${t.monthly},${e.month.toStringAsFixed(2)}')
+    ..writeln('${t.trips},${e.trips}')
     ..writeln()
-    ..writeln('Recent Rides')
-    ..writeln('RideId,Amount,Date');
+    ..writeln(t.csvRecentRides)
+    ..writeln('${t.csvRideId},${t.csvAmount},${t.csvDate}');
 
   for (final r in e.recentRides) {
     buf.writeln(

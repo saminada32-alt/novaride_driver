@@ -49,6 +49,11 @@ class CarProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setCustomVehicleType(String? v) {
+    car.customVehicleType = v;
+    notifyListeners();
+  }
+
   // حقول جديدة لأنواع المركبات الإضافية
   void setTankerCapacity(int? v) {
     car.tankerCapacity = v;
@@ -78,14 +83,17 @@ class CarProvider extends ChangeNotifier {
     //await _service.sendCarInfo(body , token);
 
     try {
-      // جهّز الـ payload مع تضمين الحقول الجديدة فقط إن وُجدت
+      final apiType = car.vehicleType == 'other' ? 'car' : car.vehicleType;
+      final customType = car.customVehicleType?.trim();
       final Map<String, dynamic> body = {
-        'type': car.vehicleType,
+        'type': apiType,
         'plateNumber': car.plateNumber,
         'manufactureYear': car.year != null ? int.tryParse(car.year!) : null,
         'color': car.color,
         'brand': car.brand,
-        'model': car.model,
+        'model': car.vehicleType == 'other' && (customType?.isNotEmpty ?? false)
+            ? customType
+            : car.model,
         'passengerCount': car.passengerCount != null
             ? int.tryParse(car.passengerCount!)
             : null,

@@ -24,13 +24,25 @@ class AuthProvider extends ChangeNotifier {
   // ───────────────────────────────────────────────
   // CHECK DRIVER STATUS
   // ───────────────────────────────────────────────
+  // Cache-first: on Syria's networks a single sessionGet attempt can take
+  // up to 25s, times 3 retries — the splash screen must never make a
+  // returning driver stare at a spinner for a minute when we already know
+  // their status from last time. Decide navigation from cache immediately
+  // when available, and verify with the server silently afterward; only
+  // block on the network when there's truly nothing cached yet.
   Future<DriverStatus> checkDriverStatus() async {
-    String? tok;
-    try {
-      tok = await AuthService.instance.getToken();
-      if (tok == null) return DriverStatus.notLoggedIn;
+    final tok = await AuthService.instance.getToken();
+    if (tok == null) return DriverStatus.notLoggedIn;
+    _token = tok;
 
-      _token = tok;
+    final cachedStatus = await SessionCache.loadDriverStatus();
+    if (cachedStatus != null) {
+      final status = await _statusFromCache(fallback: DriverStatus.pending);
+      unawaited(_refreshDriverInBackground(tok));
+      return status;
+    }
+
+    try {
       _driver = await AuthService.instance.getMe(tok, session: true);
       notifyListeners();
 
@@ -41,12 +53,10 @@ class AuthProvider extends ChangeNotifier {
       await logout();
       return DriverStatus.notLoggedIn;
     } catch (_) {
-      if (tok != null) {
-        final status = await _statusFromCache(fallback: DriverStatus.pending);
-        unawaited(_refreshDriverInBackground(tok));
-        return status;
-      }
-      return DriverStatus.notLoggedIn;
+      // No cache and the network attempt failed — same optimistic fallback
+      // as before: land the driver in the onboarding-resume flow rather
+      // than bouncing a real, logged-in driver out to the welcome screen.
+      return DriverStatus.pending;
     }
   }
 
@@ -55,6 +65,10 @@ class AuthProvider extends ChangeNotifier {
       _driver = await AuthService.instance.getMe(tok);
       await _cacheDriverSession(_driver!);
       notifyListeners();
+    } on SessionExpiredException {
+      // Token was revoked/expired server-side — don't leave the app
+      // silently "logged in" off a stale cache until the user notices.
+      await logout();
     } catch (_) {}
   }
 

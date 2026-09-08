@@ -98,7 +98,7 @@ class _OtpScreenState extends State<OtpScreen> {
       setState(() => _isError = true);
       HapticFeedback.heavyImpact();
       _snack(
-        _friendlyError(prov.error ?? t.invalidOtpCode),
+        _friendlyError(prov.error ?? t.invalidOtpCode, t),
         Colors.red.shade600,
       );
       Future.delayed(const Duration(milliseconds: 400), _clear);
@@ -153,30 +153,27 @@ class _OtpScreenState extends State<OtpScreen> {
       }
       if (parts.length > 1) body['lastName'] = parts.sublist(1).join(' ');
       if ((d['email'] ?? '').isNotEmpty) body['email'] = d['email'];
-      if ((d['licenseCountry'] ?? '').isNotEmpty) {
-        body['licenseCountry'] = d['licenseCountry'];
-      }
       if (body.isNotEmpty) unawaited(prov.updateInfo(body));
     }
   }
 
   void _otpFocusUnfocus() => FocusManager.instance.primaryFocus?.unfocus();
 
-  String _friendlyError(String raw) {
+  String _friendlyError(String raw, AppLocalizations t) {
     final lower = raw.toLowerCase();
     if (lower.contains('timeout') ||
         raw.contains('مهلة') ||
         raw.contains('تأخر')) {
-      return 'الخادم تأخر في الرد — حاول مجدداً';
+      return t.otpServerTimeout;
     }
     if (lower.contains('socket') || raw.contains('الاتصال بالخادم')) {
-      return 'تعذّر الاتصال بالخادم — تحقق من الإنترنت';
+      return t.otpConnectionFailed;
     }
     if (lower.contains('invalid') && lower.contains('otp')) {
-      return 'رمز غير صحيح — استخدم آخر SMS واضغط إعادة إرسال إذا لزم';
+      return t.otpInvalidCodeHint;
     }
     if (lower.contains('sms') || raw.contains('SMS_DELIVERY')) {
-      return 'تعذّر إرسال SMS — حاول بعد قليل';
+      return t.otpSmsSendFailed;
     }
     return raw;
   }
@@ -206,13 +203,6 @@ class _OtpScreenState extends State<OtpScreen> {
     }
   }
 
-  void _goPending() => unawaited(
-    DriverOnboardingRouter.resumePending(
-      context,
-      driver: context.read<AuthProvider>().driver,
-    ),
-  );
-
   Future<void> _resend() async {
     final t = AppLocalizations.of(context)!;
     final prov = context.read<AuthProvider>();
@@ -224,9 +214,12 @@ class _OtpScreenState extends State<OtpScreen> {
       _clear();
       _startTimer();
       await _otpKey.currentState?.restartListening();
-      _snack('Code sent!', Colors.green);
+      _snack(t.codeSentTo(widget.phone), Colors.green);
     } else {
-      _snack(_friendlyError(prov.error ?? t.actionFailed), Colors.red.shade600);
+      _snack(
+        _friendlyError(prov.error ?? t.actionFailed, t),
+        Colors.red.shade600,
+      );
     }
   }
 
@@ -272,7 +265,7 @@ class _OtpScreenState extends State<OtpScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'قد يستغرق وصول الرسالة 10–30 ثانية. إذا لم تصل، اضغط إعادة إرسال.',
+              local.otpDeliveryHint,
               style: TextStyle(color: Colors.grey[500], fontSize: 13, height: 1.4),
             ),
             const SizedBox(height: 40),

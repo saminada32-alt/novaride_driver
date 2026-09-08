@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../model/location_model.dart';
 import '../service/location_service.dart';
 import '../syria_cities_catalog.dart';
+import 'package:novaride_driver/core/services/work_zones_service.dart';
 
 class LocationProvider extends ChangeNotifier {
   final LocationService _service = LocationService();
@@ -49,12 +50,15 @@ class LocationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool get isValid =>
-      selectedCity != null &&
-      selectedArea != null &&
-      (address?.isNotEmpty ?? false) &&
-      startTime != null &&
-      endTime != null;
+  bool get isValid {
+    if (selectedCity == null ||
+        selectedArea == null ||
+        (address?.isEmpty ?? true)) {
+      return false;
+    }
+    if (WorkZonesService.workHoursDisabled) return true;
+    return startTime != null && endTime != null;
+  }
 
   String _fmt(TimeOfDay t) =>
       '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
@@ -69,8 +73,12 @@ class LocationProvider extends ChangeNotifier {
         city: selectedCity!,
         area: selectedArea!,
         address: address!,
-        startTime: _fmt(startTime!),
-        endTime: _fmt(endTime!),
+        startTime: WorkZonesService.workHoursDisabled
+            ? '00:00'
+            : _fmt(startTime!),
+        endTime: WorkZonesService.workHoursDisabled
+            ? '23:59'
+            : _fmt(endTime!),
         //latitude: latitude,
         //longitude: longitude,
       );

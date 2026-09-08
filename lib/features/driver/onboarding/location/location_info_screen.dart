@@ -6,6 +6,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../application_review/application_review_screen.dart';
 import 'provider/location_provider.dart';
+import '../../../../core/services/work_zones_service.dart';
 import 'map_selection_screen.dart';
 import 'syria_cities_catalog.dart';
 
@@ -95,7 +96,9 @@ class _BodyState extends State<_Body> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(prov.errorMessage ?? 'Error occurred'),
+          content: Text(
+            prov.errorMessage ?? AppLocalizations.of(context)!.actionFailed,
+          ),
           backgroundColor: Colors.red.shade600,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -257,6 +260,7 @@ class _BodyState extends State<_Body> {
             ),
             const SizedBox(height: 28),
 
+            if (!WorkZonesService.workHoursDisabled) ...[
             Text(
               local.workingHours,
               style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
@@ -317,6 +321,7 @@ class _BodyState extends State<_Body> {
               ],
             ),
             const SizedBox(height: 32),
+            ],
 
             if (prov.errorMessage != null)
               Container(
@@ -349,7 +354,10 @@ class _BodyState extends State<_Body> {
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    icon: const Icon(Icons.arrow_back, color: Colors.black),
+                    icon: Icon(
+                      isAr ? Icons.arrow_forward : Icons.arrow_back,
+                      color: Colors.black,
+                    ),
                     style: OutlinedButton.styleFrom(
                       backgroundColor: Colors.white,
                       side: const BorderSide(color: Colors.black),

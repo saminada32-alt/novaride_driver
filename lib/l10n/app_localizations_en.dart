@@ -12,6 +12,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'NovaRide';
 
   @override
+  String get genericLoadError => 'Couldn\'t load this. Check your connection and try again.';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
   String get splashTitle => 'Welcome to NovaRide';
 
   @override
@@ -36,6 +42,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String otpSubtitle(Object phone) {
     return 'We sent a code to $phone';
   }
+
+  @override
+  String get otpDeliveryHint => 'The message may take 10–30 seconds to arrive. If it doesn\'t, tap resend.';
 
   @override
   String get confirm => 'Confirm';
@@ -321,6 +330,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get other => 'Other';
 
   @override
+  String get enterCustomVehicleType => 'Enter your vehicle type (e.g. pickup, SUV, truck)';
+
+  @override
   String get enterPlate => 'Enter your license plate number';
 
   @override
@@ -581,6 +593,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scheduledRideDriverHint => 'You will get an accept offer ~15 min before pickup — stay online';
 
   @override
+  String get scheduledRideHide => 'Not interested';
+
+  @override
+  String get scheduledRideHideConfirmTitle => 'Hide this ride?';
+
+  @override
+  String get scheduledRideHideConfirmBody => 'This ride isn\'t assigned to you yet, so it can\'t be cancelled — this only removes it from your list and you won\'t get an accept offer for it. Other nearby drivers can still take it.';
+
+  @override
+  String get scheduledRideHidden => 'Hidden from your list';
+
+  @override
   String incomingScheduledPickup(String time) {
     return 'Pickup at: $time';
   }
@@ -709,7 +733,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editVehicle => 'Edit Information';
 
   @override
+  String get vehicleUpdated => 'Vehicle updated!';
+
+  @override
+  String get yearInvalid => 'Enter a valid year';
+
+  @override
   String get editProfile => 'Edit Profile';
+
+  @override
+  String get accountUpdated => 'Account updated!';
 
   @override
   String get all => 'All';
@@ -764,6 +797,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get totalEarnings => 'Total Earnings';
+
+  @override
+  String get csvGeneratedOn => 'Generated';
+
+  @override
+  String get csvSummary => 'Summary';
+
+  @override
+  String get csvRecentRides => 'Recent Rides';
+
+  @override
+  String get csvRideId => 'Ride ID';
+
+  @override
+  String get csvAmount => 'Amount';
+
+  @override
+  String get csvDate => 'Date';
 
   @override
   String get recentTransactions => 'Recent Transactions';
@@ -1074,6 +1125,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get minutesShort => 'min';
 
   @override
+  String get hoursShort => 'h';
+
+  @override
   String rideNumber(int id) {
     return 'Ride #$id';
   }
@@ -1130,6 +1184,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shamCash => 'Sham Cash';
 
   @override
+  String get shamCashReferenceHint => 'Transfer reference number';
+
+  @override
   String get mobileBalance => 'Mobile Balance';
 
   @override
@@ -1149,6 +1206,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get myMethod => 'My Method';
+
+  @override
+  String get subscriptionPaymentStatusPending => 'Pending';
+
+  @override
+  String get subscriptionPaymentStatusApproved => 'Approved';
+
+  @override
+  String get subscriptionPaymentStatusRejected => 'Rejected';
 
   @override
   String get currencyShort => 'SYP';
@@ -1396,6 +1462,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get walletNoPayouts => 'No payouts yet';
 
   @override
+  String get payoutStatusPending => 'Pending';
+
+  @override
+  String get payoutStatusPaid => 'Paid';
+
+  @override
+  String get payoutStatusRejected => 'Rejected';
+
+  @override
   String get walletInvalidAmount => 'Enter a valid amount';
 
   @override
@@ -1424,6 +1499,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workZonesEmpty => 'No work zones yet. Add one to set your schedule.';
+
+  @override
+  String get workZonesDisabledBanner => 'Work hours are temporarily disabled — you can go online anytime.';
+
+  @override
+  String get workZoneDeleteTitle => 'Delete work zone?';
+
+  @override
+  String get workZoneDeleteBody => 'You won\'t receive ride offers in this area anymore.';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get delete => 'Delete';
 
   @override
   String get workZonesOffShiftOnline => 'Outside scheduled hours. Update your schedule in Work zones.';
@@ -1720,4 +1810,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get actionFailed => 'Something went wrong';
+
+  @override
+  String get otpServerTimeout => 'The server is taking too long to respond — try again';
+
+  @override
+  String get otpConnectionFailed => 'Couldn\'t reach the server — check your internet connection';
+
+  @override
+  String get otpInvalidCodeHint => 'Wrong code — use the latest SMS, or resend if needed';
+
+  @override
+  String get otpSmsSendFailed => 'Couldn\'t send the SMS — try again shortly';
 }

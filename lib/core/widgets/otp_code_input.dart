@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sms_autofill/sms_autofill.dart';
@@ -40,7 +41,7 @@ class OtpCodeInputState extends State<OtpCodeInput> with CodeAutoFill {
 
   /// Call after resend so stale inbox codes are ignored until SMS arrives.
   Future<void> restartListening() async {
-    _listenAfter = DateTime.now().add(const Duration(seconds: 2));
+    _listenAfter = DateTime.now();
     await _startSmsListen();
   }
 
@@ -65,7 +66,7 @@ class OtpCodeInputState extends State<OtpCodeInput> with CodeAutoFill {
   @override
   void initState() {
     super.initState();
-    _listenAfter = DateTime.now().add(const Duration(seconds: 2));
+    _listenAfter = DateTime.now();
     _ctrl.addListener(_onTextChanged);
     unawaited(_startSmsListen());
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -75,6 +76,10 @@ class OtpCodeInputState extends State<OtpCodeInput> with CodeAutoFill {
 
   Future<void> _startSmsListen() async {
     try {
+      if (kDebugMode) {
+        final hash = await SmsAutoFill().getAppSignature;
+        debugPrint('Android SMS app hash: $hash');
+      }
       await SmsAutoFill().unregisterListener();
       _smsSub?.cancel();
       listenForCode();

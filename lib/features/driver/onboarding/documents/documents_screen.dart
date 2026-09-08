@@ -53,7 +53,6 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       'driverIdBack': local.driverIdBack,
       'licenseFront': local.licenseFront,
       'licenseBack': local.licenseBack,
-      'insuranceFront': local.insurance,
       'vehicleFront': local.vehicleFrontPhoto,
       'vehicleBack': local.vehicleBackPhoto,
     };
@@ -321,7 +320,6 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       {'key': 'driverIdBack', 'title': local.driverIdBack, 'subtitle': local.idDescription},
       {'key': 'licenseFront', 'title': local.licenseFront},
       {'key': 'licenseBack', 'title': local.licenseBack, 'subtitle': local.licenseDescription},
-      {'key': 'insuranceFront', 'title': local.insurance},
       {'key': 'vehicleFront', 'title': local.vehicleFrontPhoto},
       {'key': 'vehicleBack', 'title': local.vehicleBackPhoto},
     ];

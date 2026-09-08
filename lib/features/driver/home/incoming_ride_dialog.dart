@@ -28,6 +28,7 @@ class IncomingRideDialogState extends State<IncomingRideDialog>
   Timer? _ringTimer;
   late AnimationController _ringCtrl;
   late Animation<double> _ring;
+  bool _submitting = false;
 
   @override
   void initState() {
@@ -49,6 +50,7 @@ class IncomingRideDialogState extends State<IncomingRideDialog>
     });
 
     _timer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (_submitting) return;
       if (_countdown == 0) {
         t.cancel();
         widget.onReject();
@@ -326,11 +328,11 @@ class IncomingRideDialogState extends State<IncomingRideDialog>
                     children: [
                       Expanded(
                         child: OutlinedButton(
-                          onPressed: widget.onReject,
+                          onPressed: _submitting ? null : widget.onReject,
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
-                            side: const BorderSide(
-                              color: Colors.red,
+                            side: BorderSide(
+                              color: _submitting ? Colors.grey.shade300 : Colors.red,
                               width: 1.5,
                             ),
                             shape: RoundedRectangleBorder(
@@ -339,8 +341,8 @@ class IncomingRideDialogState extends State<IncomingRideDialog>
                           ),
                           child: Text(
                             t.incomingRideDecline,
-                            style: const TextStyle(
-                              color: Colors.red,
+                            style: TextStyle(
+                              color: _submitting ? Colors.grey.shade400 : Colors.red,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -350,9 +352,16 @@ class IncomingRideDialogState extends State<IncomingRideDialog>
                       Expanded(
                         flex: 2,
                         child: ElevatedButton(
-                          onPressed: widget.onAccept,
+                          onPressed: _submitting
+                              ? null
+                              : () {
+                                  _timer?.cancel();
+                                  setState(() => _submitting = true);
+                                  widget.onAccept();
+                                },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green.shade600,
+                            disabledBackgroundColor: Colors.green.shade600,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
@@ -360,25 +369,34 @@ class IncomingRideDialogState extends State<IncomingRideDialog>
                             elevation: 4,
                             shadowColor: Colors.green.withValues(alpha: 0.4),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.check_rounded,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                t.incomingRideAccept,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
+                          child: _submitting
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2.5,
+                                  ),
+                                )
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.check_rounded,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      t.incomingRideAccept,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
-                          ),
                         ),
                       ),
                     ],

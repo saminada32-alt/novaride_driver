@@ -9,6 +9,7 @@ class CarModel {
   String? color;
   String? passengerCount; // used for van or engine size for motor as string
   String? engineSize;
+  String? customVehicleType;
 
   // حقول جديدة
   int? tankerCapacity; // liters
@@ -24,6 +25,7 @@ class CarModel {
     this.color,
     this.passengerCount,
     this.engineSize,
+    this.customVehicleType,
     this.tankerCapacity,
     this.cargoVolume,
     this.hasPressureWasher,
@@ -44,6 +46,7 @@ class CarModel {
           ? int.tryParse(passengerCount!)
           : null,
       'engineSize': engineSize != null ? int.tryParse(engineSize!) : null,
+      'customVehicleType': customVehicleType,
       'tankerCapacity': tankerCapacity,
       'cargoVolume': cargoVolume,
       'hasPressureWasher': hasPressureWasher,
@@ -63,6 +66,7 @@ class CarModel {
     'color': color,
     'passengerCount': passengerCount,
     'engineSize': engineSize,
+    'customVehicleType': customVehicleType,
     'tankerCapacity': tankerCapacity,
     'cargoVolume': cargoVolume,
     'hasPressureWasher': hasPressureWasher,
@@ -79,6 +83,7 @@ class CarModel {
     color: json['color'],
     passengerCount: json['passengerCount']?.toString(),
     engineSize: json['engineSize']?.toString(),
+    customVehicleType: json['customVehicleType']?.toString(),
     tankerCapacity: json['tankerCapacity'],
     cargoVolume: json['cargoVolume'],
     hasPressureWasher: json['hasPressureWasher'],
@@ -93,6 +98,7 @@ class CarModel {
     String? color,
     String? passengerCount,
     String? engineSize,
+    String? customVehicleType,
     int? tankerCapacity,
     int? cargoVolume,
     bool? hasPressureWasher,
@@ -106,6 +112,7 @@ class CarModel {
       color: color ?? this.color,
       passengerCount: passengerCount ?? this.passengerCount,
       engineSize: engineSize ?? this.engineSize,
+      customVehicleType: customVehicleType ?? this.customVehicleType,
       tankerCapacity: tankerCapacity ?? this.tankerCapacity,
       cargoVolume: cargoVolume ?? this.cargoVolume,
       hasPressureWasher: hasPressureWasher ?? this.hasPressureWasher,

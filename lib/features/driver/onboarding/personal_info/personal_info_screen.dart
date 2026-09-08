@@ -484,7 +484,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                           : null,
 
                       child: Text(
-                        provider.isLoading ? "Loading..." : local.next,
+                        provider.isLoading ? local.loading : local.next,
 
                         style: const TextStyle(
                           color: Colors.white,

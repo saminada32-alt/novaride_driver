@@ -18,6 +18,7 @@ class VehicleProvider extends ChangeNotifier {
 
   Future<void> loadVehicle(String token) async {
     _isLoading = true;
+    _error = null;
     notifyListeners();
     try {
       _vehicle = await _service.fetchVehicle(token);
@@ -31,7 +32,6 @@ class VehicleProvider extends ChangeNotifier {
   Future<bool> updateVehicle({
     required String token,
     required String brand,
-    required String model,
     required String year,
     required String plate,
     required String color,
@@ -41,7 +41,6 @@ class VehicleProvider extends ChangeNotifier {
     try {
       await _service.updateVehicle(token, {
         'brand': brand,
-        'model': model,
         'manufactureYear': int.tryParse(year),
         'plateNumber': plate,
         'color': color,
@@ -49,7 +48,6 @@ class VehicleProvider extends ChangeNotifier {
       if (_vehicle != null) {
         _vehicle!
           ..brand = brand
-          ..model = model
           ..year = year
           ..plateNumber = plate
           ..color = color;

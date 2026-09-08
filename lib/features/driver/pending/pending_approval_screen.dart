@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -22,6 +23,8 @@ class _PendingApprovalScreenState extends State<PendingApprovalScreen> {
   GoogleMapController? _mapCtrl;
   LatLng _pos = const LatLng(33.5138, 36.2765);
   final Location _loc = Location();
+  StreamSubscription<LocationData>? _locSub;
+  bool _locationGranted = false;
   bool _rejected = false;
   bool _loadingDocs = false;
 
@@ -55,18 +58,27 @@ class _PendingApprovalScreenState extends State<PendingApprovalScreen> {
   @override
   void dispose() {
     _timer?.cancel();
+    unawaited(_locSub?.cancel());
     super.dispose();
   }
 
   Future<void> _initLocation() async {
-    final p = await _loc.requestPermission();
-    if (p != PermissionStatus.granted) return;
-    _loc.onLocationChanged.listen((l) {
-      if (l.latitude != null && l.longitude != null && mounted) {
-        setState(() => _pos = LatLng(l.latitude!, l.longitude!));
-        _mapCtrl?.animateCamera(CameraUpdate.newLatLng(_pos));
+    try {
+      final p = await _loc.requestPermission();
+      if (p != PermissionStatus.granted && p != PermissionStatus.grantedLimited) {
+        return;
       }
-    });
+      if (mounted) setState(() => _locationGranted = true);
+      await _locSub?.cancel();
+      _locSub = _loc.onLocationChanged.listen((l) {
+        if (l.latitude != null && l.longitude != null && mounted) {
+          setState(() => _pos = LatLng(l.latitude!, l.longitude!));
+          _mapCtrl?.animateCamera(CameraUpdate.newLatLng(_pos));
+        }
+      });
+    } catch (e) {
+      debugPrint('Pending map location: $e');
+    }
   }
 
   Future<void> _check() async {
@@ -116,16 +128,16 @@ class _PendingApprovalScreenState extends State<PendingApprovalScreen> {
             // ─── الخريطة (الوحيدة الشغالة) ───────────────────
             GoogleMap(
               initialCameraPosition: CameraPosition(target: _pos, zoom: 15),
-              myLocationEnabled: true,
+              myLocationEnabled: _locationGranted,
               myLocationButtonEnabled: false,
               zoomControlsEnabled: false,
               onMapCreated: (c) => _mapCtrl = c,
             ),
 
             // ─── زر إعادة التمركز ─────────────────────────────
-            Positioned(
+            PositionedDirectional(
               top: 60,
-              right: 16,
+              end: 16,
               child: FloatingActionButton(
                 heroTag: 'recenter',
                 mini: true,

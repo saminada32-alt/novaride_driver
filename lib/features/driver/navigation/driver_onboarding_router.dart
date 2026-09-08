@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../core/utils/session_cache.dart';
-import '../../auth/models/auth_model.dart';
+import 'package:novaride_driver/core/utils/session_cache.dart';
+import 'package:novaride_driver/features/auth/models/auth_model.dart';
 import '../onboarding/application_review/application_review_screen.dart';
 import '../onboarding/car_info/car_info_screen.dart';
 import '../onboarding/documents/documents_screen.dart';

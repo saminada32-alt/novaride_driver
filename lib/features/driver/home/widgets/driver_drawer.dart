@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/widgets/profile_avatar.dart';
+import '../../../../core/services/work_zones_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../account/provider/account_provider.dart';
 import '../../incentives/incentives_screen.dart';
@@ -156,11 +157,12 @@ class DriverDrawer extends StatelessWidget {
                       ),
                     ]),
                     _section([
-                      DriverMenuItem(
-                        icon: Icons.map_outlined,
-                        title: t.workZonesTitle,
-                        onTap: () => _push(context, const WorkZonesScreen()),
-                      ),
+                      if (!WorkZonesService.workHoursDisabled)
+                        DriverMenuItem(
+                          icon: Icons.map_outlined,
+                          title: t.workZonesTitle,
+                          onTap: () => _push(context, const WorkZonesScreen()),
+                        ),
                       DriverMenuItem(
                         icon: Icons.tune_rounded,
                         title: t.preferences,

@@ -35,7 +35,12 @@ class _SupportScreenState extends State<SupportScreen> {
   }
 
   Future<void> _submitComplaint() async {
-    if (_descCtrl.text.trim().isEmpty) return;
+    if (_descCtrl.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.fieldRequired)),
+      );
+      return;
+    }
 
     try {
       setState(() => _loading = true);

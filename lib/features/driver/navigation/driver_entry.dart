@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import '../home/home_screen.dart';
-import '../subscription/subscription_plan_screen.dart';
-import '../subscription/subscription_service.dart';
 
 class DriverEntry {
   DriverEntry._();
@@ -13,16 +11,6 @@ class DriverEntry {
       context,
       MaterialPageRoute(builder: (_) => const DriverHomeScreen()),
       (_) => false,
-    );
-
-    final sub = await DriverSubscriptionService.instance.getMySubscription();
-    if (!context.mounted || sub != null) return;
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const SubscriptionPlanScreen(fromOnboarding: true),
-      ),
     );
   }
 }

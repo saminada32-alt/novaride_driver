@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../core/services/driver_balance_service.dart';
 import '../../../core/utils/currency_utils.dart';
 import '../../../l10n/app_localizations.dart';
@@ -14,6 +15,7 @@ class _DriverWalletScreenState extends State<DriverWalletScreen> {
   double _balance = 0;
   List<Map<String, dynamic>> _payouts = [];
   bool _loading = true;
+  bool _error = false;
   final _amountCtrl = TextEditingController();
 
   @override
@@ -23,15 +25,23 @@ class _DriverWalletScreenState extends State<DriverWalletScreen> {
   }
 
   Future<void> _load() async {
-    setState(() => _loading = true);
-    final bal = await DriverBalanceService.instance.getBalance();
-    final payouts = await DriverBalanceService.instance.getPayouts();
-    if (!mounted) return;
     setState(() {
-      _balance = bal;
-      _payouts = payouts;
-      _loading = false;
+      _loading = true;
+      _error = false;
     });
+    try {
+      final bal = await DriverBalanceService.instance.getBalance();
+      final payouts = await DriverBalanceService.instance.getPayouts();
+      if (!mounted) return;
+      setState(() {
+        _balance = bal;
+        _payouts = payouts;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _error = true);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   Future<void> _withdraw() async {
@@ -86,6 +96,32 @@ class _DriverWalletScreenState extends State<DriverWalletScreen> {
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
+          : _error
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.cloud_off_rounded, size: 64, color: Colors.grey.shade400),
+                    const SizedBox(height: 16),
+                    Text(
+                      t.genericLoadError,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _load,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green.shade700,
+                      ),
+                      child: Text(t.retry, style: const TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ),
+              ),
+            )
           : RefreshIndicator(
               onRefresh: _load,
               child: ListView(
@@ -122,6 +158,7 @@ class _DriverWalletScreenState extends State<DriverWalletScreen> {
                   TextField(
                     controller: _amountCtrl,
                     keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     decoration: InputDecoration(
                       labelText: t.walletWithdrawAmount,
                       border: OutlineInputBorder(
@@ -171,7 +208,7 @@ class _DriverWalletScreenState extends State<DriverWalletScreen> {
                               double.tryParse(p['amount']?.toString() ?? '0') ?? 0,
                             ),
                           ),
-                          subtitle: Text(p['status']?.toString() ?? ''),
+                          subtitle: Text(_payoutStatusLabel(p['status']?.toString(), t)),
                         ),
                       ),
                     ),
@@ -179,5 +216,18 @@ class _DriverWalletScreenState extends State<DriverWalletScreen> {
               ),
             ),
     );
+  }
+
+  String _payoutStatusLabel(String? status, AppLocalizations t) {
+    switch (status?.toUpperCase()) {
+      case 'PENDING':
+        return t.payoutStatusPending;
+      case 'PAID':
+        return t.payoutStatusPaid;
+      case 'REJECTED':
+        return t.payoutStatusRejected;
+      default:
+        return status ?? '';
+    }
   }
 }

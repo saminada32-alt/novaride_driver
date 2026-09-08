@@ -58,7 +58,7 @@ class DriverFcmService {
     try {
       await _initLocalNotifications();
       await _initFirebase();
-    } catch (e, st) {
+    } catch (e) {
       debugPrint('DriverFcmService init failed: $e');
     }
   }
@@ -191,7 +191,7 @@ class DriverFcmService {
           importance: Importance.max,
           priority: Priority.high,
           playSound: true,
-          fullScreenIntent: true,
+          fullScreenIntent: false,
         ),
         iOS: DarwinNotificationDetails(presentAlert: true, presentSound: true),
       ),

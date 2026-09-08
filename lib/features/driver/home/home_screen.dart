@@ -30,6 +30,8 @@ import 'rides/model/ride_model.dart';
 import 'rides/screens/active_ride_screen.dart';
 import 'incoming_ride_dialog.dart';
 import '../subscription/my_subscription_screen.dart';
+import '../subscription/subscription_plan_screen.dart';
+import '../subscription/subscription_service.dart';
 import '../work_zones/work_zones_screen.dart';
 import '../../../core/services/work_zones_service.dart';
 import '../../../core/services/driver_location_guard.dart';
@@ -43,10 +45,11 @@ class DriverHomeScreen extends StatefulWidget {
   State<DriverHomeScreen> createState() => _DriverHomeScreenState();
 }
 
-class _DriverHomeScreenState extends State<DriverHomeScreen> {
+class _DriverHomeScreenState extends State<DriverHomeScreen>
+    with WidgetsBindingObserver {
   int _tab = 0;
   bool _isOnline = false;
-  final bool _toggling = false;
+  bool _toggling = false;
   bool _resumingRide = false;
 
   GoogleMapController? _map;
@@ -66,7 +69,22 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) => _bootstrap());
+  }
+
+  // iOS (and Android doze) suspend the socket's network connection while
+  // backgrounded — socket.io's own reconnection logic only gets CPU time
+  // again once the app is foregrounded. Push (see DriverFcmService) is the
+  // reliable delivery path while backgrounded, but without this the
+  // real-time socket channel could otherwise stay silently disconnected
+  // after a resume until something else happened to reconnect it.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed &&
+        !DriverSocketService.instance.isConnected) {
+      unawaited(DriverSocketService.instance.connect(driverId: _driverId));
+    }
   }
 
   Future<void> _bootstrap() async {
@@ -153,9 +171,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     final status = account != null && mounted
         ? await _fetchOnlineStatus(token)
         : null;
-    if (status != null && mounted) {
+    if (status != null && mounted && !_toggling) {
       setState(() => _isOnline = status);
-      if (status) await _startOnlineTracking(token);
+      if (status) {
+        await _startOnlineTracking(token);
+      }
     }
 
     unawaited(context.read<EarningProvider>().loadEarnings(token));
@@ -260,6 +280,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _locationTimer?.cancel();
     _heartbeatTimer?.cancel();
     DriverFcmService.instance.onNewRide = null;
@@ -306,14 +327,17 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         return IncomingRideDialog(
           ride: ride,
           onAccept: () async {
-            Navigator.pop(context);
-
+            // The dialog itself shows a spinner and disables both buttons
+            // while this is in flight (up to acceptRide's timeout) — don't
+            // pop until we know whether it succeeded, so the driver never
+            // sees the offer just vanish with no feedback on a slow link.
             try {
               final accepted = await DriverRidesService.instance.acceptRide(
                 ride.id,
               );
 
               if (!mounted) return;
+              Navigator.pop(context);
 
               await Navigator.push(
                 context,
@@ -327,6 +351,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               if (mounted) setState(() => _activeRide = null);
             } catch (e) {
               if (!mounted) return;
+              Navigator.pop(context);
               final t = AppLocalizations.of(context)!;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -349,28 +374,30 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   }
 
   Future<void> _initLoc() async {
-    final p = await _loc.requestPermission();
-    if (!mounted) return;
-    if (p != PermissionStatus.granted) return;
-
-    final token = context.read<AuthProvider>().token;
-
-    DriverBackgroundLocationService.instance.onPosition = (lat, lng) {
+    try {
+      final p = await _loc.requestPermission();
       if (!mounted) return;
-      setState(() {
-        _pos = LatLng(lat, lng);
-        _hasGpsFix = true;
-        _lastGpsAt = DateTime.now();
-      });
-      _map?.animateCamera(CameraUpdate.newLatLng(_pos));
-
-      if (token != null && _isOnline) {
-        _pushLocation(token, lat, lng);
+      if (p != PermissionStatus.granted && p != PermissionStatus.grantedLimited) {
+        return;
       }
-    };
 
-    _loc.onLocationChanged.listen(
-      (l) async {
+      final token = context.read<AuthProvider>().token;
+
+      DriverBackgroundLocationService.instance.onPosition = (lat, lng) {
+        if (!mounted) return;
+        setState(() {
+          _pos = LatLng(lat, lng);
+          _hasGpsFix = true;
+          _lastGpsAt = DateTime.now();
+        });
+        _map?.animateCamera(CameraUpdate.newLatLng(_pos));
+
+        if (token != null && _isOnline) {
+          _pushLocation(token, lat, lng);
+        }
+      };
+
+      _loc.onLocationChanged.listen((l) async {
         if (!mounted || l.latitude == null) return;
         final lat = l.latitude!;
         final lng = l.longitude!;
@@ -384,9 +411,14 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         if (token != null && _isOnline) {
           await _pushLocation(token, lat, lng);
         }
-      },
-      onError: (e) => debugPrint('Driver location stream: $e'),
-    );
+      });
+
+      if (_isOnline && token != null) {
+        unawaited(_startOnlineTracking(token));
+      }
+    } catch (e, st) {
+      debugPrint('Init location error: $e\n$st');
+    }
   }
 
   Future<void> _pushLocation(String token, double lat, double lng) async {
@@ -409,7 +441,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   }
 
   Future<void> _startOnlineTracking(String token) async {
-    unawaited(DriverBackgroundLocationService.instance.start());
+    try {
+      await DriverBackgroundLocationService.instance.start();
+    } catch (e, st) {
+      debugPrint('Background location start failed: $e\n$st');
+    }
     unawaited(_sendLocation(token));
     _locationTimer?.cancel();
     _locationTimer = Timer.periodic(
@@ -440,9 +476,36 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       return;
     }
 
+    setState(() => _toggling = true);
+
+    final sub = await DriverSubscriptionService.instance.getMySubscription();
+    if (!_subscriptionAllowsOnline(sub)) {
+      if (mounted) {
+        setState(() => _toggling = false);
+        await _openSubscriptionsScreen(sub);
+      }
+      return;
+    }
+
     setState(() => _isOnline = true);
     unawaited(_startOnlineTracking(token));
     unawaited(_completeGoOnline(token));
+  }
+
+  bool _subscriptionAllowsOnline(Map<String, dynamic>? sub) {
+    if (sub == null) return false;
+    return sub['canDrive'] == true;
+  }
+
+  Future<void> _openSubscriptionsScreen(Map<String, dynamic>? sub) {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => sub == null
+            ? const SubscriptionPlanScreen(fromOnboarding: false)
+            : const MySubscriptionScreen(),
+      ),
+    );
   }
 
   Future<void> _completeGoOnline(String token) async {
@@ -452,15 +515,18 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         WorkZonesService.instance.isOnShift(),
         DriverLocationGuard.checkBeforeOnline(
           _loc,
-          cachedPosition: _hasGpsFix ? _pos : null,
-          cachedAt: _lastGpsAt,
+          cachedPosition: _pos,
+          cachedAt: _hasGpsFix ? _lastGpsAt : null,
         ),
       ]);
       final onShift = checks[0] as bool;
       final locResult = checks[1] as LocationGuardResult;
 
       if (!onShift && mounted) {
-        setState(() => _isOnline = false);
+        setState(() {
+          _isOnline = false;
+          _toggling = false;
+        });
         unawaited(_stopOnlineTracking());
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -472,7 +538,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       }
 
       if (!locResult.ok && mounted) {
-        setState(() => _isOnline = false);
+        setState(() {
+          _isOnline = false;
+          _toggling = false;
+        });
         unawaited(_stopOnlineTracking());
         final msg = switch (locResult.failure) {
           LocationGuardFailure.permissionDenied => t.gpsPermissionRequired,
@@ -493,14 +562,22 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
       final ok = await _patchStatus(token, true);
       if (!ok && mounted) {
-        setState(() => _isOnline = false);
+        setState(() {
+          _isOnline = false;
+          _toggling = false;
+        });
         unawaited(_stopOnlineTracking());
         return;
       }
+
+      if (mounted) setState(() => _toggling = false);
     } catch (e) {
       debugPrint('Go online error: $e');
       if (mounted) {
-        setState(() => _isOnline = false);
+        setState(() {
+          _isOnline = false;
+          _toggling = false;
+        });
         unawaited(_stopOnlineTracking());
       }
     }
@@ -520,17 +597,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       if (res.statusCode == 200 || res.statusCode == 201) return true;
 
       if (mounted && online && (res.statusCode == 403 || res.statusCode == 400)) {
-        final t = AppLocalizations.of(context)!;
-        String msg = t.subscriptionPaymentRequired;
-        try {
-          final body = jsonDecode(res.body);
-          final m = body['message'];
-          final raw = m is List ? m.join(', ') : m?.toString() ?? msg;
-          msg = localizeApiError(raw, t);
-        } catch (_) {}
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(msg), backgroundColor: Colors.orange),
-        );
+        final sub = await DriverSubscriptionService.instance.getMySubscription();
+        if (mounted) {
+          await _openSubscriptionsScreen(sub);
+        }
       }
       return false;
     } catch (e) {

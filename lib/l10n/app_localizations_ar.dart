@@ -12,6 +12,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get appName => 'نوفا رايد';
 
   @override
+  String get genericLoadError => 'تعذّر تحميل البيانات. تحقّق من الاتصال وحاول مجدداً.';
+
+  @override
+  String get retry => 'إعادة المحاولة';
+
+  @override
   String get splashTitle => 'مرحبًا بك في نوفا رايد';
 
   @override
@@ -36,6 +42,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String otpSubtitle(Object phone) {
     return 'لقد أرسلنا الرمز إلى $phone';
   }
+
+  @override
+  String get otpDeliveryHint => 'قد يستغرق وصول الرسالة 10–30 ثانية. إذا لم تصل، اضغط إعادة إرسال.';
 
   @override
   String get confirm => 'تأكيد';
@@ -321,6 +330,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get other => 'أخرى';
 
   @override
+  String get enterCustomVehicleType => 'اكتب نوع سيارتك (مثال: بيك أب، جيب، تريلة)';
+
+  @override
   String get enterPlate => 'أدخل رقم لوحة السيارة';
 
   @override
@@ -357,7 +369,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get selectBrandHint => 'اختر المصنع';
 
   @override
-  String get brandLabel => 'Brand';
+  String get brandLabel => 'الماركة';
 
   @override
   String get enterOtherBrand => 'اكتب نوع المصنع';
@@ -581,6 +593,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get scheduledRideDriverHint => 'ستصلك إشعار قبول تلقائي قبل 15 دقيقة من الموعد — ابقَ متصلاً';
 
   @override
+  String get scheduledRideHide => 'غير مهتم';
+
+  @override
+  String get scheduledRideHideConfirmTitle => 'إخفاء هاي الرحلة؟';
+
+  @override
+  String get scheduledRideHideConfirmBody => 'هاي الرحلة لسا مو مسندة إلك، فما فيك تلغيها — هاد الخيار بس بيشيلها من قائمتك وما رح توصلك إشعار قبول فيها. سائقين تانيين قريبين لسا فيهم ياخدوها.';
+
+  @override
+  String get scheduledRideHidden => 'تم إخفاؤها من قائمتك';
+
+  @override
   String incomingScheduledPickup(String time) {
     return 'موعد الالتقاط: $time';
   }
@@ -709,7 +733,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get editVehicle => 'تعديل المعلومات';
 
   @override
+  String get vehicleUpdated => 'تم تحديث المركبة!';
+
+  @override
+  String get yearInvalid => 'أدخل سنة صحيحة';
+
+  @override
   String get editProfile => 'تعديل الملف الشخصي';
+
+  @override
+  String get accountUpdated => 'تم تحديث الحساب!';
 
   @override
   String get all => 'الكل';
@@ -764,6 +797,24 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get totalEarnings => 'إجمالي الأرباح';
+
+  @override
+  String get csvGeneratedOn => 'تاريخ الإنشاء';
+
+  @override
+  String get csvSummary => 'الملخص';
+
+  @override
+  String get csvRecentRides => 'الرحلات الأخيرة';
+
+  @override
+  String get csvRideId => 'رقم الرحلة';
+
+  @override
+  String get csvAmount => 'المبلغ';
+
+  @override
+  String get csvDate => 'التاريخ';
 
   @override
   String get recentTransactions => 'آخر العمليات';
@@ -1074,6 +1125,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get minutesShort => 'د';
 
   @override
+  String get hoursShort => 'س';
+
+  @override
   String rideNumber(int id) {
     return 'رحلة #$id';
   }
@@ -1130,6 +1184,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get shamCash => 'شام كاش';
 
   @override
+  String get shamCashReferenceHint => 'رقم مرجع التحويل';
+
+  @override
   String get mobileBalance => 'رصيد هاتفي';
 
   @override
@@ -1149,6 +1206,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get myMethod => 'طريقتي';
+
+  @override
+  String get subscriptionPaymentStatusPending => 'قيد الانتظار';
+
+  @override
+  String get subscriptionPaymentStatusApproved => 'مقبول';
+
+  @override
+  String get subscriptionPaymentStatusRejected => 'مرفوض';
 
   @override
   String get currencyShort => 'ل.س';
@@ -1396,6 +1462,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get walletNoPayouts => 'لا توجد سحوبات بعد';
 
   @override
+  String get payoutStatusPending => 'قيد الانتظار';
+
+  @override
+  String get payoutStatusPaid => 'مدفوع';
+
+  @override
+  String get payoutStatusRejected => 'مرفوض';
+
+  @override
   String get walletInvalidAmount => 'أدخل مبلغاً صحيحاً';
 
   @override
@@ -1424,6 +1499,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get workZonesEmpty => 'لا توجد مناطق عمل. أضف منطقة لتحديد الدوام.';
+
+  @override
+  String get workZonesDisabledBanner => 'ساعات العمل معطّلة مؤقتاً — يمكنك البدء في أي وقت.';
+
+  @override
+  String get workZoneDeleteTitle => 'حذف منطقة العمل؟';
+
+  @override
+  String get workZoneDeleteBody => 'لن تصلك عروض رحلات من هاي المنطقة بعد الحذف.';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get delete => 'حذف';
 
   @override
   String get workZonesOffShiftOnline => 'خارج ساعات الدوام. حدّث الجدول من مناطق العمل.';
@@ -1720,4 +1810,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get actionFailed => 'فشلت العملية';
+
+  @override
+  String get otpServerTimeout => 'الخادم تأخر في الرد — حاول مجدداً';
+
+  @override
+  String get otpConnectionFailed => 'تعذّر الاتصال بالخادم — تحقق من الإنترنت';
+
+  @override
+  String get otpInvalidCodeHint => 'رمز غير صحيح — استخدم آخر SMS واضغط إعادة إرسال إذا لزم';
+
+  @override
+  String get otpSmsSendFailed => 'تعذّر إرسال SMS — حاول بعد قليل';
 }

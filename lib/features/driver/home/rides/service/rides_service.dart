@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import '../../../../../core/constants/api_constants.dart';
@@ -25,6 +26,23 @@ class DriverRidesService {
     throw Exception(msg is List ? msg.join(', ') : msg?.toString() ?? 'Error');
   }
 
+  List<DriverRideModel> _parseRideList(dynamic data) {
+    final list = data is List ? data : const [];
+    final rides = <DriverRideModel>[];
+    for (final raw in list) {
+      try {
+        if (raw is Map) {
+          rides.add(
+            DriverRideModel.fromJson(Map<String, dynamic>.from(raw)),
+          );
+        }
+      } catch (e) {
+        debugPrint('Skip invalid ride payload: $e');
+      }
+    }
+    return rides;
+  }
+
   // ─── جيب رحلاتي كسائق ────────────────────────────────────
   Future<List<DriverRideModel>> getMyRides({String? status}) async {
     final tok = await _token();
@@ -40,10 +58,7 @@ class DriverRidesService {
 
     if (res.statusCode == 200) {
       final data = jsonDecode(utf8.decode(res.bodyBytes));
-      final list = data is List ? data : [];
-      return list
-          .map((r) => DriverRideModel.fromJson(Map<String, dynamic>.from(r)))
-          .toList();
+      return _parseRideList(data);
     }
     return [];
   }
@@ -68,10 +83,7 @@ class DriverRidesService {
 
     if (res.statusCode == 200) {
       final data = jsonDecode(utf8.decode(res.bodyBytes));
-      final list = data is List ? data : [];
-      return list
-          .map((r) => DriverRideModel.fromJson(Map<String, dynamic>.from(r)))
-          .toList();
+      return _parseRideList(data);
     }
     return [];
   }
@@ -96,10 +108,7 @@ class DriverRidesService {
 
     if (res.statusCode == 200) {
       final data = jsonDecode(utf8.decode(res.bodyBytes));
-      final list = data is List ? data : [];
-      return list
-          .map((r) => DriverRideModel.fromJson(Map<String, dynamic>.from(r)))
-          .toList();
+      return _parseRideList(data);
     }
     return [];
   }
