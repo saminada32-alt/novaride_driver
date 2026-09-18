@@ -255,21 +255,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lastName => 'Last Name';
 
   @override
-  String get person => 'Person';
-
-  @override
-  String get office => 'Office';
-
-  @override
-  String get officeName => 'Office Name';
-
-  @override
-  String get officeLocation => 'Office Location';
-
-  @override
-  String get officeContact => 'Office Contact Information';
-
-  @override
   String get idNumber => 'ID Number';
 
   @override
@@ -298,12 +283,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get personalInfoTitle2 => 'Personal information and car details';
-
-  @override
-  String get joinAsDriver => 'I want to join NovaRide as:';
-
-  @override
-  String get explain => 'Select \"office\" if you\'re using a limited office (Ltd) (if you\'re the sole owner or director) or a limited liability partnership (LLP).\n\nSelect \"Person\" if you operate individually, for example, as a sole trader or are self-employed.';
 
   @override
   String get licensePlate => 'License Plate Number';
@@ -971,12 +950,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get driverFaqTripCancelA => 'If a trip is canceled, you will be notified immediately. Earnings for completed trips remain unaffected.';
-
-  @override
-  String get location => 'Location of the office';
-
-  @override
-  String get officeN => 'Office Name';
 
   @override
   String get ageError => 'You must be at least 18 years old.';

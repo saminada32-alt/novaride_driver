@@ -18,8 +18,6 @@ class PersonalInfoScreen extends StatefulWidget {
 }
 
 class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
-  String? joinType;
-
   @override
   void initState() {
     super.initState();
@@ -30,15 +28,12 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController(); // ✅ جديد
-  final officeNameController = TextEditingController();
-  final officeLocationController = TextEditingController();
   final idController = TextEditingController();
 
   DateTime? selectedBirthDate;
 
   String? nameError;
   String? lastNameError; // ✅ جديد
-  String? officeNameError;
   String? idError;
   String? ageError;
 
@@ -57,18 +52,12 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   bool get isUnderAge => selectedBirthDate != null && age < 18;
 
   bool get isValid {
-    if (joinType == null) return false;
     if (selectedBirthDate == null) return false;
     if (isUnderAge) return false;
 
     if (firstNameController.text.trim().length < 3) return false;
     if (lastNameController.text.trim().length < 3) return false; // ✅ جديد
     if (idController.text.trim().length < 6) return false;
-
-    if (joinType == "office") {
-      if (officeNameController.text.trim().length < 3) return false;
-      if (officeLocationController.text.trim().length < 3) return false;
-    }
 
     return true;
   }
@@ -87,17 +76,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
           ),
         );
       }),
-    );
-  }
-
-  Widget buildRadioTile(String value, String title, IconData icon) {
-    return RadioListTile<String>(
-      value: value,
-      groupValue: joinType,
-      activeColor: Colors.green,
-      secondary: Icon(icon, color: Colors.green),
-      title: Text(title),
-      onChanged: (val) => setState(() => joinType = val),
     );
   }
 
@@ -232,269 +210,193 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
                 const SizedBox(height: 30),
 
-                Text(
-                  local.joinAsDriver,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                /// FIRST NAME
+                requiredLabel(local.firstName, isArabic),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: firstNameController,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'[a-zA-Z\u0600-\u06FF\s]'),
+                    ),
+                  ],
+                  decoration: inputDecoration(
+                    icon: Icons.person_outline,
+                    hint: local.firstNameHint,
+                  ),
+                  onChanged: (_) {
+                    setState(() {
+                      nameError = firstNameController.text.trim().length < 3
+                          ? local.nameError
+                          : null;
+                    });
+                  },
                 ),
-
-                buildRadioTile("person", local.person, Icons.person),
-                buildRadioTile("office", local.office, Icons.business),
+                if (nameError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      nameError!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
 
                 const SizedBox(height: 20),
 
-                if (joinType != null) ...[
-                  Text(
-                    local.explain,
-                    style: TextStyle(color: Colors.grey[600]),
-                    textAlign: isArabic ? TextAlign.right : TextAlign.left,
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  /// FIRST NAME
-                  requiredLabel(local.firstName, isArabic),
-                  const SizedBox(height: 6),
-                  TextField(
-                    controller: firstNameController,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                        RegExp(r'[a-zA-Z\u0600-\u06FF\s]'),
-                      ),
-                    ],
-                    decoration: inputDecoration(
-                      icon: Icons.person_outline,
-                      hint: local.firstNameHint,
-                    ),
-                    onChanged: (_) {
-                      setState(() {
-                        nameError = firstNameController.text.trim().length < 3
-                            ? local.nameError
-                            : null;
-                      });
-                    },
-                  ),
-                  if (nameError != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 6),
-                      child: Text(
-                        nameError!,
-                        style: const TextStyle(color: Colors.red),
-                      ),
-                    ),
-
-                  const SizedBox(height: 20),
-
-                  /// LAST NAME (جديد)
-                  requiredLabel(local.lastName, isArabic),
-                  const SizedBox(height: 6),
-                  TextField(
-                    controller: lastNameController,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                        RegExp(r'[a-zA-Z\u0600-\u06FF\s]'),
-                      ),
-                    ],
-                    decoration: inputDecoration(
-                      icon: Icons.person_outline,
-                      hint: local.lastNameHint,
-                    ),
-                    onChanged: (_) {
-                      setState(() {
-                        lastNameError =
-                            lastNameController.text.trim().length < 3
-                            ? local.nameError
-                            : null;
-                      });
-                    },
-                  ),
-                  if (lastNameError != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 6),
-                      child: Text(
-                        lastNameError!,
-                        style: const TextStyle(color: Colors.red),
-                      ),
-                    ),
-
-                  requiredLabel(local.birthDate, isArabic),
-                  const SizedBox(height: 6),
-                  GestureDetector(
-                    onTap: () => pickDate(local),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: const Border.fromBorderSide(
-                          BorderSide(color: Colors.black),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.calendar_month_rounded,
-                            color: Colors.green,
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            selectedBirthDate == null
-                                ? local.selectBirthDate
-                                : "${selectedBirthDate!.day}/${selectedBirthDate!.month}/${selectedBirthDate!.year}",
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  if (ageError != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 6),
-                      child: Text(
-                        ageError!,
-                        style: const TextStyle(color: Colors.red),
-                      ),
-                    ),
-
-                  if (joinType == "office") ...[
-                    const SizedBox(height: 20),
-
-                    requiredLabel(local.officeN, isArabic),
-                    const SizedBox(height: 6),
-                    TextField(
-                      controller: officeNameController,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(
-                          RegExp(r'[a-zA-Z\u0600-\u06FF\s]'),
-                        ),
-                      ],
-                      decoration: inputDecoration(
-                        icon: Icons.business,
-                        hint: local.officeN,
-                      ),
-                      onChanged: (_) {
-                        setState(() {
-                          officeNameError =
-                              officeNameController.text.trim().length < 3
-                              ? local.nameError
-                              : null;
-                        });
-                      },
-                    ),
-                    if (officeNameError != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 6),
-                        child: Text(
-                          officeNameError!,
-                          style: const TextStyle(color: Colors.red),
-                        ),
-                      ),
-
-                    const SizedBox(height: 20),
-
-                    requiredLabel(local.location, isArabic),
-                    const SizedBox(height: 6),
-                    TextField(
-                      controller: officeLocationController,
-                      decoration: inputDecoration(
-                        icon: Icons.location_on_outlined,
-                        hint: local.location,
-                      ),
-                      onChanged: (_) => setState(() {}),
+                /// LAST NAME (جديد)
+                requiredLabel(local.lastName, isArabic),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: lastNameController,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'[a-zA-Z\u0600-\u06FF\s]'),
                     ),
                   ],
-
-                  const SizedBox(height: 20),
-
-                  requiredLabel(local.idNumber, isArabic),
-                  const SizedBox(height: 6),
-                  TextField(
-                    controller: idController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: inputDecoration(
-                      icon: Icons.credit_card_outlined,
-                      hint: local.idHint,
-                    ),
-                    onChanged: (_) {
-                      setState(() {
-                        idError = idController.text.trim().length < 6
-                            ? local.idError
-                            : null;
-                      });
-                    },
+                  decoration: inputDecoration(
+                    icon: Icons.person_outline,
+                    hint: local.lastNameHint,
                   ),
-                  if (idError != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 6),
-                      child: Text(
-                        idError!,
-                        style: const TextStyle(color: Colors.red),
+                  onChanged: (_) {
+                    setState(() {
+                      lastNameError = lastNameController.text.trim().length < 3
+                          ? local.nameError
+                          : null;
+                    });
+                  },
+                ),
+                if (lastNameError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      lastNameError!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+
+                requiredLabel(local.birthDate, isArabic),
+                const SizedBox(height: 6),
+                GestureDetector(
+                  onTap: () => pickDate(local),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: const Border.fromBorderSide(
+                        BorderSide(color: Colors.black),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_month_rounded,
+                          color: Colors.green,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          selectedBirthDate == null
+                              ? local.selectBirthDate
+                              : "${selectedBirthDate!.day}/${selectedBirthDate!.month}/${selectedBirthDate!.year}",
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                if (ageError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      ageError!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+
+                const SizedBox(height: 20),
+
+                requiredLabel(local.idNumber, isArabic),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: idController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: inputDecoration(
+                    icon: Icons.credit_card_outlined,
+                    hint: local.idHint,
+                  ),
+                  onChanged: (_) {
+                    setState(() {
+                      idError = idController.text.trim().length < 6
+                          ? local.idError
+                          : null;
+                    });
+                  },
+                ),
+                if (idError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      idError!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+
+                const SizedBox(height: 40),
+
+                SizedBox(
+                  height: 55,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isValid ? Colors.black : Colors.grey,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
 
-                  const SizedBox(height: 40),
+                    onPressed: isValid && !provider.isLoading
+                        ? () async {
+                            final token = context.read<AuthProvider>().token;
+                            if (token == null) return;
 
-                  SizedBox(
-                    height: 55,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isValid ? Colors.black : Colors.grey,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
+                            final driver = DriverInfoModel(
+                              firstName: firstNameController.text.trim(),
+                              lastName: lastNameController.text.trim(),
+                              idNumber: idController.text.trim(),
+                              birthDate: selectedBirthDate!,
+                            );
 
-                      onPressed: isValid && !provider.isLoading
-                          ? () async {
-                              final token = context.read<AuthProvider>().token;
-                              if (token == null) return;
+                            final ok = await provider.registerDriver(
+                              driver,
+                              token,
+                            );
 
-                              final driver = DriverInfoModel(
-                                joinType: joinType!,
-                                firstName: firstNameController.text.trim(),
-                                lastName: lastNameController.text.trim(),
-                                idNumber: idController.text.trim(),
-                                birthDate: selectedBirthDate!,
-                                officeName: joinType == 'office'
-                                    ? officeNameController.text.trim()
-                                    : null,
-                                officeLocation: joinType == 'office'
-                                    ? officeLocationController.text.trim()
-                                    : null,
+                            if (ok && mounted) {
+                              unawaited(
+                                DriverOnboardingRouter.saveStep(
+                                  DriverOnboardingStep.carInfo,
+                                ),
                               );
-
-                              final ok = await provider.registerDriver(
-                                driver,
-                                token,
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const CarInfoScreen(),
+                                ),
                               );
-
-                              if (ok && mounted) {
-                                unawaited(
-                                  DriverOnboardingRouter.saveStep(
-                                    DriverOnboardingStep.carInfo,
-                                  ),
-                                );
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const CarInfoScreen(),
-                                  ),
-                                );
-                              }
                             }
-                          : null,
+                          }
+                        : null,
 
-                      child: Text(
-                        provider.isLoading ? local.loading : local.next,
+                    child: Text(
+                      provider.isLoading ? local.loading : local.next,
 
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                ],
+                ),
               ],
             ),
           ),

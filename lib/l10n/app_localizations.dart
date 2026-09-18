@@ -575,36 +575,6 @@ abstract class AppLocalizations {
   /// **'Last Name'**
   String get lastName;
 
-  /// No description provided for @person.
-  ///
-  /// In en, this message translates to:
-  /// **'Person'**
-  String get person;
-
-  /// No description provided for @office.
-  ///
-  /// In en, this message translates to:
-  /// **'Office'**
-  String get office;
-
-  /// No description provided for @officeName.
-  ///
-  /// In en, this message translates to:
-  /// **'Office Name'**
-  String get officeName;
-
-  /// No description provided for @officeLocation.
-  ///
-  /// In en, this message translates to:
-  /// **'Office Location'**
-  String get officeLocation;
-
-  /// No description provided for @officeContact.
-  ///
-  /// In en, this message translates to:
-  /// **'Office Contact Information'**
-  String get officeContact;
-
   /// No description provided for @idNumber.
   ///
   /// In en, this message translates to:
@@ -664,18 +634,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Personal information and car details'**
   String get personalInfoTitle2;
-
-  /// No description provided for @joinAsDriver.
-  ///
-  /// In en, this message translates to:
-  /// **'I want to join NovaRide as:'**
-  String get joinAsDriver;
-
-  /// No description provided for @explain.
-  ///
-  /// In en, this message translates to:
-  /// **'Select \"office\" if you\'re using a limited office (Ltd) (if you\'re the sole owner or director) or a limited liability partnership (LLP).\n\nSelect \"Person\" if you operate individually, for example, as a sole trader or are self-employed.'**
-  String get explain;
 
   /// No description provided for @licensePlate.
   ///
@@ -2002,18 +1960,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'If a trip is canceled, you will be notified immediately. Earnings for completed trips remain unaffected.'**
   String get driverFaqTripCancelA;
-
-  /// No description provided for @location.
-  ///
-  /// In en, this message translates to:
-  /// **'Location of the office'**
-  String get location;
-
-  /// No description provided for @officeN.
-  ///
-  /// In en, this message translates to:
-  /// **'Office Name'**
-  String get officeN;
 
   /// No description provided for @ageError.
   ///

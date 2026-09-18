@@ -255,21 +255,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get lastName => 'اسم العائلة';
 
   @override
-  String get person => 'فرد';
-
-  @override
-  String get office => 'مكتب';
-
-  @override
-  String get officeName => 'اسم المكتب';
-
-  @override
-  String get officeLocation => 'موقع المكتب';
-
-  @override
-  String get officeContact => 'معلومات الاتصال بالمكتب';
-
-  @override
   String get idNumber => 'رقم الهوية';
 
   @override
@@ -298,12 +283,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get personalInfoTitle2 => 'Personal information and car details';
-
-  @override
-  String get joinAsDriver => 'أريد الانضمام إلى NovaRide كـ:';
-
-  @override
-  String get explain => 'اختر \"مكتب\" إذا كنت تستخدم شركة ذات مسؤولية محدودة  (إذا كنت المالك الوحيد أو المدير) أو شراكة ذات مسؤولية محدودة .\n\nاختر \"فرد\" إذا كنت تعمل بشكل فردي، على سبيل المثال، كتاجر فردي أو مستقل.';
 
   @override
   String get licensePlate => 'رقم لوحة السيارة';
@@ -971,12 +950,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get driverFaqTripCancelA => 'إذا تم إلغاء الرحلة، ستتلقى إشعاراً فورياً. الأرباح الخاصة بالرحلات المكتملة تبقى دون تغيير.';
-
-  @override
-  String get location => 'موقع المكتب';
-
-  @override
-  String get officeN => 'اسم المكتب';
 
   @override
   String get ageError => 'يجب أن يكون عمرك 18 سنة على الأقل.';
