@@ -772,9 +772,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get weekly => 'اسبوعي';
 
   @override
-  String get monthly => 'شهري';
-
-  @override
   String get totalEarnings => 'إجمالي الأرباح';
 
   @override
@@ -1021,33 +1018,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get no => 'لا';
 
   @override
-  String get subscriptions => 'الاشتراكات';
-
-  @override
-  String get mySubscriptions => 'اشتراكاتي';
-
-  @override
-  String get mySubscriptionTitle => 'اشتراكي';
-
-  @override
-  String get noSubscriptionFound => 'لا يوجد اشتراك';
-
-  @override
-  String get noSubscriptionPlanRequired => 'لا يوجد اشتراك. يرجى اختيار خطة من التطبيق.';
-
-  @override
-  String get subscriptionPaymentRequired => 'مطلوب دفع الاشتراك';
-
-  @override
-  String get subscriptionSuspended => 'الاشتراك موقوف. يرجى تسوية الدفع للاتصال.';
-
-  @override
-  String get monthlySubscriptionPaymentRequired => 'مطلوب دفع الاشتراك الشهري قبل الاتصال.';
-
-  @override
-  String get subscriptionPaymentOverdue => 'الدفع متأخر. يرجى تقديم الدفع من قسم الاشتراكات.';
-
-  @override
   String get saved => 'تم الحفظ';
 
   @override
@@ -1112,55 +1082,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get call => 'اتصال';
 
   @override
-  String get choosePlan => 'اختر خطة';
-
-  @override
-  String get changePlan => 'تغيير الخطة';
-
-  @override
-  String get commissionPlan => 'خطة العمولة';
-
-  @override
-  String get monthlyPlan => 'الخطة الشهرية';
-
-  @override
-  String get paymentOverdue => '⚠️ متأخر بالدفع';
-
-  @override
-  String get active => '✅ نشط';
-
-  @override
-  String get amountDue => 'المبلغ المستحق';
-
-  @override
-  String get totalEarned => 'إجمالي الأرباح';
-
-  @override
-  String get totalOwed => 'المستحق للتطبيق';
-
-  @override
-  String get totalPaid => 'إجمالي المدفوع';
-
-  @override
-  String get nextDue => 'الموعد القادم';
-
-  @override
-  String get howToPay => 'طرق الدفع';
-
-  @override
   String get cash => 'نقداً';
-
-  @override
-  String get payWeeklyInPerson => 'دفع أسبوعي لدى الإدارة';
 
   @override
   String get shamCash => 'شام كاش';
 
   @override
   String get shamCashReferenceHint => 'رقم مرجع التحويل';
-
-  @override
-  String get mobileBalance => 'رصيد هاتفي';
 
   @override
   String get transferToPhone => 'تحويل إلى: 0900000000';
@@ -1175,61 +1103,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get iban => 'IBAN';
 
   @override
-  String get paymentHistory => 'سجل الدفعات';
-
-  @override
-  String get myMethod => 'طريقتي';
-
-  @override
-  String get subscriptionPaymentStatusPending => 'قيد الانتظار';
-
-  @override
-  String get subscriptionPaymentStatusApproved => 'مقبول';
-
-  @override
-  String get subscriptionPaymentStatusRejected => 'مرفوض';
-
-  @override
-  String get currencyShort => 'ل.س';
-
-  @override
-  String get cashKey => 'cash';
-
-  @override
-  String get shamCashKey => 'sham_cash';
-
-  @override
-  String get balanceKey => 'balance';
-
-  @override
-  String get bankKey => 'bank';
-
-  @override
-  String get commission => 'عمولة';
-
-  @override
-  String get payPerRide => 'اقتطاع من كل رحلة';
-
-  @override
-  String get fixedFee => 'رسوم ثابتة';
-
-  @override
-  String get chooseYourPlan => 'اختر خطتك';
-
-  @override
-  String get novaRidePartnership => 'شراكة NovaRide';
-
-  @override
-  String get chooseHowYouWork => 'اختر طريقة العمل معنا';
-
-  @override
-  String get paymentMethodTitle => 'طريقة الدفع';
-
-  @override
   String get commissionRate => 'نسبة العمولة';
-
-  @override
-  String get commissionExplanation => 'من كل رحلة مكتملة يتم اقتطاع 10% لصالح التطبيق وتتجمع أسبوعياً للدفع.';
 
   @override
   String get commissionShort => 'عمولة';
@@ -1251,21 +1125,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get fixedAmountPerMonth => 'مبلغ ثابت شهرياً';
-
-  @override
-  String get monthlyExplanation => 'احتفظ بكامل أرباح الرحلات وادفع الرسوم الشهرية الثابتة.';
-
-  @override
-  String get startDriving => 'ابدأ العمل 🚀';
-
-  @override
-  String get updatePlan => 'تحديث الخطة';
-
-  @override
-  String get subscriptionUpdated => 'تم تحديث الاشتراك!';
-
-  @override
-  String get subscriptionFailed => 'فشل تحديث الاشتراك';
 
   @override
   String get changePlanAnytime => 'يمكنك تغيير الخطة في أي وقت من الإعدادات';
@@ -1415,6 +1274,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get chatTypeMessage => 'اكتب رسالة…';
+
+  @override
+  String get monthly => 'شهري';
 
   @override
   String get walletTitle => 'المحفظة';
@@ -1681,22 +1543,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get saveAutoAccept => 'حفظ القبول التلقائي';
 
   @override
-  String get submitPaymentTitle => 'تقديم الدفع';
-
-  @override
   String get paymentNote => 'ملاحظة';
-
-  @override
-  String get paymentSubmittedReview => 'تم تقديم الدفع — الإدارة ستراجعه';
-
-  @override
-  String get suspendedStatus => 'موقوف';
-
-  @override
-  String get pendingReview => 'بانتظار المراجعة';
-
-  @override
-  String get cannotGoOnlineUntilPaid => 'لا يمكنك الاتصال حتى يتم تأكيد الدفع.';
 
   @override
   String get referralsTitle => 'الإحالات';
@@ -1795,4 +1642,64 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get otpSmsSendFailed => 'تعذّر إرسال SMS — حاول بعد قليل';
+
+  @override
+  String get prepaidBalanceTitle => 'المحفظة';
+
+  @override
+  String get prepaidCurrentBalance => 'الرصيد الحالي';
+
+  @override
+  String get prepaidTopUp => 'شحن الرصيد';
+
+  @override
+  String get prepaidMustTopUp => 'اشحن رصيدك لتتمكن من الاتصال والعمل';
+
+  @override
+  String get prepaidCommissionNote => 'تُخصم عمولة 10% تلقائياً من رصيدك عند إكمال كل رحلة';
+
+  @override
+  String get prepaidChooseMethod => 'اختر طريقة الشحن';
+
+  @override
+  String get prepaidShamCashNote => 'التحويل عبر شام كاش يُضاف لرصيدك تلقائياً خلال دقائق';
+
+  @override
+  String get prepaidBankNote => 'بعد التحويل، أرسل رقم العملية أدناه ليتم تأكيده يدوياً';
+
+  @override
+  String get prepaidCashNote => 'راجع المكتب لدفع المبلغ نقداً، ثم أرسل الطلب أدناه ليتم تأكيده';
+
+  @override
+  String get prepaidSubmitRequest => 'إرسال طلب الشحن';
+
+  @override
+  String get prepaidRequestSubmitted => 'تم إرسال الطلب — سيتم مراجعته قريباً';
+
+  @override
+  String get prepaidRequestFailed => 'تعذّر إرسال الطلب';
+
+  @override
+  String get prepaidRecentRequests => 'طلبات الشحن الأخيرة';
+
+  @override
+  String get prepaidNoRequests => 'لا توجد طلبات شحن بعد';
+
+  @override
+  String get prepaidStatusPending => 'قيد المراجعة';
+
+  @override
+  String get prepaidStatusApproved => 'تم القبول';
+
+  @override
+  String get prepaidStatusRejected => 'مرفوض';
+
+  @override
+  String get prepaidCopied => 'تم النسخ';
+
+  @override
+  String get prepaidOfficeAddress => 'عنوان المكتب';
+
+  @override
+  String get prepaidCopyReference => 'نسخ رقم المرجع';
 }

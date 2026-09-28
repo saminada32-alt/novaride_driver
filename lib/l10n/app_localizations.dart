@@ -1601,12 +1601,6 @@ abstract class AppLocalizations {
   /// **'Weekly'**
   String get weekly;
 
-  /// No description provided for @monthly.
-  ///
-  /// In en, this message translates to:
-  /// **'Monthly'**
-  String get monthly;
-
   /// No description provided for @totalEarnings.
   ///
   /// In en, this message translates to:
@@ -2099,60 +2093,6 @@ abstract class AppLocalizations {
   /// **'No'**
   String get no;
 
-  /// No description provided for @subscriptions.
-  ///
-  /// In en, this message translates to:
-  /// **'Subscriptions'**
-  String get subscriptions;
-
-  /// No description provided for @mySubscriptions.
-  ///
-  /// In en, this message translates to:
-  /// **'My Subscriptions'**
-  String get mySubscriptions;
-
-  /// No description provided for @mySubscriptionTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'My Subscription'**
-  String get mySubscriptionTitle;
-
-  /// No description provided for @noSubscriptionFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No subscription found'**
-  String get noSubscriptionFound;
-
-  /// No description provided for @noSubscriptionPlanRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'No subscription plan. Please choose a plan in the app.'**
-  String get noSubscriptionPlanRequired;
-
-  /// No description provided for @subscriptionPaymentRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'Subscription payment required'**
-  String get subscriptionPaymentRequired;
-
-  /// No description provided for @subscriptionSuspended.
-  ///
-  /// In en, this message translates to:
-  /// **'Subscription suspended. Please settle payment to go online.'**
-  String get subscriptionSuspended;
-
-  /// No description provided for @monthlySubscriptionPaymentRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'Monthly subscription payment required before going online.'**
-  String get monthlySubscriptionPaymentRequired;
-
-  /// No description provided for @subscriptionPaymentOverdue.
-  ///
-  /// In en, this message translates to:
-  /// **'Payment overdue. Please submit payment in Subscriptions.'**
-  String get subscriptionPaymentOverdue;
-
   /// No description provided for @saved.
   ///
   /// In en, this message translates to:
@@ -2261,89 +2201,11 @@ abstract class AppLocalizations {
   /// **'Call'**
   String get call;
 
-  /// No description provided for @choosePlan.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose Plan'**
-  String get choosePlan;
-
-  /// No description provided for @changePlan.
-  ///
-  /// In en, this message translates to:
-  /// **'Change Plan'**
-  String get changePlan;
-
-  /// No description provided for @commissionPlan.
-  ///
-  /// In en, this message translates to:
-  /// **'Commission Plan'**
-  String get commissionPlan;
-
-  /// No description provided for @monthlyPlan.
-  ///
-  /// In en, this message translates to:
-  /// **'Monthly Plan'**
-  String get monthlyPlan;
-
-  /// No description provided for @paymentOverdue.
-  ///
-  /// In en, this message translates to:
-  /// **'⚠️ Payment Overdue'**
-  String get paymentOverdue;
-
-  /// No description provided for @active.
-  ///
-  /// In en, this message translates to:
-  /// **'✅ Active'**
-  String get active;
-
-  /// No description provided for @amountDue.
-  ///
-  /// In en, this message translates to:
-  /// **'Amount Due'**
-  String get amountDue;
-
-  /// No description provided for @totalEarned.
-  ///
-  /// In en, this message translates to:
-  /// **'Total Earned'**
-  String get totalEarned;
-
-  /// No description provided for @totalOwed.
-  ///
-  /// In en, this message translates to:
-  /// **'Total Owed'**
-  String get totalOwed;
-
-  /// No description provided for @totalPaid.
-  ///
-  /// In en, this message translates to:
-  /// **'Total Paid'**
-  String get totalPaid;
-
-  /// No description provided for @nextDue.
-  ///
-  /// In en, this message translates to:
-  /// **'Next Due'**
-  String get nextDue;
-
-  /// No description provided for @howToPay.
-  ///
-  /// In en, this message translates to:
-  /// **'How to Pay'**
-  String get howToPay;
-
   /// No description provided for @cash.
   ///
   /// In en, this message translates to:
   /// **'Cash'**
   String get cash;
-
-  /// No description provided for @payWeeklyInPerson.
-  ///
-  /// In en, this message translates to:
-  /// **'Pay weekly in person to admin'**
-  String get payWeeklyInPerson;
 
   /// No description provided for @shamCash.
   ///
@@ -2356,12 +2218,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Transfer reference number'**
   String get shamCashReferenceHint;
-
-  /// No description provided for @mobileBalance.
-  ///
-  /// In en, this message translates to:
-  /// **'Mobile Balance'**
-  String get mobileBalance;
 
   /// No description provided for @transferToPhone.
   ///
@@ -2387,119 +2243,11 @@ abstract class AppLocalizations {
   /// **'IBAN'**
   String get iban;
 
-  /// No description provided for @paymentHistory.
-  ///
-  /// In en, this message translates to:
-  /// **'Payment History'**
-  String get paymentHistory;
-
-  /// No description provided for @myMethod.
-  ///
-  /// In en, this message translates to:
-  /// **'My Method'**
-  String get myMethod;
-
-  /// No description provided for @subscriptionPaymentStatusPending.
-  ///
-  /// In en, this message translates to:
-  /// **'Pending'**
-  String get subscriptionPaymentStatusPending;
-
-  /// No description provided for @subscriptionPaymentStatusApproved.
-  ///
-  /// In en, this message translates to:
-  /// **'Approved'**
-  String get subscriptionPaymentStatusApproved;
-
-  /// No description provided for @subscriptionPaymentStatusRejected.
-  ///
-  /// In en, this message translates to:
-  /// **'Rejected'**
-  String get subscriptionPaymentStatusRejected;
-
-  /// No description provided for @currencyShort.
-  ///
-  /// In en, this message translates to:
-  /// **'SYP'**
-  String get currencyShort;
-
-  /// No description provided for @cashKey.
-  ///
-  /// In en, this message translates to:
-  /// **'cash'**
-  String get cashKey;
-
-  /// No description provided for @shamCashKey.
-  ///
-  /// In en, this message translates to:
-  /// **'sham_cash'**
-  String get shamCashKey;
-
-  /// No description provided for @balanceKey.
-  ///
-  /// In en, this message translates to:
-  /// **'balance'**
-  String get balanceKey;
-
-  /// No description provided for @bankKey.
-  ///
-  /// In en, this message translates to:
-  /// **'bank'**
-  String get bankKey;
-
-  /// No description provided for @commission.
-  ///
-  /// In en, this message translates to:
-  /// **'Commission'**
-  String get commission;
-
-  /// No description provided for @payPerRide.
-  ///
-  /// In en, this message translates to:
-  /// **'Pay per ride'**
-  String get payPerRide;
-
-  /// No description provided for @fixedFee.
-  ///
-  /// In en, this message translates to:
-  /// **'Fixed fee'**
-  String get fixedFee;
-
-  /// No description provided for @chooseYourPlan.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose Your Plan'**
-  String get chooseYourPlan;
-
-  /// No description provided for @novaRidePartnership.
-  ///
-  /// In en, this message translates to:
-  /// **'NovaRide Partnership'**
-  String get novaRidePartnership;
-
-  /// No description provided for @chooseHowYouWork.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose how you work with us'**
-  String get chooseHowYouWork;
-
-  /// No description provided for @paymentMethodTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Payment Method'**
-  String get paymentMethodTitle;
-
   /// No description provided for @commissionRate.
   ///
   /// In en, this message translates to:
   /// **'Commission Rate'**
   String get commissionRate;
-
-  /// No description provided for @commissionExplanation.
-  ///
-  /// In en, this message translates to:
-  /// **'Each completed ride: 10% is taken by the app and accumulated weekly to be paid.'**
-  String get commissionExplanation;
 
   /// No description provided for @commissionShort.
   ///
@@ -2542,36 +2290,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fixed amount per month'**
   String get fixedAmountPerMonth;
-
-  /// No description provided for @monthlyExplanation.
-  ///
-  /// In en, this message translates to:
-  /// **'Keep 100% of ride earnings. Pay fixed monthly fee.'**
-  String get monthlyExplanation;
-
-  /// No description provided for @startDriving.
-  ///
-  /// In en, this message translates to:
-  /// **'Start Driving 🚀'**
-  String get startDriving;
-
-  /// No description provided for @updatePlan.
-  ///
-  /// In en, this message translates to:
-  /// **'Update Plan'**
-  String get updatePlan;
-
-  /// No description provided for @subscriptionUpdated.
-  ///
-  /// In en, this message translates to:
-  /// **'Subscription updated!'**
-  String get subscriptionUpdated;
-
-  /// No description provided for @subscriptionFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to update subscription'**
-  String get subscriptionFailed;
 
   /// No description provided for @changePlanAnytime.
   ///
@@ -2866,6 +2584,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Type a message…'**
   String get chatTypeMessage;
+
+  /// No description provided for @monthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get monthly;
 
   /// No description provided for @walletTitle.
   ///
@@ -3383,41 +3107,11 @@ abstract class AppLocalizations {
   /// **'Save auto-accept'**
   String get saveAutoAccept;
 
-  /// No description provided for @submitPaymentTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Submit payment'**
-  String get submitPaymentTitle;
-
   /// No description provided for @paymentNote.
   ///
   /// In en, this message translates to:
   /// **'Note'**
   String get paymentNote;
-
-  /// No description provided for @paymentSubmittedReview.
-  ///
-  /// In en, this message translates to:
-  /// **'Payment submitted — admin will review'**
-  String get paymentSubmittedReview;
-
-  /// No description provided for @suspendedStatus.
-  ///
-  /// In en, this message translates to:
-  /// **'Suspended'**
-  String get suspendedStatus;
-
-  /// No description provided for @pendingReview.
-  ///
-  /// In en, this message translates to:
-  /// **'Pending review'**
-  String get pendingReview;
-
-  /// No description provided for @cannotGoOnlineUntilPaid.
-  ///
-  /// In en, this message translates to:
-  /// **'You cannot go online until payment is confirmed.'**
-  String get cannotGoOnlineUntilPaid;
 
   /// No description provided for @referralsTitle.
   ///
@@ -3586,6 +3280,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t send the SMS — try again shortly'**
   String get otpSmsSendFailed;
+
+  /// No description provided for @prepaidBalanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet'**
+  String get prepaidBalanceTitle;
+
+  /// No description provided for @prepaidCurrentBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Current balance'**
+  String get prepaidCurrentBalance;
+
+  /// No description provided for @prepaidTopUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Top up'**
+  String get prepaidTopUp;
+
+  /// No description provided for @prepaidMustTopUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Top up your wallet to go online and start working'**
+  String get prepaidMustTopUp;
+
+  /// No description provided for @prepaidCommissionNote.
+  ///
+  /// In en, this message translates to:
+  /// **'A 10% commission is deducted automatically from your wallet when a ride completes'**
+  String get prepaidCommissionNote;
+
+  /// No description provided for @prepaidChooseMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a top-up method'**
+  String get prepaidChooseMethod;
+
+  /// No description provided for @prepaidShamCashNote.
+  ///
+  /// In en, this message translates to:
+  /// **'A Sham Cash transfer is added to your balance automatically within minutes'**
+  String get prepaidShamCashNote;
+
+  /// No description provided for @prepaidBankNote.
+  ///
+  /// In en, this message translates to:
+  /// **'After transferring, submit the transaction reference below for manual confirmation'**
+  String get prepaidBankNote;
+
+  /// No description provided for @prepaidCashNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit the office to pay in cash, then submit the request below for confirmation'**
+  String get prepaidCashNote;
+
+  /// No description provided for @prepaidSubmitRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit top-up request'**
+  String get prepaidSubmitRequest;
+
+  /// No description provided for @prepaidRequestSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Request submitted — it will be reviewed shortly'**
+  String get prepaidRequestSubmitted;
+
+  /// No description provided for @prepaidRequestFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t submit the request'**
+  String get prepaidRequestFailed;
+
+  /// No description provided for @prepaidRecentRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent top-up requests'**
+  String get prepaidRecentRequests;
+
+  /// No description provided for @prepaidNoRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No top-up requests yet'**
+  String get prepaidNoRequests;
+
+  /// No description provided for @prepaidStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Under review'**
+  String get prepaidStatusPending;
+
+  /// No description provided for @prepaidStatusApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get prepaidStatusApproved;
+
+  /// No description provided for @prepaidStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get prepaidStatusRejected;
+
+  /// No description provided for @prepaidCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get prepaidCopied;
+
+  /// No description provided for @prepaidOfficeAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Office address'**
+  String get prepaidOfficeAddress;
+
+  /// No description provided for @prepaidCopyReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy reference'**
+  String get prepaidCopyReference;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

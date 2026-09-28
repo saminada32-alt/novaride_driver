@@ -29,9 +29,8 @@ import 'rides/service/rides_service.dart';
 import 'rides/model/ride_model.dart';
 import 'rides/screens/active_ride_screen.dart';
 import 'incoming_ride_dialog.dart';
-import '../subscription/my_subscription_screen.dart';
-import '../subscription/subscription_plan_screen.dart';
-import '../subscription/subscription_service.dart';
+import '../wallet/prepaid_wallet_screen.dart';
+import '../wallet/prepaid_wallet_service.dart';
 import '../work_zones/work_zones_screen.dart';
 import '../../../core/services/work_zones_service.dart';
 import '../../../core/services/driver_location_guard.dart';
@@ -60,6 +59,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
 
   DriverRideModel? _activeRide;
   BuildContext? _offerDialogCtx;
+  int? _acceptingRideId;
 
   int? _driverId;
 
@@ -293,6 +293,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
 
   void _handleRideTaken(int? rideId) {
     if (!mounted) return;
+    if (_acceptingRideId != null &&
+        (rideId == null || rideId == _acceptingRideId)) {
+      return;
+    }
     if (_activeRide == null || (rideId != null && _activeRide!.id != rideId)) {
       return;
     }
@@ -331,6 +335,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
             // while this is in flight (up to acceptRide's timeout) — don't
             // pop until we know whether it succeeded, so the driver never
             // sees the offer just vanish with no feedback on a slow link.
+            _acceptingRideId = ride.id;
             try {
               final accepted = await DriverRidesService.instance.acceptRide(
                 ride.id,
@@ -359,6 +364,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
                   backgroundColor: Colors.red,
                 ),
               );
+            } finally {
+              _acceptingRideId = null;
             }
           },
           onReject: () async {
@@ -478,11 +485,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
 
     setState(() => _toggling = true);
 
-    final sub = await DriverSubscriptionService.instance.getMySubscription();
-    if (!_subscriptionAllowsOnline(sub)) {
+    final balance = await DriverPrepaidWalletService.instance.getBalance();
+    if (!_walletAllowsOnline(balance)) {
       if (mounted) {
         setState(() => _toggling = false);
-        await _openSubscriptionsScreen(sub);
+        await _openPrepaidWalletScreen();
       }
       return;
     }
@@ -492,19 +499,17 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
     unawaited(_completeGoOnline(token));
   }
 
-  bool _subscriptionAllowsOnline(Map<String, dynamic>? sub) {
-    if (sub == null) return false;
-    return sub['canDrive'] == true;
+  bool _walletAllowsOnline(Map<String, dynamic>? wallet) {
+    if (wallet == null) return false;
+    final balance = wallet['balance'];
+    if (balance == null) return false;
+    return (balance is num ? balance : num.tryParse(balance.toString()) ?? 0) > 0;
   }
 
-  Future<void> _openSubscriptionsScreen(Map<String, dynamic>? sub) {
+  Future<void> _openPrepaidWalletScreen() {
     return Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => sub == null
-            ? const SubscriptionPlanScreen(fromOnboarding: false)
-            : const MySubscriptionScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => const PrepaidWalletScreen()),
     );
   }
 
@@ -597,9 +602,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
       if (res.statusCode == 200 || res.statusCode == 201) return true;
 
       if (mounted && online && (res.statusCode == 403 || res.statusCode == 400)) {
-        final sub = await DriverSubscriptionService.instance.getMySubscription();
         if (mounted) {
-          await _openSubscriptionsScreen(sub);
+          await _openPrepaidWalletScreen();
         }
       }
       return false;

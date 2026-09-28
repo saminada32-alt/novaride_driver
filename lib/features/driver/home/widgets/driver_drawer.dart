@@ -9,9 +9,9 @@ import '../../incentives/incentives_screen.dart';
 import '../../notifications/notifications_screen.dart';
 import '../../preferences/driver_preferences_screen.dart';
 import '../../referrals/referral_screen.dart';
-import '../../subscription/my_subscription_screen.dart';
-import '../../scheduled/scheduled_rides_screen.dart';
 import '../../wallet/wallet_screen.dart';
+import '../../wallet/prepaid_wallet_screen.dart';
+import '../../scheduled/scheduled_rides_screen.dart';
 import '../../work_zones/work_zones_screen.dart';
 import '../../account/language/language_screen.dart';
 import '../support/support_screen.dart';
@@ -198,11 +198,11 @@ class DriverDrawer extends StatelessWidget {
                         ),
                       ),
                       DriverMenuItem(
-                        icon: Icons.subscriptions_outlined,
-                        title: t.subscriptions,
+                        icon: Icons.account_balance_wallet_rounded,
+                        title: t.prepaidBalanceTitle,
                         onTap: () => _push(
                           context,
-                          const MySubscriptionScreen(),
+                          const PrepaidWalletScreen(),
                         ),
                       ),
                       DriverMenuItem(

@@ -772,9 +772,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weekly => 'Weekly';
 
   @override
-  String get monthly => 'Monthly';
-
-  @override
   String get totalEarnings => 'Total Earnings';
 
   @override
@@ -1021,33 +1018,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get no => 'No';
 
   @override
-  String get subscriptions => 'Subscriptions';
-
-  @override
-  String get mySubscriptions => 'My Subscriptions';
-
-  @override
-  String get mySubscriptionTitle => 'My Subscription';
-
-  @override
-  String get noSubscriptionFound => 'No subscription found';
-
-  @override
-  String get noSubscriptionPlanRequired => 'No subscription plan. Please choose a plan in the app.';
-
-  @override
-  String get subscriptionPaymentRequired => 'Subscription payment required';
-
-  @override
-  String get subscriptionSuspended => 'Subscription suspended. Please settle payment to go online.';
-
-  @override
-  String get monthlySubscriptionPaymentRequired => 'Monthly subscription payment required before going online.';
-
-  @override
-  String get subscriptionPaymentOverdue => 'Payment overdue. Please submit payment in Subscriptions.';
-
-  @override
   String get saved => 'Saved';
 
   @override
@@ -1112,55 +1082,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get call => 'Call';
 
   @override
-  String get choosePlan => 'Choose Plan';
-
-  @override
-  String get changePlan => 'Change Plan';
-
-  @override
-  String get commissionPlan => 'Commission Plan';
-
-  @override
-  String get monthlyPlan => 'Monthly Plan';
-
-  @override
-  String get paymentOverdue => '⚠️ Payment Overdue';
-
-  @override
-  String get active => '✅ Active';
-
-  @override
-  String get amountDue => 'Amount Due';
-
-  @override
-  String get totalEarned => 'Total Earned';
-
-  @override
-  String get totalOwed => 'Total Owed';
-
-  @override
-  String get totalPaid => 'Total Paid';
-
-  @override
-  String get nextDue => 'Next Due';
-
-  @override
-  String get howToPay => 'How to Pay';
-
-  @override
   String get cash => 'Cash';
-
-  @override
-  String get payWeeklyInPerson => 'Pay weekly in person to admin';
 
   @override
   String get shamCash => 'Sham Cash';
 
   @override
   String get shamCashReferenceHint => 'Transfer reference number';
-
-  @override
-  String get mobileBalance => 'Mobile Balance';
 
   @override
   String get transferToPhone => 'Transfer to: 0900000000';
@@ -1175,61 +1103,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get iban => 'IBAN';
 
   @override
-  String get paymentHistory => 'Payment History';
-
-  @override
-  String get myMethod => 'My Method';
-
-  @override
-  String get subscriptionPaymentStatusPending => 'Pending';
-
-  @override
-  String get subscriptionPaymentStatusApproved => 'Approved';
-
-  @override
-  String get subscriptionPaymentStatusRejected => 'Rejected';
-
-  @override
-  String get currencyShort => 'SYP';
-
-  @override
-  String get cashKey => 'cash';
-
-  @override
-  String get shamCashKey => 'sham_cash';
-
-  @override
-  String get balanceKey => 'balance';
-
-  @override
-  String get bankKey => 'bank';
-
-  @override
-  String get commission => 'Commission';
-
-  @override
-  String get payPerRide => 'Pay per ride';
-
-  @override
-  String get fixedFee => 'Fixed fee';
-
-  @override
-  String get chooseYourPlan => 'Choose Your Plan';
-
-  @override
-  String get novaRidePartnership => 'NovaRide Partnership';
-
-  @override
-  String get chooseHowYouWork => 'Choose how you work with us';
-
-  @override
-  String get paymentMethodTitle => 'Payment Method';
-
-  @override
   String get commissionRate => 'Commission Rate';
-
-  @override
-  String get commissionExplanation => 'Each completed ride: 10% is taken by the app and accumulated weekly to be paid.';
 
   @override
   String get commissionShort => 'commission';
@@ -1251,21 +1125,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fixedAmountPerMonth => 'Fixed amount per month';
-
-  @override
-  String get monthlyExplanation => 'Keep 100% of ride earnings. Pay fixed monthly fee.';
-
-  @override
-  String get startDriving => 'Start Driving 🚀';
-
-  @override
-  String get updatePlan => 'Update Plan';
-
-  @override
-  String get subscriptionUpdated => 'Subscription updated!';
-
-  @override
-  String get subscriptionFailed => 'Failed to update subscription';
 
   @override
   String get changePlanAnytime => 'You can change your plan anytime from settings';
@@ -1415,6 +1274,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chatTypeMessage => 'Type a message…';
+
+  @override
+  String get monthly => 'Monthly';
 
   @override
   String get walletTitle => 'Wallet';
@@ -1681,22 +1543,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveAutoAccept => 'Save auto-accept';
 
   @override
-  String get submitPaymentTitle => 'Submit payment';
-
-  @override
   String get paymentNote => 'Note';
-
-  @override
-  String get paymentSubmittedReview => 'Payment submitted — admin will review';
-
-  @override
-  String get suspendedStatus => 'Suspended';
-
-  @override
-  String get pendingReview => 'Pending review';
-
-  @override
-  String get cannotGoOnlineUntilPaid => 'You cannot go online until payment is confirmed.';
 
   @override
   String get referralsTitle => 'Referrals';
@@ -1795,4 +1642,64 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get otpSmsSendFailed => 'Couldn\'t send the SMS — try again shortly';
+
+  @override
+  String get prepaidBalanceTitle => 'Wallet';
+
+  @override
+  String get prepaidCurrentBalance => 'Current balance';
+
+  @override
+  String get prepaidTopUp => 'Top up';
+
+  @override
+  String get prepaidMustTopUp => 'Top up your wallet to go online and start working';
+
+  @override
+  String get prepaidCommissionNote => 'A 10% commission is deducted automatically from your wallet when a ride completes';
+
+  @override
+  String get prepaidChooseMethod => 'Choose a top-up method';
+
+  @override
+  String get prepaidShamCashNote => 'A Sham Cash transfer is added to your balance automatically within minutes';
+
+  @override
+  String get prepaidBankNote => 'After transferring, submit the transaction reference below for manual confirmation';
+
+  @override
+  String get prepaidCashNote => 'Visit the office to pay in cash, then submit the request below for confirmation';
+
+  @override
+  String get prepaidSubmitRequest => 'Submit top-up request';
+
+  @override
+  String get prepaidRequestSubmitted => 'Request submitted — it will be reviewed shortly';
+
+  @override
+  String get prepaidRequestFailed => 'Couldn\'t submit the request';
+
+  @override
+  String get prepaidRecentRequests => 'Recent top-up requests';
+
+  @override
+  String get prepaidNoRequests => 'No top-up requests yet';
+
+  @override
+  String get prepaidStatusPending => 'Under review';
+
+  @override
+  String get prepaidStatusApproved => 'Approved';
+
+  @override
+  String get prepaidStatusRejected => 'Rejected';
+
+  @override
+  String get prepaidCopied => 'Copied';
+
+  @override
+  String get prepaidOfficeAddress => 'Office address';
+
+  @override
+  String get prepaidCopyReference => 'Copy reference';
 }
