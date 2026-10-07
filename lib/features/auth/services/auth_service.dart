@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import '../models/auth_model.dart';
@@ -119,7 +120,24 @@ class AuthService {
     _check(res);
   }
 
-  Future<String?> getToken() => _storage.read(key: 'driver_token');
+  // Secure storage's encrypted entry can become undecipherable (e.g. the
+  // app was previously installed with a different signing key, or the
+  // Android Keystore entry was invalidated by the OS) and throws instead
+  // of returning null. Treat that like "no token" and wipe the now-unreadable
+  // entry so later reads of the same key stop throwing too — this is what
+  // was crashing the app instantly on launch instead of just logging out.
+  Future<String?> getToken() async {
+    try {
+      return await _storage.read(key: 'driver_token');
+    } catch (e) {
+      debugPrint('Secure storage read failed, clearing token: $e');
+      try {
+        await _storage.delete(key: 'driver_token');
+      } catch (_) {}
+      return null;
+    }
+  }
+
   Future<bool> isLoggedIn() async => (await getToken()) != null;
   Future<void> logout() => _storage.delete(key: 'driver_token');
 
