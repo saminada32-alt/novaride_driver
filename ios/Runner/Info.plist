@@ -36,17 +36,17 @@
 		<key>LSRequiresIPhoneOS</key>
 		<true/>
 		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-		<string>نحتاج موقعك لتحديد موقعك على الخريطة</string>
-		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-		<string>نحتاج موقعك لتقديم خدمة أفضل</string>
+		<string>نحتاج موقعك لاستقبال الطلبات القريبة منك وتتبع الرحلة أثناء عملك</string>
 		<key>NSLocationAlwaysUsageDescription</key>
-		<string>نحتاج موقعك حتى أثناء استخدام التطبيق</string>
+		<string>نحتاج موقعك حتى أثناء عمل التطبيق في الخلفية لاستقبال الطلبات وتتبع الرحلة</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>نحتاج موقعك لاستقبال الطلبات القريبة منك</string>
+		<key>NSCameraUsageDescription</key>
+		<string>نحتاج الكاميرا لتصوير مستنداتك وصورتك الشخصية</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>نحتاج الوصول لصورك لاختيار مستنداتك وصورة إشعار التحويل</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
-		<key>NSLocationWhenInUseUsageDescription</key>
-<string>NovaRide needs your location to find nearby drivers</string>
-<key>NSLocationAlwaysUsageDescription</key>
-<string>NovaRide needs your location for ride tracking</string>
 		<key>UIBackgroundModes</key>
 		<array>
 			<string>location</string>

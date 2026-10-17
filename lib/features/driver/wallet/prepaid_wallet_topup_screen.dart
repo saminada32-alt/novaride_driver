@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../l10n/app_localizations.dart';
 import 'prepaid_wallet_service.dart';
 
@@ -16,6 +18,8 @@ class _PrepaidWalletTopupScreenState extends State<PrepaidWalletTopupScreen> {
   Map<String, dynamic>? _instructions;
   bool _loading = true;
   bool _submitting = false;
+  File? _receipt;
+  final _picker = ImagePicker();
   _TopupMethod _method = _TopupMethod.shamCash;
 
   final amountController = TextEditingController();
@@ -53,28 +57,64 @@ class _PrepaidWalletTopupScreenState extends State<PrepaidWalletTopupScreen> {
     );
   }
 
+  Future<void> _pickReceipt() async {
+    final picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+      maxWidth: 1600,
+      maxHeight: 1600,
+    );
+    if (picked == null || !mounted) return;
+    setState(() => _receipt = File(picked.path));
+  }
+
+  String get _methodKey => switch (_method) {
+        _TopupMethod.shamCash => 'sham_cash',
+        _TopupMethod.bank => 'bank',
+        _TopupMethod.cash => 'cash',
+      };
+
   Future<void> _submit() async {
     final local = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
     final amount = double.tryParse(amountController.text.trim());
     if (amount == null || amount <= 0) return;
 
+    final needsReceipt = _method == _TopupMethod.shamCash;
+    if (needsReceipt && _receipt == null) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(local.prepaidReceiptRequired),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
     setState(() => _submitting = true);
-    final ok = await DriverPrepaidWalletService.instance.submitTopupRequest(
+    final result = await DriverPrepaidWalletService.instance.submitTopupRequest(
       amount: amount,
-      method: _method == _TopupMethod.bank ? 'bank' : 'cash',
+      method: _methodKey,
       reference: referenceController.text.trim(),
       note: noteController.text.trim(),
+      receipt: needsReceipt ? _receipt : null,
     );
     if (!mounted) return;
     setState(() => _submitting = false);
 
-    ScaffoldMessenger.of(context).showSnackBar(
+    messenger.showSnackBar(
       SnackBar(
-        content: Text(ok ? local.prepaidRequestSubmitted : local.prepaidRequestFailed),
-        backgroundColor: ok ? Colors.green : Colors.red,
+        content: Text(
+          result.ok
+              ? local.prepaidRequestSubmitted
+              : result.isDuplicateReceipt
+                  ? local.prepaidReceiptDuplicate
+                  : local.prepaidRequestFailed,
+        ),
+        backgroundColor: result.ok ? Colors.green : Colors.red,
       ),
     );
-    if (ok) Navigator.pop(context);
+    if (result.ok) Navigator.pop(context);
   }
 
   @override
@@ -196,28 +236,35 @@ class _PrepaidWalletTopupScreenState extends State<PrepaidWalletTopupScreen> {
 
   Widget _shamCashPanel(AppLocalizations local) {
     final sc = _instructions?['shamCash'] as Map<String, dynamic>? ?? {};
-    return _card(
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _card(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.bolt_rounded, color: Colors.purple, size: 20),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  local.prepaidShamCashNote,
-                  style: const TextStyle(color: Colors.black87, fontSize: 13),
-                ),
+              Row(
+                children: [
+                  const Icon(Icons.phone_android_rounded, color: Colors.purple, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      local.prepaidShamCashNote,
+                      style: const TextStyle(color: Colors.black87, fontSize: 13),
+                    ),
+                  ),
+                ],
               ),
+              const Divider(height: 28),
+              _copyRow(local.transferTo, sc['phone']?.toString() ?? '—', local),
+              _copyRow(local.account, sc['accountName']?.toString() ?? '—', local),
+              _copyRow(local.ref, sc['reference']?.toString() ?? '—', local),
             ],
           ),
-          const Divider(height: 28),
-          _copyRow(local.transferTo, sc['phone']?.toString() ?? '—', local),
-          _copyRow(local.account, sc['accountName']?.toString() ?? '—', local),
-          _copyRow(local.ref, sc['reference']?.toString() ?? '—', local),
-        ],
-      ),
+        ),
+        const SizedBox(height: 16),
+        _requestForm(local, referenceLabel: null, withReceipt: true),
+      ],
     );
   }
 
@@ -291,7 +338,63 @@ class _PrepaidWalletTopupScreenState extends State<PrepaidWalletTopupScreen> {
     );
   }
 
-  Widget _requestForm(AppLocalizations local, {String? referenceLabel}) {
+  Widget _receiptPicker(AppLocalizations local) {
+    final file = _receipt;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(local.prepaidReceiptTitle,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+        const SizedBox(height: 4),
+        Text(local.prepaidReceiptHint,
+            style: TextStyle(color: Colors.grey[600], fontSize: 11.5)),
+        const SizedBox(height: 10),
+        GestureDetector(
+          onTap: _submitting ? null : _pickReceipt,
+          child: Container(
+            width: double.infinity,
+            height: file == null ? 96 : 200,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: file == null ? Colors.black26 : Colors.green,
+                width: file == null ? 1 : 1.6,
+              ),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: file == null
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.add_photo_alternate_rounded,
+                          size: 30, color: Colors.green),
+                      const SizedBox(height: 6),
+                      Text(local.prepaidPickReceipt,
+                          style: const TextStyle(fontSize: 13)),
+                    ],
+                  )
+                : Image.file(file, fit: BoxFit.cover),
+          ),
+        ),
+        if (file != null)
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: TextButton.icon(
+              onPressed: _submitting ? null : _pickReceipt,
+              icon: const Icon(Icons.swap_horiz_rounded, size: 18),
+              label: Text(local.prepaidChangeReceipt),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _requestForm(
+    AppLocalizations local, {
+    String? referenceLabel,
+    bool withReceipt = false,
+  }) {
     return _card(
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -304,10 +407,14 @@ class _PrepaidWalletTopupScreenState extends State<PrepaidWalletTopupScreen> {
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             decoration: InputDecoration(
-              labelText: local.amount,
+              labelText: withReceipt ? local.prepaidAmountTransferred : local.amount,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
+          if (withReceipt) ...[
+            const SizedBox(height: 14),
+            _receiptPicker(local),
+          ],
           if (referenceLabel != null) ...[
             const SizedBox(height: 10),
             TextField(

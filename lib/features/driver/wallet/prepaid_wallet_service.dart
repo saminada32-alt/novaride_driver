@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -83,37 +84,58 @@ class DriverPrepaidWalletService {
     return [];
   }
 
-  Future<bool> submitTopupRequest({
+  /// Multipart so a transfer-receipt image can ride along with the fields.
+  /// Slow networks get a long timeout — a phone screenshot is a few hundred KB.
+  Future<TopupSubmitResult> submitTopupRequest({
     required double amount,
     required String method,
     String? reference,
     String? note,
+    File? receipt,
   }) async {
     try {
       final tok = await _token();
-      if (tok == null) return false;
+      if (tok == null) return const TopupSubmitResult(ok: false);
 
-      final res = await http
-          .post(
-            Uri.parse('${Api.base}/wallet/me/topup-requests'),
-            headers: {
-              ..._headers(tok),
-              'Content-Type': 'application/json',
-            },
-            body: jsonEncode({
-              'amount': amount,
-              'method': method,
-              if (reference != null && reference.isNotEmpty)
-                'reference': reference,
-              if (note != null && note.isNotEmpty) 'note': note,
-            }),
-          )
-          .timeout(_timeout);
+      final req = http.MultipartRequest(
+        'POST',
+        Uri.parse('${Api.base}/wallet/me/topup-requests'),
+      )
+        ..headers.addAll(_headers(tok))
+        ..fields['amount'] = amount.toStringAsFixed(0)
+        ..fields['method'] = method;
+      if (reference != null && reference.isNotEmpty) {
+        req.fields['reference'] = reference;
+      }
+      if (note != null && note.isNotEmpty) req.fields['note'] = note;
+      if (receipt != null) {
+        req.files.add(await http.MultipartFile.fromPath('receipt', receipt.path));
+      }
 
-      return res.statusCode == 201 || res.statusCode == 200;
+      final streamed = await req.send().timeout(const Duration(seconds: 90));
+      final res = await http.Response.fromStream(streamed);
+      if (res.statusCode == 201 || res.statusCode == 200) {
+        return const TopupSubmitResult(ok: true);
+      }
+
+      String? message;
+      try {
+        final body = jsonDecode(utf8.decode(res.bodyBytes));
+        if (body is Map) message = body['message']?.toString();
+      } catch (_) {}
+      return TopupSubmitResult(ok: false, message: message);
     } catch (e) {
       debugPrint('submitTopupRequest error: $e');
-      return false;
+      return const TopupSubmitResult(ok: false);
     }
   }
+}
+
+class TopupSubmitResult {
+  final bool ok;
+  final String? message;
+  const TopupSubmitResult({required this.ok, this.message});
+
+  bool get isDuplicateReceipt =>
+      (message ?? '').toLowerCase().contains('already submitted');
 }

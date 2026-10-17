@@ -3305,6 +3305,18 @@ abstract class AppLocalizations {
   /// **'Top up your wallet to go online and start working'**
   String get prepaidMustTopUp;
 
+  /// No description provided for @driverNotApprovedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account is not approved yet.'**
+  String get driverNotApprovedYet;
+
+  /// No description provided for @driverFinishCurrentRide.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish your current ride before accepting another one.'**
+  String get driverFinishCurrentRide;
+
   /// No description provided for @prepaidCommissionNote.
   ///
   /// In en, this message translates to:
@@ -3316,12 +3328,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose a top-up method'**
   String get prepaidChooseMethod;
-
-  /// No description provided for @prepaidShamCashNote.
-  ///
-  /// In en, this message translates to:
-  /// **'A Sham Cash transfer is added to your balance automatically within minutes'**
-  String get prepaidShamCashNote;
 
   /// No description provided for @prepaidBankNote.
   ///
@@ -3400,6 +3406,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Copy reference'**
   String get prepaidCopyReference;
+
+  /// No description provided for @prepaidShamCashNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer via Sham Cash, then enter the amount and upload the transfer notification screenshot so our team can approve it and add the balance'**
+  String get prepaidShamCashNote;
+
+  /// No description provided for @prepaidAmountTransferred.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount you transferred'**
+  String get prepaidAmountTransferred;
+
+  /// No description provided for @prepaidReceiptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer notification screenshot'**
+  String get prepaidReceiptTitle;
+
+  /// No description provided for @prepaidReceiptHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A screenshot of the Sham Cash notification showing the amount and transaction number'**
+  String get prepaidReceiptHint;
+
+  /// No description provided for @prepaidPickReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the screenshot'**
+  String get prepaidPickReceipt;
+
+  /// No description provided for @prepaidChangeReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Change image'**
+  String get prepaidChangeReceipt;
+
+  /// No description provided for @prepaidReceiptRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload the transfer screenshot first'**
+  String get prepaidReceiptRequired;
+
+  /// No description provided for @prepaidReceiptDuplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'This screenshot was already used for another top-up'**
+  String get prepaidReceiptDuplicate;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

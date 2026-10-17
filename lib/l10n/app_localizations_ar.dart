@@ -1656,13 +1656,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get prepaidMustTopUp => 'اشحن رصيدك لتتمكن من الاتصال والعمل';
 
   @override
+  String get driverNotApprovedYet => 'حسابك لم تتم الموافقة عليه بعد.';
+
+  @override
+  String get driverFinishCurrentRide => 'أنهِ رحلتك الحالية قبل قبول رحلة أخرى.';
+
+  @override
   String get prepaidCommissionNote => 'تُخصم عمولة 10% تلقائياً من رصيدك عند إكمال كل رحلة';
 
   @override
   String get prepaidChooseMethod => 'اختر طريقة الشحن';
-
-  @override
-  String get prepaidShamCashNote => 'التحويل عبر شام كاش يُضاف لرصيدك تلقائياً خلال دقائق';
 
   @override
   String get prepaidBankNote => 'بعد التحويل، أرسل رقم العملية أدناه ليتم تأكيده يدوياً';
@@ -1702,4 +1705,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get prepaidCopyReference => 'نسخ رقم المرجع';
+
+  @override
+  String get prepaidShamCashNote => 'حوّل المبلغ عبر شام كاش ثم أدخل المبلغ وارفع صورة إشعار التحويل ليعتمدها فريقنا ويُضاف الرصيد';
+
+  @override
+  String get prepaidAmountTransferred => 'المبلغ الذي حوّلته';
+
+  @override
+  String get prepaidReceiptTitle => 'صورة إشعار التحويل';
+
+  @override
+  String get prepaidReceiptHint => 'لقطة شاشة لإشعار شام كاش يظهر فيها المبلغ ورقم العملية';
+
+  @override
+  String get prepaidPickReceipt => 'اختر صورة الإشعار';
+
+  @override
+  String get prepaidChangeReceipt => 'تغيير الصورة';
+
+  @override
+  String get prepaidReceiptRequired => 'ارفع صورة إشعار التحويل أولاً';
+
+  @override
+  String get prepaidReceiptDuplicate => 'هذه الصورة استُخدمت سابقاً في طلب شحن آخر';
 }

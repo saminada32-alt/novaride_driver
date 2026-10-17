@@ -586,10 +586,11 @@
   "prepaidCurrentBalance": "الرصيد الحالي",
   "prepaidTopUp": "شحن الرصيد",
   "prepaidMustTopUp": "اشحن رصيدك لتتمكن من الاتصال والعمل",
+  "driverNotApprovedYet": "حسابك لم تتم الموافقة عليه بعد.",
+  "driverFinishCurrentRide": "أنهِ رحلتك الحالية قبل قبول رحلة أخرى.",
   "prepaidCommissionNote": "تُخصم عمولة 10% تلقائياً من رصيدك عند إكمال كل رحلة",
   "prepaidChooseMethod": "اختر طريقة الشحن",
-  "prepaidShamCashNote": "التحويل عبر شام كاش يُضاف لرصيدك تلقائياً خلال دقائق",
-  "prepaidBankNote": "بعد التحويل، أرسل رقم العملية أدناه ليتم تأكيده يدوياً",
+    "prepaidBankNote": "بعد التحويل، أرسل رقم العملية أدناه ليتم تأكيده يدوياً",
   "prepaidCashNote": "راجع المكتب لدفع المبلغ نقداً، ثم أرسل الطلب أدناه ليتم تأكيده",
   "prepaidSubmitRequest": "إرسال طلب الشحن",
   "prepaidRequestSubmitted": "تم إرسال الطلب — سيتم مراجعته قريباً",
@@ -601,5 +602,13 @@
   "prepaidStatusRejected": "مرفوض",
   "prepaidCopied": "تم النسخ",
   "prepaidOfficeAddress": "عنوان المكتب",
-  "prepaidCopyReference": "نسخ رقم المرجع"
+  "prepaidCopyReference": "نسخ رقم المرجع",
+  "prepaidShamCashNote": "حوّل المبلغ عبر شام كاش ثم أدخل المبلغ وارفع صورة إشعار التحويل ليعتمدها فريقنا ويُضاف الرصيد",
+  "prepaidAmountTransferred": "المبلغ الذي حوّلته",
+  "prepaidReceiptTitle": "صورة إشعار التحويل",
+  "prepaidReceiptHint": "لقطة شاشة لإشعار شام كاش يظهر فيها المبلغ ورقم العملية",
+  "prepaidPickReceipt": "اختر صورة الإشعار",
+  "prepaidChangeReceipt": "تغيير الصورة",
+  "prepaidReceiptRequired": "ارفع صورة إشعار التحويل أولاً",
+  "prepaidReceiptDuplicate": "هذه الصورة استُخدمت سابقاً في طلب شحن آخر"
 }

@@ -1656,13 +1656,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get prepaidMustTopUp => 'Top up your wallet to go online and start working';
 
   @override
+  String get driverNotApprovedYet => 'Your account is not approved yet.';
+
+  @override
+  String get driverFinishCurrentRide => 'Finish your current ride before accepting another one.';
+
+  @override
   String get prepaidCommissionNote => 'A 10% commission is deducted automatically from your wallet when a ride completes';
 
   @override
   String get prepaidChooseMethod => 'Choose a top-up method';
-
-  @override
-  String get prepaidShamCashNote => 'A Sham Cash transfer is added to your balance automatically within minutes';
 
   @override
   String get prepaidBankNote => 'After transferring, submit the transaction reference below for manual confirmation';
@@ -1702,4 +1705,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get prepaidCopyReference => 'Copy reference';
+
+  @override
+  String get prepaidShamCashNote => 'Transfer via Sham Cash, then enter the amount and upload the transfer notification screenshot so our team can approve it and add the balance';
+
+  @override
+  String get prepaidAmountTransferred => 'Amount you transferred';
+
+  @override
+  String get prepaidReceiptTitle => 'Transfer notification screenshot';
+
+  @override
+  String get prepaidReceiptHint => 'A screenshot of the Sham Cash notification showing the amount and transaction number';
+
+  @override
+  String get prepaidPickReceipt => 'Choose the screenshot';
+
+  @override
+  String get prepaidChangeReceipt => 'Change image';
+
+  @override
+  String get prepaidReceiptRequired => 'Upload the transfer screenshot first';
+
+  @override
+  String get prepaidReceiptDuplicate => 'This screenshot was already used for another top-up';
 }

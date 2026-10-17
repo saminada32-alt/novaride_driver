@@ -250,7 +250,11 @@ class _PrepaidWalletScreenState extends State<PrepaidWalletScreen> {
         label = local.prepaidStatusPending;
     }
 
-    final methodLabel = method == 'bank' ? local.bankTransfer : local.cash;
+    final methodLabel = switch (method) {
+      'bank' => local.bankTransfer,
+      'sham_cash' => local.shamCash,
+      _ => local.cash,
+    };
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
