@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import 'core/services/driver_fcm_service.dart';
 import 'core/services/app_controller.dart';
+import 'core/services/crash_diagnostics.dart';
 import 'core/services/crash_reporting.dart';
 import 'core/services/network_connectivity_service.dart';
 import 'features/auth/providers/auth_provider.dart';
@@ -78,6 +79,7 @@ class _MyAppRootState extends State<MyAppRoot> {
 
   Future<void> _initServices() async {
     if (!mounted) return;
+    unawaited(CrashDiagnostics.checkLastRun());
     try {
       await DriverFcmService.instance.init();
     } catch (e, st) {

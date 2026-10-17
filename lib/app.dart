@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'core/services/app_controller.dart';
+import 'core/services/crash_diagnostics.dart';
 import 'core/widgets/connectivity_overlay.dart';
 import 'l10n/app_localizations.dart';
 import 'features/auth/login/login_screen.dart';
@@ -14,6 +15,7 @@ class MyApp extends StatelessWidget {
     final ctrl = context.watch<AppController>();
 
     return MaterialApp(
+      navigatorKey: CrashDiagnostics.navigatorKey,
       debugShowCheckedModeBanner: false,
       locale: ctrl.locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
