@@ -42,6 +42,12 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+        <!-- Google Maps still loads org.apache.http classes; Android 16 (targetSdk 36)
+             no longer puts them on the app classpath, which crashes the map with
+             NoClassDefFoundError on e.g. Samsung One UI 8. -->
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
